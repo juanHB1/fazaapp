@@ -16,6 +16,10 @@ class RegistroState extends State<Registro> {
   final TextEditingController nombresController = TextEditingController();
   final TextEditingController apellidoController = TextEditingController();
   final TextEditingController telefonoController = TextEditingController();
+  final TextEditingController _rolController = TextEditingController();
+
+  String? selectedOption; //opcion seleccionada 
+  
   final _formKey = GlobalKey<FormState>();
 
 
@@ -26,96 +30,236 @@ class RegistroState extends State<Registro> {
 
 
     return Scaffold(
-      appBar: AppBar(title: const Text("Registro")),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              TextFormField(
-                controller: _emailController,
-                decoration: const InputDecoration(labelText: "Correo"),
-                keyboardType: TextInputType.emailAddress,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return "Por favor, ingresa tu correo";
-                  } else if (!RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+').hasMatch(value)) {
-                    return "Ingresa un correo válido";
-                  }
-                  return null;
-                },
+      backgroundColor: Colors.blueGrey[50],
+      appBar: AppBar(
+        title: const Text("Registro de usuarios"),
+        backgroundColor: Colors.blueAccent,
+        elevation: 0,
+      ),
+      body: Center(
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(20.0),
+            child: Card(
+              elevation: 5,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(15),
               ),
-              TextFormField(
-                controller: _passwordController,
-                decoration: const InputDecoration(labelText: "Contraseña"),
-                obscureText: true,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return "Por favor, ingresa tu contraseña";
-                  } else if (value.length < 6) {
-                    return "La contraseña debe tener al menos 6 caracteres";
-                  }
-                  return null;
-                },
+              child: Padding(
+                padding: const EdgeInsets.all(20.0),
+                child: Form(
+                  key: _formKey,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Text(
+                        "Crea tu cuenta",
+                        style: TextStyle(
+                          fontSize: 22,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.blueAccent,
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+
+                      // Campo de Correo
+                      TextFormField(
+                        controller: _emailController,
+                        decoration: InputDecoration(
+                          labelText: "Correo",
+                          prefixIcon: const Icon(Icons.email, color: Colors.blueAccent),
+                          filled: true,
+                          fillColor: Colors.white,
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                            borderSide: BorderSide.none,
+                          ),
+                        ),
+                        keyboardType: TextInputType.emailAddress,
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return "Por favor, ingresa tu correo";
+                          } else if (!RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+').hasMatch(value)) {
+                            return "Ingresa un correo válido";
+                          }
+                          return null;
+                        },
+                      ),
+
+                      const SizedBox(height: 10),
+
+                      // Campo de Contraseña
+                      TextFormField(
+                        controller: _passwordController,
+                        decoration: InputDecoration(
+                          labelText: "Contraseña",
+                          prefixIcon: const Icon(Icons.lock, color: Colors.blueAccent),
+                          filled: true,
+                          fillColor: Colors.white,
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                            borderSide: BorderSide.none,
+                          ),
+                        ),
+                        obscureText: true,
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return "Por favor, ingresa tu contraseña";
+                          } else if (value.length < 6) {
+                            return "La contraseña debe tener al menos 6 caracteres";
+                          }
+                          return null;
+                        },
+                      ),
+
+                      const SizedBox(height: 10),
+
+                      // Campo de Nombres
+                      TextFormField(
+                        controller: nombresController,
+                        decoration: InputDecoration(
+                          labelText: "Nombres",
+                          prefixIcon: const Icon(Icons.person, color: Colors.blueAccent),
+                          filled: true,
+                          fillColor: Colors.white,
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                            borderSide: BorderSide.none,
+                          ),
+                        ),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return "Por favor, ingrese su nombre";
+                          }
+                          return null;
+                        },
+                      ),
+
+                      const SizedBox(height: 10),
+
+                      // Campo de Apellidos
+                      TextFormField(
+                        controller: apellidoController,
+                        decoration: InputDecoration(
+                          labelText: "Apellidos",
+                          prefixIcon: const Icon(Icons.person_outline, color: Colors.blueAccent),
+                          filled: true,
+                          fillColor: Colors.white,
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                            borderSide: BorderSide.none,
+                          ),
+                        ),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return "Por favor, ingrese sus apellidos";
+                          }
+                          return null;
+                        },
+                      ),
+
+                      const SizedBox(height: 10),
+
+                      // Campo de Teléfono
+                      TextFormField(
+                        controller: telefonoController,
+                        decoration: InputDecoration(
+                          labelText: "Teléfono",
+                          prefixIcon: const Icon(Icons.phone, color: Colors.blueAccent),
+                          filled: true,
+                          fillColor: Colors.white,
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                            borderSide: BorderSide.none,
+                          ),
+                        ),
+                        keyboardType: TextInputType.number,
+                        inputFormatters: [
+                          FilteringTextInputFormatter.digitsOnly,
+                        ],
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return "Por favor, ingrese un número de teléfono";
+                          } else if (value.length > 10) {
+                            return "El número de teléfono no puede tener más de 10 dígitos";
+                          }
+                          return null;
+                        },
+                      ),
+
+                      const SizedBox(height: 10),
+
+                      // Dropdown para seleccionar el rol
+                      DropdownButtonFormField<String>(
+                        value: selectedOption,
+                        hint: const Text("Seleccione un rol"),
+                        onChanged: (newValue) {
+                          setState(() {
+                            _rolController.text = newValue ?? "";
+                          });
+                        },
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return "Seleccione un rol";
+                          }
+                          return null;
+                        },
+                        items: registroProvider.optionsDropDownList.map((String role) {
+                          return DropdownMenuItem<String>(
+                            value: role,
+                            child: Text(role),
+                          );
+                        }).toList(),
+                        decoration: InputDecoration(
+                          filled: true,
+                          fillColor: Colors.white,
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                            borderSide: BorderSide.none,
+                          ),
+                          contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
+                        ),
+                      ),
+
+                      const SizedBox(height: 20),
+
+                      // Botón de registro
+                      SizedBox(
+                        width: double.infinity,
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.blueAccent,
+                            padding: const EdgeInsets.symmetric(vertical: 12),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                          ),
+                          onPressed: () {
+                            if (_formKey.currentState!.validate()) {
+                              registroProvider.registrarUsuario(
+                                nombresController,
+                                apellidoController,
+                                _emailController,
+                                telefonoController,
+                                _rolController,
+                                _passwordController,
+                                context,
+                                _formKey,
+                              );
+                              // Aquí iría la función de registrar usuario
+                            }
+                          },
+                          child: const Text(
+                            "Registrar",
+                            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
               ),
-              TextFormField(
-                controller: nombresController,
-                decoration: const InputDecoration(labelText: "Nombres"),
-                obscureText: false,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return "Por favor, ingrese su nombre";
-                  }
-                  return null;
-                },
-              ),
-              TextFormField(
-                controller: apellidoController,
-                decoration: const InputDecoration(labelText: "Apellidos completos"),
-                obscureText: false,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return "Por favor, ingrese sus apellidos";
-                  }
-                  return null;
-                },
-              ),
-              TextFormField(
-                controller: telefonoController,
-                decoration: const InputDecoration(labelText: "Teléfono"),
-                keyboardType: TextInputType.number,
-                inputFormatters: [
-                  FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
-                ],
-                obscureText: false,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return "Por favor, ingrese un numero de teléfono";
-                  }
-                  else if (value.length > 10) {
-                    return "El número de teléfono no puede tener más de 10 dígitos";
-                  }
-                  return null;
-                },
-              ),
-              const SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: (){
-                  registroProvider.registrarUsuario(
-                    _emailController, 
-                    _passwordController, 
-                    nombresController,
-                    apellidoController,
-                    telefonoController,
-                    context, 
-                    _formKey);
-                    
-                },
-                child: const Text("Registrar"),
-              ),
-            ],
+            ),
           ),
         ),
       ),

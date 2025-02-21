@@ -4,16 +4,29 @@ import 'package:firebase_auth/firebase_auth.dart';
 
 class LoginProvider extends ChangeNotifier {
 
+  List<String> optionsDropDownList = ["cliente", "admin"];
 
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
-  Future<void> iniciarSesion(email, password, context, formkey) async {
+  Future<void> iniciarSesion(email, password, option, context, formkey) async {
     if (formkey.currentState!.validate()) {
       try {
-         UserCredential userCredential = await _auth.signInWithEmailAndPassword(
+
+        switch (option) {
+          case "cliente":
+            Navigator.pushNamed(context, '/registroUsuario');
+            break;
+          
+          case "admin":
+            print("Admin");
+            break;
+        }
+
+        /* UserCredential userCredential = await _auth.signInWithEmailAndPassword(
           email: email.text.trim(),
           password: password.text.trim(),
         );
+
         print(userCredential.user);
         if(userCredential.user != null){
 
@@ -22,7 +35,7 @@ class LoginProvider extends ChangeNotifier {
           );
 
           Navigator.pushNamed(context, '/vehiculos');
-        }
+        } */
         
 
       } catch (e) {
@@ -34,6 +47,7 @@ class LoginProvider extends ChangeNotifier {
     }
   }
 
+ 
 
 }
 

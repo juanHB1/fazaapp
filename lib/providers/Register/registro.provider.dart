@@ -5,7 +5,11 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 class RegisterProvider extends ChangeNotifier {
 
-  Future<void> registrarUsuario(email, password, nombres, apelidos, tel, context, formkey) async {
+  List<String> optionsDropDownList = ["cliente", "admin"];
+
+  
+
+  Future<void> registrarUsuario(nombres, apelidos, email, tel, rol, password, context, formkey) async {
     if (formkey.currentState!.validate()) {
       try {
         UserCredential userCredential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
@@ -20,9 +24,11 @@ class RegisterProvider extends ChangeNotifier {
         await FirebaseFirestore.instance.collection('usuarios').doc(uid).set({
           'nombre': nombres.text,
           'apellido': apelidos.text,
-          'telefono': tel.text,
           'email': email.text,
+          'telefono': tel.text,
           'uid': uid,
+          'rol': rol.text,
+          'password':password.text
         });
 
         ScaffoldMessenger.of(context).showSnackBar(
