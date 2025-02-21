@@ -7,9 +7,9 @@ class RegisterProvider extends ChangeNotifier {
 
   List<String> optionsDropDownList = ["cliente", "admin"];
 
-  
 
-  Future<void> registrarUsuario(nombres, apelidos, email, tel, rol, password, context, formkey) async {
+
+  Future<void> registrarUsuario(nombres, apellidos, email, tel, rol, password, context, formkey) async {
     if (formkey.currentState!.validate()) {
       try {
         UserCredential userCredential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
@@ -23,18 +23,27 @@ class RegisterProvider extends ChangeNotifier {
         // Crear documento en la colección "usuarios"
         await FirebaseFirestore.instance.collection('usuarios').doc(uid).set({
           'nombre': nombres.text,
-          'apellido': apelidos.text,
+          'apellido': apellidos.text,
           'email': email.text,
           'telefono': tel.text,
           'uid': uid,
           'rol': rol.text,
           'password':password.text
         });
+        
+        formkey.currentState?.reset();
+        nombres.clear();
+        apellidos.clear();
+        email.clear();
+        tel.clear();
+        rol.clear();
+        password.clear();
 
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Usuario registrado con éxito')),
         );
-        formkey.currentState?.reset();
+        
+
       } on FirebaseAuthException catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Error: ${e.message}')),
