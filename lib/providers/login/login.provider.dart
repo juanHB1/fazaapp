@@ -14,11 +14,11 @@ class LoginProvider extends ChangeNotifier {
 
         switch (option) {
           case "cliente":
-            Navigator.pushNamed(context, '/registroUsuario');
+            
             break;
           
           case "admin":
-            print("Admin");
+            Navigator.pushNamed(context, '/registroUsuario');
             break;
         }
 
