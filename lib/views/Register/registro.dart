@@ -24,12 +24,13 @@ class RegistroState extends State<Registro> {
   final _formKey = GlobalKey<FormState>();
 
 
+  
   @override
   Widget build(BuildContext context) {
 
-    final registroProvider = Provider.of<RegisterProvider>(context, listen: false);
+    final registroProvider = Provider.of<RegisterProvider>(context, listen: true);
     final loginProvider = Provider.of<LoginProvider>(context, listen: false);
-    registroProvider.obtenerCredenciales('nombre');
+    registroProvider.obtenerCredenciales("nombre");
 
     return PopScope(
       canPop: false, // Bloquea el botón "Atrás"

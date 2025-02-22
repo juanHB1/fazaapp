@@ -60,14 +60,16 @@ class LoginProvider extends ChangeNotifier {
             // Retornar los datos del usuario en un mapa
               Map<String, dynamic> datosUsuario = usuario.data() as Map<String, dynamic>;
 
-              Shared.saveCredentials('uid', datosUsuario['uid']);
-              Shared.saveCredentials('password', datosUsuario['password']); 
-              Shared.saveCredentials('apellido', datosUsuario['apellido']);
-              Shared.saveCredentials('nombre', datosUsuario['nombre']);
-              Shared.saveCredentials('email', datosUsuario['email']);
-              Shared.saveCredentials('rol', datosUsuario['rol']);
-              Shared.saveCredentials('telefono', datosUsuario['telefono']);
-
+              final prefs = await SharedPreferences.getInstance();
+              
+              await prefs.setString('uid', datosUsuario['uid']);
+              await prefs.setString('nombre', datosUsuario['nombre']);
+              await prefs.setString('apellido', datosUsuario['apellido']);
+              await prefs.setString('email', datosUsuario['email']);
+              await prefs.setString('rol', datosUsuario['rol']);
+              await prefs.setString('telefono', datosUsuario['telefono']);
+              
+              
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(content: Text("Login exitoso!")),
               );
@@ -76,7 +78,7 @@ class LoginProvider extends ChangeNotifier {
               email.clear();
               password.clear();
               rol.clear();
-
+              
               Navigator.pushNamed(context, '/registroUsuario');
             break;
         }
@@ -108,7 +110,7 @@ class LoginProvider extends ChangeNotifier {
     final prefs = await SharedPreferences.getInstance();
     await prefs.clear();
     await FirebaseAuth.instance.signOut();
-
+    notifyListeners();
     // Elimina las pantallas anteriores y lleva al usuario al login
     Navigator.of(context).pushAndRemoveUntil(
       MaterialPageRoute(builder: (context) => Login()), // Reemplaza con tu pantalla de login
@@ -146,18 +148,16 @@ class LoginProvider extends ChangeNotifier {
             child: Text("Cancelar", style: TextStyle(color: Colors.blueGrey[700])),
           ),
           TextButton(
-            onPressed: () => Navigator.of(context).pop(true),
+            onPressed: () async { // Borra TODOS los datos antes de salir
+              Navigator.of(context).pop(true);
+              cerrarSesion(context);
+            }, //=> Navigator.of(context).pop(true),
             child: Text("Cerrar sesión", style: TextStyle(color: Colors.redAccent)),
           ),
         ],
       );
     },
-  ).then((value) {
-      if (value == true) {
-        cerrarSesion(context); // Ejecuta cerrar sesión solo si el usuario confirma
-      }
-      return value ?? false;
-    });
+  );
   }
 }
 

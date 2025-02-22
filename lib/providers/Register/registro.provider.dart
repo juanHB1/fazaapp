@@ -8,7 +8,7 @@ class RegisterProvider extends ChangeNotifier {
 
   List<String> optionsDropDownList = ["cliente", "admin"];
   String credencialNombre = '';
-
+  
 
   Future<void> registrarUsuario(nombres, apellidos, email, tel, rol, password, context, formkey) async {
     if (formkey.currentState!.validate()) {

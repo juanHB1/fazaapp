@@ -119,10 +119,7 @@ class LoginState extends State<Login> {
                         width: double.infinity,
                         child: ElevatedButton(
                           onPressed: () {
-                            if (_formKey.currentState!.validate()) {
-                              // Lógica de inicio de sesión
-                              loginProvider.iniciarSesion(_emailController, _passwordController, rolController, context, _formKey);
-                            }
+                            loginProvider.iniciarSesion(_emailController, _passwordController, rolController, context, _formKey);
                           },
                           style: ElevatedButton.styleFrom(
                             padding: EdgeInsets.symmetric(vertical: 14),
