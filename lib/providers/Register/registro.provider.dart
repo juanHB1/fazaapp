@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter_application_1/servicios/shared_preferences/shared_preferences.dart';
 
 
 class RegisterProvider extends ChangeNotifier {
 
   List<String> optionsDropDownList = ["cliente", "admin"];
-
+  String credencialNombre = '';
 
 
   Future<void> registrarUsuario(nombres, apellidos, email, tel, rol, password, context, formkey) async {
@@ -52,5 +53,8 @@ class RegisterProvider extends ChangeNotifier {
     }
   }
 
-
+  Future<void> obtenerCredenciales(String key) async {
+    credencialNombre = await Shared.getCredentials(key) ?? "";
+    notifyListeners();
+  }
 }

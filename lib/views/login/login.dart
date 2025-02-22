@@ -15,14 +15,13 @@ class LoginState extends State<Login> {
 
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  String? selectedOption; //opcion seleccionada  
+  final TextEditingController rolController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) {
     
-    final loginProvider = Provider.of<LoginProvider>(context);
-
+    final loginProvider = Provider.of<LoginProvider>(context, listen: false);
 
     return Scaffold(
       backgroundColor: Colors.blueGrey[50], // Fondo suave
@@ -51,11 +50,11 @@ class LoginState extends State<Login> {
 
                       // Dropdown para tipo de usuario
                       DropdownButtonFormField<String>(
-                        value: selectedOption,
+                        value: rolController.text.isEmpty ? null : rolController.text,
                         hint: Text("Seleccione su rol"),
                         onChanged: (newValue) {
                           setState(() {
-                            selectedOption = newValue;
+                            rolController.text = newValue ?? "";
                           });
                         },
                         validator: (value) => value == null ? "Seleccione un rol" : null,
@@ -122,7 +121,7 @@ class LoginState extends State<Login> {
                           onPressed: () {
                             if (_formKey.currentState!.validate()) {
                               // Lógica de inicio de sesión
-                              loginProvider.iniciarSesion(_emailController, _passwordController, selectedOption, context, _formKey);
+                              loginProvider.iniciarSesion(_emailController, _passwordController, rolController, context, _formKey);
                             }
                           },
                           style: ElevatedButton.styleFrom(
