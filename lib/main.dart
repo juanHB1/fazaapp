@@ -4,6 +4,7 @@ import 'package:flutter_application_1/providers/Vehiculo/vehiculo.provider.dart'
 import 'package:flutter_application_1/providers/clientes/crudclientes.dart';
 import 'package:flutter_application_1/providers/login/login.provider.dart';
 import 'package:flutter_application_1/views/Register/registro.dart';
+import 'package:flutter_application_1/views/actualizardatos/EditarClienteScreen.dart';
 import 'package:flutter_application_1/views/listadoclientes/listaclientes.dart';
 import 'package:flutter_application_1/views/login/login.dart';
 import 'package:flutter_application_1/views/vehiculos/vehiculo.dart';
@@ -49,10 +50,10 @@ class MyApp extends StatelessWidget {
 
       initialRoute: '/',
       routes: {
-        '/': (context) => Login(),
-
+        '/': (context) => const ListaCliente(), //Login(),
         '/registroUsuario': (context) => const Registro(),
         '/vehiculos': (context) => const Vehiculo(),
+
       },
 
     );

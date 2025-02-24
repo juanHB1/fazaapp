@@ -1,20 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/providers/clientes/crudclientes.dart';
+import 'package:flutter_application_1/views/actualizardatos/EditarClienteScreen.dart';
 import 'package:provider/provider.dart';
 
-class Cliente extends StatefulWidget {
-  const Cliente({super.key});
+class ListaCliente extends StatefulWidget {
+  const ListaCliente({super.key});
 
   @override
-  State<Cliente> createState() => _ClienteState();
+  State<ListaCliente> createState() => _ListaClienteState();
 }
 
-class _ClienteState extends State<Cliente> {
+class _ListaClienteState extends State<ListaCliente> {
   @override
   Widget build(BuildContext context) {
 
     final clientesProvider = Provider.of<ClientesProvider>(context);
     clientesProvider.cargarClientes();
+    
 
     return Scaffold(
   appBar: AppBar(
@@ -81,21 +83,20 @@ class _ClienteState extends State<Cliente> {
                   textAlign: TextAlign.center,
                 ), 
                 SizedBox(height: 5),
-/* 
+
                 IconButton(
                   icon: Icon(Icons.edit),
                   onPressed: () {
+                     final cliente = clientesProvider.clientes[index]; // Obtiene el cliente seleccionado
+                    
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => EditarClienteScreen(
-                        cliente: clientesProvider.clientes[index],
-                        index: index, // Pasa el índice del cliente // Agrega esta línea
-                        ),
+                        builder: (context) => EditarClienteScreen(cliente: cliente),
                       ),
                     );
                   },
-                ) */
+                )
 
                 
               ],
