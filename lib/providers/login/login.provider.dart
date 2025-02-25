@@ -79,7 +79,7 @@ class LoginProvider extends ChangeNotifier {
               password.clear();
               rol.clear();
               
-              Navigator.pushNamed(context, '/registroUsuario');
+              Navigator.pushNamed(context, '/home');
             break;
         }
       } catch (e) {

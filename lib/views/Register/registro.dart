@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_application_1/providers/Register/registro.provider.dart';
 import 'package:flutter_application_1/providers/login/login.provider.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_application_1/views/drawer/drawe.dart'; // Importa el Drawer reutilizable
 
 class Registro extends StatefulWidget {
   const Registro({super.key});
@@ -30,20 +31,10 @@ class RegistroState extends State<Registro> {
 
     final registroProvider = Provider.of<RegisterProvider>(context, listen: true);
     final loginProvider = Provider.of<LoginProvider>(context, listen: false);
-    registroProvider.obtenerCredenciales("nombre");
 
-    return PopScope(
-      canPop: false, // Bloquea el botón "Atrás"
-      onPopInvokedWithResult: (didPop, result) async {
-        if (!didPop) {
-          bool salir = await loginProvider.mostrarAlertaCerrarSesion(context);
-          if (salir) {
-            loginProvider.cerrarSesion(context);
-          }
-        }
-      },
-      child: Scaffold(
+    return Scaffold(
         backgroundColor: Colors.blueGrey[50],
+        //barra de navegacion superior
         appBar: AppBar(
           automaticallyImplyLeading: false,
           backgroundColor: Colors.blueGrey[900], // Color oscuro elegante
@@ -54,6 +45,7 @@ class RegistroState extends State<Registro> {
             children: [
               Icon(Icons.car_repair, color: Colors.amber, size: 28), // Ícono llamativo
               SizedBox(width: 8),
+              //texto con el nombre de la empresa e icono
               Text(
                 "Faza Ingeniería", 
                 style: TextStyle(
@@ -66,18 +58,21 @@ class RegistroState extends State<Registro> {
             ],
           ),
           centerTitle: true,
-          actions: [
-            IconButton(
-              icon: Icon(Icons.exit_to_app_rounded, color: Colors.redAccent, size: 28),
-              tooltip: "Cerrar sesión",
-              onPressed: () {
-                loginProvider.cerrarSesion(context);
-              },
-              splashRadius: 26, // Efecto al presionar
-            ),
-          ],
+          //icono para abrir el drawer( panel izquierdo )
+          leading: Builder(
+            builder: (context) {
+              return IconButton(
+                icon: Icon(Icons.menu, color: Colors.white, size: 28),
+                tooltip: "Abrir menú",
+                onPressed: () {
+                  Scaffold.of(context).openDrawer(); // Abre el Drawer correctamente
+                },
+              );
+            },
+          ),
+          
         ),
-      
+        drawer: CustomDrawer(),
         body: Center(
           child: SingleChildScrollView(
             child: Padding(
@@ -92,16 +87,6 @@ class RegistroState extends State<Registro> {
                     children: [
                       Icon(Icons.waving_hand, size: 40, color: Colors.amber), // Icono llamativo
                       SizedBox(height: 8),
-                      Text(
-                        "¡Hola, ${registroProvider.credencialNombre}! 👋",
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontSize: 22,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.blueGrey[900],
-                        ),
-                      ),
-                      SizedBox(height: 5),
                       Text(
                         "Bienvenido a nuestra plataforma. Esperamos que tengas una excelente experiencia 🎉",
                         textAlign: TextAlign.center,
@@ -302,8 +287,7 @@ class RegistroState extends State<Registro> {
             ),
           ),
         ),
-      ),
-    );
+      );
 
   }
 }

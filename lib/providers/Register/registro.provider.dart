@@ -8,6 +8,7 @@ class RegisterProvider extends ChangeNotifier {
 
   List<String> optionsDropDownList = ["cliente", "admin"];
   String credencialNombre = '';
+  String credencialApellido ='';
   
 
   Future<void> registrarUsuario(nombres, apellidos, email, tel, rol, password, context, formkey) async {
@@ -53,8 +54,13 @@ class RegisterProvider extends ChangeNotifier {
     }
   }
 
-  Future<void> obtenerCredenciales(String key) async {
+  Future<void> obtenerCredencialNombre(String key) async {
     credencialNombre = await Shared.getCredentials(key) ?? "";
+    notifyListeners();
+  }
+
+  Future<void> obtenerCredencialApellido(String key) async {
+    credencialApellido = await Shared.getCredentials(key) ?? "";
     notifyListeners();
   }
 }

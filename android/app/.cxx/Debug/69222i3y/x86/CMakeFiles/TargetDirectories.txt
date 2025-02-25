@@ -1,0 +1,2 @@
+C:/Users/oscar/Documents/app flutter/fazaapp/android/app/.cxx/Debug/69222i3y/x86/CMakeFiles/edit_cache.dir
+C:/Users/oscar/Documents/app flutter/fazaapp/android/app/.cxx/Debug/69222i3y/x86/CMakeFiles/rebuild_cache.dir
