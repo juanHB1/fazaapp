@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/providers/clientes/crudclientes.dart';
-import 'package:flutter_application_1/views/clientes/clientes.dart';
+import 'package:flutter_application_1/providers/Clientes/cliente.provider.dart';
+import 'package:flutter_application_1/views/RegistroClientes/registroClientes.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_application_1/views/drawer/drawe.dart'; // Importa el Drawer reutilizable
 
@@ -13,11 +13,20 @@ class ListaCliente extends StatefulWidget {
 }
 
 class _ListaClienteState extends State<ListaCliente> {
+
+  @override
+  void initState() {
+    super.initState();
+    // 🔹 Cargar los clientes solo una vez al iniciar el widget
+    Future.microtask(() {
+      Provider.of<ClientesProvider>(context, listen: false).cargarClientes();
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
 
     final clientesProvider = Provider.of<ClientesProvider>(context);
-    clientesProvider.cargarClientes();
     
 
     return Scaffold(
@@ -29,7 +38,6 @@ class _ListaClienteState extends State<ListaCliente> {
         backgroundColor: Colors.blueGrey[900],
         elevation: 4,
         shadowColor: Colors.black45,
-        
         leading: Builder(
             builder: (context) {
               return IconButton(
@@ -89,7 +97,7 @@ class _ListaClienteState extends State<ListaCliente> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => ClienteScreen(cliente: cliente),
+                              builder: (context) => RegistroClientes(cliente: cliente),
                             )
                           );
                         },
@@ -99,21 +107,25 @@ class _ListaClienteState extends State<ListaCliente> {
                 },
               ),
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => const ClienteScreen(cliente: null),
-            ),
-          ).then((_) => setState(() {})); // Recarga la lista al volver
-        },
-        backgroundColor: Colors.blueGrey[700],
-        icon: const Icon(Icons.add, color: Colors.white),
-        label: const Text("Agregar Cliente",
-            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+      //boton flotante para agregar
+      floatingActionButton: Align(
+        alignment: Alignment.bottomRight, // Mueve el botón a la izquierda
+        child: FloatingActionButton(
+          tooltip: "Agregar nuevo cliente",
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const RegistroClientes(cliente: null),
+              ),
+            );
+          },
+          backgroundColor: Colors.blueGrey[700], // Ícono de "+"
+          shape: const CircleBorder(),
+          child: const Icon(Icons.add, color: Colors.white), // Asegura que sea completamente redondo
+        ),
       ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+
     );
   }
 

@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/providers/Register/registro.provider.dart';
 import 'package:flutter_application_1/providers/Vehiculo/vehiculo.provider.dart';
-import 'package:flutter_application_1/providers/clientes/crudclientes.dart';
+import 'package:flutter_application_1/providers/Clientes/cliente.provider.dart';
 import 'package:flutter_application_1/providers/login/login.provider.dart';
-import 'package:flutter_application_1/views/Register/registro.dart';
-import 'package:flutter_application_1/views/clientes/clientes.dart';
+import 'package:flutter_application_1/views/RegistroClientes/registroClientes.dart';
 import 'package:flutter_application_1/views/home/home.dart';
 import 'package:flutter_application_1/views/listadoclientes/listaclientes.dart';
 import 'package:flutter_application_1/views/login/login.dart';
@@ -28,7 +27,6 @@ Future<void> main() async {
         ChangeNotifierProvider(create : (_)=>RegisterProvider() ),
         ChangeNotifierProvider(create : (_)=>VehiculoProvider() ),
         ChangeNotifierProvider(create: (_)=>ClientesProvider()),
-        ChangeNotifierProvider(create: (_) => ClientesProvider()),
       ],
       
       child: const MyApp(),
@@ -54,7 +52,6 @@ class MyApp extends StatelessWidget {
         '/': (context) => const Login(),
         '/home': (context) => BienvenidaScreen(),
         '/clientes': (context) => const ListaCliente(),
-        '/registroUsuario': (context) => const Registro(),
         '/vehiculos': (context) => const Vehiculo(),
 
       },

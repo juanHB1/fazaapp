@@ -1,7 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter_application_1/servicios/shared_preferences/shared_preferences.dart';
 import 'package:flutter_application_1/views/login/login.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -12,76 +11,73 @@ class LoginProvider extends ChangeNotifier {
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
   /// Método para iniciar sesión en la aplicación.
-///
-/// Parámetros:
-/// - `email`: Controlador de texto que contiene el correo ingresado por el usuario.
-/// - `password`: Controlador de texto que contiene la contraseña ingresada.
-/// - `rol`: Controlador de texto que indica el rol del usuario (ejemplo: "cliente" o "admin").
-/// - `context`: Contexto de la aplicación, necesario para navegación y mostrar mensajes.
-/// - `formkey`: Llave del formulario para validar los campos antes de proceder.
-///
-/// Funcionamiento:
-/// - Verifica si los campos del formulario son válidos.
-/// - Dependiendo del rol ingresado, ejecuta diferentes acciones:
-///   - Si el rol es "cliente", actualmente solo imprime un mensaje en la consola.
-///   - Si el rol es "admin":
-///     1. Autentica al usuario con Firebase Authentication.
-///     2. Obtiene su UID y consulta los datos en Firestore.
-///     3. Guarda los datos en `SharedPreferences` para persistencia.
-///     4. Muestra un mensaje de éxito con `SnackBar`.
-///     5. Limpia los campos del formulario.
-///     6. Redirige a la pantalla de registro de usuario (`/registroUsuario`).
-/// - Si ocurre un error (por ejemplo, credenciales incorrectas), muestra un mensaje de error.
-///
-/// Excepciones:
-/// - Captura errores en la autenticación y muestra un `SnackBar` con el mensaje "Email o contraseña incorrectos".
-  Future<void> iniciarSesion(email, password, rol, context, formkey) async {
+  ///
+  /// Parámetros:
+  /// - `email`: Controlador de texto que contiene el correo ingresado por el usuario.
+  /// - `password`: Controlador de texto que contiene la contraseña ingresada.
+  /// - `rol`: Controlador de texto que indica el rol del usuario (ejemplo: "cliente" o "admin").
+  /// - `context`: Contexto de la aplicación, necesario para navegación y mostrar mensajes.
+  /// - `formkey`: Llave del formulario para validar los campos antes de proceder.
+  ///
+  /// Funcionamiento:
+  /// - Verifica si los campos del formulario son válidos.
+  /// - Dependiendo del rol ingresado, ejecuta diferentes acciones:
+  ///   - Si el rol es "cliente", actualmente solo imprime un mensaje en la consola.
+  ///   - Si el rol es "admin":
+  ///     1. Autentica al usuario con Firebase Authentication.
+  ///     2. Obtiene su UID y consulta los datos en Firestore.
+  ///     3. Guarda los datos en `SharedPreferences` para persistencia.
+  ///     4. Muestra un mensaje de éxito con `SnackBar`.
+  ///     5. Limpia los campos del formulario.
+  ///     6. Redirige a la pantalla de registro de usuario (`/registroUsuario`).
+  /// - Si ocurre un error (por ejemplo, credenciales incorrectas), muestra un mensaje de error.
+  ///
+  /// Excepciones:
+  /// - Captura errores en la autenticación y muestra un `SnackBar` con el mensaje "Email o contraseña incorrectos".
+  /* Future<void> iniciarSesion(email, password, context, formkey) async {
     if (formkey.currentState!.validate()) {
       try {
 
-        switch (rol.text) {
-          case "cliente":
-            print("cliente");
-            break;
-          
-          case "admin":
-            UserCredential userCredential = await _auth.signInWithEmailAndPassword(
-              email: email.text.trim(),
-              password: password.text.trim(),
-            );
+        UserCredential userCredential = await _auth.signInWithEmailAndPassword(
+          email: email.text.trim(),
+          password: password.text.trim(),
+        );
 
+        // 🔹 Obtener usuario autenticado
+        User? user = userCredential.user;
+        if(user != userCredential.user){
             // Obtener ID del usuario
             String uid = userCredential.user!.uid;
 
             // Traer datos del usuario desde Firestore
             DocumentSnapshot usuario = await FirebaseFirestore.instance.collection('usuarios').doc(uid).get();
-            
-
             // Retornar los datos del usuario en un mapa
-              Map<String, dynamic> datosUsuario = usuario.data() as Map<String, dynamic>;
+            Map<String, dynamic> datosUsuario = usuario.data() as Map<String, dynamic>;
+            final prefs = await SharedPreferences.getInstance();
+              
+            await prefs.setString('uid', datosUsuario['uid']);
+            await prefs.setString('nombre', datosUsuario['nombre']);
+            await prefs.setString('apellido', datosUsuario['apellido']);
+            await prefs.setString('email', datosUsuario['email']);
+            await prefs.setString('rol', datosUsuario['rol']);
+            await prefs.setString('telefono', datosUsuario['telefono']);
 
-              final prefs = await SharedPreferences.getInstance();
+            switch (datosUsuario['rol']) {
+              case "cliente":
+                debugPrint("👉 cliente");
+                break;
               
-              await prefs.setString('uid', datosUsuario['uid']);
-              await prefs.setString('nombre', datosUsuario['nombre']);
-              await prefs.setString('apellido', datosUsuario['apellido']);
-              await prefs.setString('email', datosUsuario['email']);
-              await prefs.setString('rol', datosUsuario['rol']);
-              await prefs.setString('telefono', datosUsuario['telefono']);
-              
-              
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text("Login exitoso!")),
-              );
-
-              formkey.currentState?.reset();
-              email.clear();
-              password.clear();
-              rol.clear();
-              
-              Navigator.pushNamed(context, '/home');
-            break;
+              case "admin":
+                debugPrint("👉 admin");
+                formkey.currentState?.reset();
+                email.clear();
+                password.clear();                  
+                Navigator.pushNamed(context, '/home');
+                break;
+            }
         }
+
+        
       } catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text("Email o contraseña incorrectos")),
@@ -89,6 +85,87 @@ class LoginProvider extends ChangeNotifier {
       }
     }
   }
+ */
+
+  Future<void> iniciarSesion(
+    TextEditingController email, 
+    TextEditingController password, 
+    BuildContext context, 
+    GlobalKey<FormState> formKey) async {
+
+  if (!formKey.currentState!.validate()) return; // Verifica si el formulario es válido
+
+  try {
+    // 🔹 Iniciar sesión con Firebase Authentication
+    UserCredential userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(
+      email: email.text.trim(),
+      password: password.text.trim(),
+    );
+
+    User? user = userCredential.user;
+
+    if (user == null) {
+      throw FirebaseAuthException(code: "user-not-found", message: "No se pudo autenticar el usuario.");
+    }
+
+    // 🔹 Obtener datos del usuario desde Firestore
+    DocumentSnapshot usuarioDoc = await FirebaseFirestore.instance.collection('usuarios').doc(user.uid).get();
+
+    if (!usuarioDoc.exists) {
+      throw FirebaseAuthException(code: "user-not-found", message: "No se encontraron datos en Firestore.");
+    }
+
+    Map<String, dynamic> datosUsuario = usuarioDoc.data() as Map<String, dynamic>;
+
+    // Guardar en SharedPreferences
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('uid', datosUsuario['uid']);
+    await prefs.setString('nombre', datosUsuario['nombre']);
+    await prefs.setString('apellido', datosUsuario['apellido']);
+    await prefs.setString('email', datosUsuario['email']);
+    await prefs.setString('rol', datosUsuario['rol']);
+    await prefs.setString('telefono', datosUsuario['telefono']);
+    await prefs.setString('password', datosUsuario['password']);
+
+    // 🔹 Navegar según el rol del usuario
+    switch (datosUsuario['rol']) {
+      case "cliente":
+      debugPrint("👉 cliente");
+      break;   
+      
+      case "admin":
+      formKey.currentState?.reset();
+      email.clear();
+      password.clear();              
+      Navigator.pushNamed(context, '/home');
+      break;
+    }
+
+  } on FirebaseAuthException catch (e) {
+    String mensajeError = "Error al iniciar sesión";
+    switch (e.code) {
+      case "user-not-found":
+        mensajeError = "No existe una cuenta con este correo";
+        break;
+      case "wrong-password":
+        mensajeError = "Contraseña incorrecta";
+        break;
+      case "invalid-email":
+        mensajeError = "Formato de correo inválido";
+        break;
+      case "user-disabled":
+        mensajeError = "Esta cuenta ha sido deshabilitada";
+        break;
+      default:
+        mensajeError = e.message ?? mensajeError;
+    }
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(mensajeError)),
+    );
+  }
+}
+
 
   /// Método para cerrar sesión en la aplicación.
 ///

@@ -27,9 +27,11 @@ class CustomDrawer extends StatelessWidget {
               children: [
                 Icon(Icons.person, size: 50, color: Colors.white),
                 SizedBox(width: 10),
-                Text(
-                  "${registroProvider.credencialNombre} ${registroProvider.credencialApellido}",
-                  style: TextStyle(fontSize: 20, color: Colors.white, fontWeight: FontWeight.bold),
+                Expanded(
+                  child: Text(
+                    "${registroProvider.credencialNombre} ${registroProvider.credencialApellido}",
+                    style: TextStyle(fontSize: 20, color: Colors.white, fontWeight: FontWeight.bold),
+                  ),
                 ),
               ],
             ),
