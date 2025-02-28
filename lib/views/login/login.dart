@@ -15,7 +15,6 @@ class LoginState extends State<Login> {
 
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController rolController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
 
   @override
@@ -47,31 +46,6 @@ class LoginState extends State<Login> {
                         style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.blueGrey),
                       ),
                       SizedBox(height: 20),
-
-                      // Dropdown para tipo de usuario
-                      DropdownButtonFormField<String>(
-                        value: rolController.text.isEmpty ? null : rolController.text,
-                        hint: Text("Seleccione su rol"),
-                        onChanged: (newValue) {
-                          setState(() {
-                            rolController.text = newValue ?? "";
-                          });
-                        },
-                        validator: (value) => value == null ? "Seleccione un rol" : null,
-                        items: loginProvider.optionsDropDownList.map((String option) {
-                          return DropdownMenuItem<String>(
-                            value: option,
-                            child: Text(option),
-                          );
-                        }).toList(),
-                        decoration: InputDecoration(
-                          border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
-                          contentPadding: EdgeInsets.symmetric(horizontal: 10),
-                        ),
-                      ),
-
-                      SizedBox(height: 15),
-
                       // Campo de correo
                       TextFormField(
                         controller: _emailController,
@@ -119,7 +93,7 @@ class LoginState extends State<Login> {
                         width: double.infinity,
                         child: ElevatedButton(
                           onPressed: () {
-                            loginProvider.iniciarSesion(_emailController, _passwordController, rolController, context, _formKey);
+                            loginProvider.iniciarSesion(_emailController, _passwordController, context, _formKey);
                           },
                           style: ElevatedButton.styleFrom(
                             padding: EdgeInsets.symmetric(vertical: 14),
