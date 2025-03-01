@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/providers/Vehiculo/vehiculo.provider.dart';
+import 'package:flutter_application_1/views/vehiculos/formularioVehiculo/formularioVehiculo.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_application_1/views/drawer/drawe.dart';
 
@@ -28,7 +29,12 @@ class VehiculoState extends State<Vehiculo> {
     final vehiculosProvider = Provider.of<VehiculoProvider>(context);
     final cliente = widget.cliente;
 
-    return Scaffold(
+    return PopScope(
+        canPop: false, // Bloquea el botón "Atrás"
+        onPopInvokedWithResult: (didPop, result) {
+          if (didPop) return;
+        },
+      child: Scaffold(
       backgroundColor: Colors.blueGrey[50],
       appBar: AppBar(
         title: const Text('Lista de vehículos',
@@ -119,7 +125,7 @@ class VehiculoState extends State<Vehiculo> {
                 ),
               ),
             ) :
-            vehiculosProvider.vehiculos.isEmpty 
+            vehiculosProvider.vehiculos.isEmpty
                 ? Center(
                   child: Padding(
                     padding: const EdgeInsets.all(20.0),
@@ -202,6 +208,24 @@ class VehiculoState extends State<Vehiculo> {
           ],
         ),
       ),
+      floatingActionButton: Align(
+        alignment: Alignment.bottomRight,
+        child: FloatingActionButton(
+          tooltip: "Agregar nuevo cliente",
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => FormularioVehiculo(cliente: cliente, vehiculo: null,),
+              ),
+            );
+          },
+          backgroundColor: Colors.blueGrey[700],
+          shape: const CircleBorder(),
+          child: const Icon(Icons.add, color: Colors.white),
+        ),
+      ),
+    )
     );
   }
 

@@ -1,59 +1,51 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:flutter_application_1/providers/Clientes/cliente.provider.dart';
-import 'package:provider/provider.dart';
-import 'package:flutter_application_1/views/drawer/drawe.dart'; // Importa el Drawer reutilizable
+import 'package:flutter_application_1/providers/Vehiculo/vehiculo.provider.dart';
+import 'package:flutter_application_1/views/drawer/drawe.dart';
+import 'package:provider/provider.dart'; // Importa el Drawer reutilizable
 
-class RegistroClientes extends StatefulWidget {
-  
-  final Map<String, dynamic>? cliente; // Datos del cliente a editar
-  const RegistroClientes({super.key, this.cliente});
 
+class FormularioVehiculo extends StatefulWidget {
+  final Map<String, dynamic>? cliente;
+  final Map<String, dynamic>? vehiculo;
+  const FormularioVehiculo({super.key, this.cliente, this.vehiculo});
 
   @override
-  State<RegistroClientes> createState() => RegistroState();
+  State<FormularioVehiculo> createState() => _FormularioVehiculoState();
 }
 
-class RegistroState extends State<RegistroClientes> {
+class _FormularioVehiculoState extends State<FormularioVehiculo> {
 
-  final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _nombresController = TextEditingController();
-  final TextEditingController _apellidoController = TextEditingController();
-  final TextEditingController _telefonoController = TextEditingController();
-  final TextEditingController _rolController = TextEditingController();
+  final TextEditingController marcaController = TextEditingController();
+  final TextEditingController modeloController = TextEditingController();
+  final TextEditingController placaController = TextEditingController();
+  final TextEditingController colorController = TextEditingController();
+  final TextEditingController kilometrajeEntradaController = TextEditingController();
+  final TextEditingController tipoCombustibleController = TextEditingController();
+  final TextEditingController numeroChasisController = TextEditingController();
+  final formKey = GlobalKey<FormState>();
 
-  String? selectedOption; //opcion seleccionada 
-  
-  final _formKey = GlobalKey<FormState>();
 
-  @override
+   @override
   void initState() {
     super.initState();
     // Inicializa los controladores con los datos actuales del cliente
-    _nombresController.text = widget.cliente?['nombres'] ?? '';
-    _apellidoController.text = widget.cliente?['apellidos'] ?? '';
-    _emailController.text = widget.cliente?['email'] ?? '';
-    _passwordController.text = widget.cliente?['password'] ?? '';
-    _telefonoController.text = widget.cliente?['telefono'] ?? '';
-    _rolController.text = widget.cliente?['rol'] ?? '';
-
-    // Asigna el valor del rol a selectedOption si existe en la lista de opciones
-    if (widget.cliente?['rol'] != null) {
-      selectedOption = widget.cliente!['rol'];
-    }
-
+    marcaController.text = widget.vehiculo?['marca'] ?? '';
+    modeloController.text = widget.vehiculo?['modelo'] ?? '';
+    placaController.text = widget.vehiculo?['placa'] ?? '';
+    colorController.text = widget.vehiculo?['color'] ?? '';
+    kilometrajeEntradaController.text = widget.vehiculo?['kilonetraje'] ?? '';
+    tipoCombustibleController.text = widget.vehiculo?['tipoCombustible'] ?? '';
+    numeroChasisController.text = widget.vehiculo?['numeroChasis'] ?? '';
+    debugPrint("variable cliente: 👉 ${widget.cliente}");
   }
 
-  
   @override
   Widget build(BuildContext context) {
 
-    bool esEdicion = widget.cliente != null;
-    final clientesProvider = Provider.of<ClientesProvider>(context);
+    bool esEdicion = widget.vehiculo != null;
+    final vehiculoProvider = Provider.of<VehiculoProvider>(context);
 
-
-      return PopScope(
+    return PopScope(
         canPop: false, // Bloquea el botón "Atrás"
         onPopInvokedWithResult: (didPop, result) {
           if (didPop) return;
@@ -136,7 +128,7 @@ class RegistroState extends State<RegistroClientes> {
                               child: Padding(
                                 padding: const EdgeInsets.all(20.0),
                                 child: Form(
-                                  key: _formKey,
+                                  key: formKey,
                                   child: Column(
                                     mainAxisSize: MainAxisSize.min,
                                     children: [
@@ -144,23 +136,62 @@ class RegistroState extends State<RegistroClientes> {
                                       Icon(Icons.person, size: 60, color: Colors.blueGrey),
                                       const SizedBox(height: 10),
                                       Text(
-                                        esEdicion ? "Editar Cliente" : "Registrar Cliente",
+                                        esEdicion ? "Editar vehiculo" : "Registrar vehiculo",
                                         style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Color.fromARGB(255, 45, 43, 43)),
                                       ),
                                       const SizedBox(height: 20),
                             
-                                      // Campo de Nombres
+                                      // Campo de marca
                                       TextFormField(
-                                        controller: _nombresController,
+                                        controller: marcaController,
                                         decoration: InputDecoration(
-                                          labelText: "Nombres",
-                                          prefixIcon: Icon(Icons.person, color: Colors.blueGrey),
+                                          labelText: "Marca",
+                                          prefixIcon: Icon(Icons.card_membership, color: Colors.blueGrey),
+                                          border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+                                        ),
+                                        keyboardType: TextInputType.text,
+                                        validator: (value) {
+                                          if (value == null || value.isEmpty) {
+                                            return "Por favor, la marca de su vehiculo ";
+                                          }
+                                          return null;
+                                        },
+                                      ),
+                            
+                                      const SizedBox(height: 10),
+                            
+                                      // Campo de modelo
+                                    TextFormField(
+                                        controller: modeloController,
+                                        decoration: InputDecoration(
+                                          labelText: "Modelo",
+                                          prefixIcon: Icon(Icons.person_outline, color: Colors.blueGrey),
+                                          border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+                                        ),
+                                        validator: (value) {
+                                          if (value == null || value.isEmpty) {
+                                            return "Por favor, ingrese el modelo de su vehiculo";
+                                          }
+                                          return null;
+                                        },
+                                      ),
+                            
+                                      const SizedBox(height: 10),
+                            
+                                      // Campo de placa
+                                      TextFormField(
+                                        controller: placaController,
+                                        decoration: InputDecoration(
+                                          labelText: "Placa",
+                                          prefixIcon: Icon(Icons.email, color: Colors.blueGrey),
                                           border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
                                         ),
                                         keyboardType: TextInputType.text,
                                         validator: (value) {
                                           if (value == null || value.isEmpty) {
                                             return "Por favor, ingresa tu correo";
+                                          }else if (value.length > 6) {
+                                            return "La placa puede tener como maximo 6 digitos";
                                           }
                                           return null;
                                         },
@@ -168,69 +199,18 @@ class RegistroState extends State<RegistroClientes> {
                             
                                       const SizedBox(height: 10),
                             
-                                      // Campo de Apellidos
+                                    // Campo de color
                                     TextFormField(
-                                        controller: _apellidoController,
+                                        controller: colorController,
                                         decoration: InputDecoration(
-                                          labelText: "Apellidos",
-                                          prefixIcon: Icon(Icons.person_outline, color: Colors.blueGrey),
-                                          border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
-                                        ),
-                                        validator: (value) {
-                                          if (value == null || value.isEmpty) {
-                                            return "Por favor, ingrese sus apellidos";
-                                          }
-                                          return null;
-                                        },
-                                      ),
-                            
-                                      const SizedBox(height: 10),
-                            
-                                      // Campo de Correo
-                                      TextFormField(
-                                        controller: _emailController,
-                                        decoration: InputDecoration(
-                                          enabledBorder: OutlineInputBorder(
-                                            borderSide: BorderSide(color: Colors.blueGrey), // Borde cuando está habilitado
-                                          ),
-                                          disabledBorder: OutlineInputBorder(
-                                            borderSide: BorderSide(color: Colors.grey), // Borde cuando está deshabilitado
-                                          ),
-                                          labelText: "Correo",
-                                          prefixIcon: Icon(Icons.email, color: Colors.blueGrey),
-                                          border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
-                                        ),
-                                        keyboardType: TextInputType.emailAddress,
-                                        enabled: esEdicion ? false : true,
-                                        validator: (value) {
-                                          if (value == null || value.isEmpty) {
-                                            return "Por favor, ingresa tu correo";
-                                          } else if (!RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+').hasMatch(value)) {
-                                            return "Ingresa un correo válido";
-                                          }
-                                          return null;
-                                        },
-                                      ),
-                            
-                                      const SizedBox(height: 10),
-                            
-                                    // Campo de Teléfono
-                                    TextFormField(
-                                        controller: _telefonoController,
-                                        decoration: InputDecoration(
-                                          labelText: "Teléfono",
+                                          labelText: "Color",
                                           prefixIcon: Icon(Icons.phone, color: Colors.blueGrey),
                                           border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
                                         ),
-                                        keyboardType: TextInputType.number,
-                                        inputFormatters: [
-                                          FilteringTextInputFormatter.digitsOnly,
-                                        ],
+                                        keyboardType: TextInputType.text,
                                         validator: (value) {
                                           if (value == null || value.isEmpty) {
-                                            return "Por favor, ingrese un número de teléfono";
-                                          } else if (value.length > 10) {
-                                            return "El número de teléfono no puede tener más de 10 dígitos";
+                                            return "Por favor, ingrese el color del vehiculo";
                                           }
                                           return null;
                                         },
@@ -240,57 +220,55 @@ class RegistroState extends State<RegistroClientes> {
                             
                                     // Campo de Contraseña
                                     TextFormField(
-                                        controller: _passwordController,
-                                        
+                                        controller: kilometrajeEntradaController,
                                         decoration: InputDecoration(
-                                          enabledBorder: OutlineInputBorder(
-                                            borderSide: BorderSide(color: Colors.blueGrey), // Borde cuando está habilitado
-                                          ),
-                                          disabledBorder: OutlineInputBorder(
-                                            borderSide: BorderSide(color: Colors.grey), // Borde cuando está deshabilitado
-                                          ),
-                                          labelText: "Contraseña",
+                                          labelText: "Kilometraje de ingreso",
                                           prefixIcon: Icon(Icons.lock, color: Colors.blueGrey),
                                           border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
                                         ),
-                                        enabled: esEdicion ? false : true,
-                                        obscureText: esEdicion ? false : true,
                                         validator: (value) {
                                           if (value == null || value.isEmpty) {
-                                            return "Por favor, ingresa tu contraseña";
-                                          } else if (value.length < 6) {
-                                            return "La contraseña debe tener al menos 6 caracteres";
+                                            return "Por favor, ingresar el kilometraje de ingreso del vehiculo";
                                           }
                                           return null;
                                         },
                                       ),
-                            
-                                      const SizedBox(height: 10),
-                            
-                                      // Dropdown para seleccionar el rol
-                                      DropdownButtonFormField<String>(
-                                        value: selectedOption,
-                                        hint: const Text("Seleccione un rol"),
-                                        onChanged: (newValue) {
-                                          setState(() {
-                                            selectedOption = newValue;
-                                            _rolController.text = newValue ?? "";
-                                          });
-                                        },
-                                        validator: (value) => value == null || value.isEmpty ? "Seleccione un rol" : null,
-                                        items: clientesProvider.optionsDropDownList.map((String role) {
-                                          return DropdownMenuItem<String>(
-                                            value: role,
-                                            child: Text(role),
-                                          );
-                                        }).toList(),
+
+                                    const SizedBox(height: 10),
+
+                                      // Campo de tipo de combustible
+                                    TextFormField(
+                                        controller: tipoCombustibleController,
                                         decoration: InputDecoration(
+                                          labelText: "tipo de combustible",
+                                          prefixIcon: Icon(Icons.lock, color: Colors.blueGrey),
                                           border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
-                                          contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
                                         ),
+                                        validator: (value) {
+                                          if (value == null || value.isEmpty) {
+                                            return "Por favor, ingresar el tipo de combustible del vehiculo";
+                                          }
+                                          return null;
+                                        },
                                       ),
-                            
-                                      const SizedBox(height: 20),
+
+                                    const SizedBox(height: 10),
+
+                                      // Campo de numero chasis
+                                    TextFormField(
+                                        controller: numeroChasisController,
+                                        decoration: InputDecoration(
+                                          labelText: "Número de chasis",
+                                          prefixIcon: Icon(Icons.lock, color: Colors.blueGrey),
+                                          border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+                                        ),
+                                        validator: (value) {
+                                          if (value == null || value.isEmpty) {
+                                            return "Por favor, ingresar el # de chasis del vehiculo";
+                                          }
+                                          return null;
+                                        },
+                                      ),
                             
                                       // Botón de registro
                                       SizedBox(
@@ -302,38 +280,41 @@ class RegistroState extends State<RegistroClientes> {
                                             backgroundColor: Colors.blueGrey,
                                           ),
                                           onPressed: () {
-                                            if (_formKey.currentState!.validate()) {
+                                            if (formKey.currentState!.validate()) {
                           
                                               switch (esEdicion) {
                                                 case true:
-                                                  clientesProvider.editarCliente(
-                                                    widget.cliente!["id"], 
-                                                    _nombresController, 
-                                                    _apellidoController, 
-                                                    _emailController, 
-                                                    _telefonoController, 
-                                                    _rolController, 
-                                                    _passwordController, 
+                                                  /* vehiculoProvider.editarVehiculo(
+                                                    widget.cliente, 
+                                                    widget.vehiculo?["uid"],
+                                                    marcaController,
+                                                    modeloController,
+                                                    placaController,
+                                                    colorController,
+                                                    kilometrajeEntradaController,
+                                                    tipoCombustibleController,
+                                                    numeroChasisController,
                                                     context, 
-                                                    _formKey);
+                                                    formKey); */
                                                   break;
                                                 case false:
-                                                  clientesProvider.registrarCliente(
-                                                    _nombresController,
-                                                    _apellidoController,
-                                                    _emailController,
-                                                    _telefonoController,
-                                                    _rolController,
-                                                    _passwordController,
-                                                    context,
-                                                    _formKey,
-                                                  );
+                                                  vehiculoProvider.guardarVehiculo(
+                                                    widget.cliente!,
+                                                    marcaController,
+                                                    modeloController,
+                                                    placaController,
+                                                    colorController,
+                                                    kilometrajeEntradaController,
+                                                    tipoCombustibleController,
+                                                    numeroChasisController,
+                                                    context, 
+                                                    formKey);
                                                   break;
                                               }
                                               
                                             }
                                           },
-                                          child: clientesProvider.loading ? 
+                                          child: vehiculoProvider.loading ? 
                                           const SizedBox(
                                             height: 24,
                                             width: 24,
@@ -362,6 +343,5 @@ class RegistroState extends State<RegistroClientes> {
             ),
           ),
       );
-
   }
 }

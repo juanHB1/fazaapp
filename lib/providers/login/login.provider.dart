@@ -8,8 +8,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 class LoginProvider extends ChangeNotifier {
 
   List<String> optionsDropDownList = ["cliente", "admin"];
-  final FirebaseAuth _auth = FirebaseAuth.instance;
-
+  
   /// Método para iniciar sesión en la aplicación.
   ///
   /// Parámetros:

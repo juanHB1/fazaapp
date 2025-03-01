@@ -100,7 +100,7 @@ class LoginState extends State<Login> {
                             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                             backgroundColor: Colors.blueGrey,
                           ),
-                          child: Text("Iniciar Sesión", style: TextStyle(fontSize: 18, color: Colors.white)),
+                          child:Text("Iniciar Sesión", style: TextStyle(fontSize: 18, color: Colors.white)),
                         ),
                       ),
 
