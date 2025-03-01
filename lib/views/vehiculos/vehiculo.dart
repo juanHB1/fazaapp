@@ -1,122 +1,218 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/providers/Vehiculo/vehiculo.provider.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_application_1/views/drawer/drawe.dart';
 
 class Vehiculo extends StatefulWidget {
-  final Map<String, dynamic> cliente; // Propiedad cliente
+  final Map<String, dynamic> cliente;
 
-  const Vehiculo({super.key, required this.cliente}); // Constructor corregido
+  const Vehiculo({super.key, required this.cliente});
 
   @override
   State<Vehiculo> createState() => VehiculoState();
 }
 
 class VehiculoState extends State<Vehiculo> {
-  final TextEditingController marcaController = TextEditingController();
-  final TextEditingController modeloController = TextEditingController();
-  final TextEditingController anioController = TextEditingController();
-  final TextEditingController colorController = TextEditingController();
-  final TextEditingController placaController = TextEditingController();
-  final TextEditingController vinController = TextEditingController();
-  final _formKey = GlobalKey<FormState>();
+
+  @override
+  void initState() {
+    super.initState();
+    Future.microtask(() {
+      Provider.of<VehiculoProvider>(context, listen: false).obtenerVehiculos(widget.cliente["id"]);
+    });
+  }
+
 
   @override
   Widget build(BuildContext context) {
     final vehiculosProvider = Provider.of<VehiculoProvider>(context);
-    final cliente = widget.cliente; // Accede al cliente
+    final cliente = widget.cliente;
 
     return Scaffold(
+      backgroundColor: Colors.blueGrey[50],
       appBar: AppBar(
-        title: Text("Registro del vehículo para ${cliente["nombres"]}"), // Usa el cliente
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              TextFormField(
-                controller: marcaController,
-                decoration: const InputDecoration(labelText: "Marca"),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return "Por favor, ingrese la marca del vehículo";
-                  }
-                  return null;
-                },
-              ),
-              TextFormField(
-                controller: modeloController,
-                decoration: const InputDecoration(labelText: "Modelo"),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return "Por favor, ingrese el modelo del vehículo";
-                  }
-                  return null;
-                },
-              ),
-              TextFormField(
-                controller: anioController,
-                decoration: const InputDecoration(labelText: "Año"),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return "Por favor, ingrese el año del vehículo";
-                  }
-                  return null;
-                },
-              ),
-              TextFormField(
-                controller: colorController,
-                decoration: const InputDecoration(labelText: "Color"),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return "Por favor, ingrese el color del vehículo";
-                  }
-                  return null;
-                },
-              ),
-              TextFormField(
-                controller: placaController,
-                decoration: const InputDecoration(labelText: "Placa"),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return "Por favor, ingrese la placa del vehículo";
-                  }
-                  return null;
-                },
-              ),
-              TextFormField(
-                controller: vinController,
-                decoration: const InputDecoration(labelText: "VIN"),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return "Por favor, ingrese el VIN del vehículo";
-                  }
-                  return null;
-                },
-              ),
-              const SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: () {
-                  vehiculosProvider.agregarVehiculo(
-                    'fOeCSB7f60aNKfjNSqIPAby5mYy1',
-                    marcaController,
-                    modeloController,
-                    anioController,
-                    colorController,
-                    placaController,
-                    vinController,
-                    context,
-                    _formKey,
-                  );
-                },
-                child: const Text("Registrar"),
-              ),
-            ],
-          ),
+        title: const Text('Lista de vehículos',
+            style: TextStyle(fontWeight: FontWeight.bold, letterSpacing: 1.2, color: Colors.white)),
+        centerTitle: true,
+        backgroundColor: Colors.blueGrey[900],
+        elevation: 4,
+        shadowColor: Colors.black45,
+        leading: Builder(
+          builder: (context) {
+            return IconButton(
+              icon: Icon(Icons.menu, color: Colors.white, size: 28),
+              tooltip: "Abrir menú",
+              onPressed: () => Scaffold.of(context).openDrawer(),
+            );
+          },
         ),
       ),
+      drawer: CustomDrawer(),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Stack(
+                  children: [
+                    CircleAvatar(
+                      backgroundColor: Colors.blueGrey[700],
+                      radius: 35,
+                      child: Icon(Icons.person, size: 30, color: const Color.fromARGB(255, 212, 209, 209)), // Ícono dentro // Imagen del cliente
+                    ),
+                  ],
+                ),
+                SizedBox(width: 16),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Icon(Icons.person, color: Colors.blueGrey[700], size: 20),
+                        SizedBox(width: 6),
+                        Text(
+                          "${cliente['nombres']} ${cliente['apellidos']}" ,
+                          style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: Colors.black87),
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: 8),
+                    Row(
+                      children: [
+                        Icon(Icons.mail, color: Colors.blueGrey[700], size: 20),
+                        SizedBox(width: 6),
+                        Text(
+                          cliente['email'] ?? "email",
+                          style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: Colors.black54),
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: 8),
+                    Row(
+                      children: [
+                        Icon(Icons.phone, color: Colors.blueGrey[700], size: 18),
+                        SizedBox(width: 6),
+                        Text(
+                          cliente['telefono'] ?? "No registrado",
+                          style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: Colors.black54),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ],
+            ),
+            SizedBox(height: 20),
+            Expanded(
+            child: vehiculosProvider.loading ? 
+            Center(
+              child: Text(
+                "LOADING...",
+                style: TextStyle(
+                  fontSize: 28,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.blueGrey[900],
+                  letterSpacing: 2,
+                  fontFamily: 'RobotoMono',
+                ),
+              ),
+            ) :
+            vehiculosProvider.vehiculos.isEmpty 
+                ? Center(
+                  child: Padding(
+                    padding: const EdgeInsets.all(20.0),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Icon(Icons.directions_car_filled_outlined, 
+                            size: 80, 
+                            color: Colors.blueGrey[400]), // Ícono de auto
+                        const SizedBox(height: 16),
+                        Text(
+                          "¡Sin vehículos registrados!",
+                          style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.blueGrey[800]),
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          "Este usuario aún no tiene vehículos registrados.\nAgrega uno ahora y empieza a gestionarlos fácilmente.",
+                          textAlign: TextAlign.center,
+                          style: TextStyle(fontSize: 16, color: Colors.blueGrey[600]),
+                        ),
+                      ],
+                    ),
+                  ),
+                )
+                : ListView.builder(
+                    itemCount: vehiculosProvider.vehiculos.length,
+                    itemBuilder: (context, index) {
+                      final cliente = vehiculosProvider.vehiculos[index];
+
+                      return Card(
+                        margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 10),
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(15)),
+                        elevation: 6,
+                        child: ListTile(
+                          contentPadding: const EdgeInsets.all(15),
+                          leading: CircleAvatar(
+                            radius: 28,
+                            backgroundColor: Colors.blueGrey[700],
+                            child: Text(
+                              cliente["marca"][0],
+                              style: const TextStyle(
+                                  fontSize: 22, fontWeight: FontWeight.bold, color: Colors.white),
+                            ),
+                          ),
+                          title: Text(
+                            "${cliente["marca"]}",
+                            style: const TextStyle(
+                                fontSize: 18, fontWeight: FontWeight.bold, color: Colors.blueGrey),
+                          ),
+                          subtitle: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const SizedBox(height: 5),
+                              _infoRow(Icons.car_rental, cliente["modelo"]),
+                            ],
+                          ),
+                          trailing: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              IconButton(
+                                icon: Icon(Icons.remove_red_eye, color: Colors.blue[700]),
+                                onPressed: () {},
+                              ),
+                              IconButton(
+                                icon: Icon(Icons.edit, color: Colors.amber[800]),
+                                onPressed: () {},
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+          ],
+        ),
+      ),
+    );
+  }
+
+
+  Widget _infoRow(IconData icon, String text) {
+    return Row(
+      children: [
+        Icon(icon, size: 18, color: Colors.blueGrey[500]),
+        const SizedBox(width: 6),
+        Text(text, style: TextStyle(color: Colors.blueGrey[700])),
+      ],
     );
   }
 }

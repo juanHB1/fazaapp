@@ -46,17 +46,10 @@ class CustomDrawer extends StatelessWidget {
             },
           ),
           _buildDrawerItem(
-            icon: Icons.list,
-            text: "Registro usuarios",
-            onTap: () {
-              Navigator.pushReplacementNamed(context, '/registroUsuario');
-            },
-          ),
-          _buildDrawerItem(
             icon: Icons.settings,
             text: "Configuración",
             onTap: () {
-              //Navigator.pushReplacementNamed(context, '/settings');
+              return ;
             },
           ),
 

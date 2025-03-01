@@ -2,6 +2,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_application_1/servicios/shared_preferences/shared_preferences.dart';
+import 'package:flutter_application_1/views/vehiculos/vehiculo.dart';
+
 
 class ClientesProvider extends ChangeNotifier {
   
@@ -192,6 +194,70 @@ class ClientesProvider extends ChangeNotifier {
     }
   }
 
+
+    // Método para navegar a la vista de vehículos
+  void agregarCarros(BuildContext context, Map<String, dynamic> cliente) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => Vehiculo(cliente: cliente), // Pasa el cliente
+      ),
+    );
+  }
+
+  void mostrarPrevisualizacion(BuildContext context, Map<String, dynamic> cliente) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text("Detalles del Cliente", 
+               style: TextStyle(color: Colors.blueGrey[900], fontWeight: FontWeight.bold)),
+        content: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              _infoDialogRow('Nombres:', cliente["nombres"]),
+              _infoDialogRow('Apellidos:', cliente["apellidos"]),
+              _infoDialogRow('Email:', cliente["email"]),
+              _infoDialogRow('Teléfono:', cliente["telefono"]),
+              _infoDialogRow('Rol:', cliente["rol"]),
+              if (cliente["direccion"] != null) 
+                _infoDialogRow('Dirección:', cliente["direccion"]),
+              if (cliente["fechaRegistro"] != null)
+                _infoDialogRow('Registro:', cliente["fechaRegistro"]),
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text('OK', style: TextStyle(color: Colors.blueGrey[900])),
+          )
+        ],
+      ),
+    );
+  }
+
+  Widget _infoDialogRow(String label, String value) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4.0),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(label, style: TextStyle(
+            fontWeight: FontWeight.bold, 
+            color: Colors.blueGrey[800],
+            fontSize: 14
+          )),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Text(value,
+                style: TextStyle(color: Colors.blueGrey[700], fontSize: 14)),
+          ),
+        ],
+      ),
+    );
+  }
 
   Future<void> obtenerCredencialNombre(String key) async {
     credencialNombre = await Shared.getCredentials(key) ?? "";

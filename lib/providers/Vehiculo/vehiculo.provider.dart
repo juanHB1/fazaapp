@@ -5,6 +5,39 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 class VehiculoProvider extends ChangeNotifier {
 
+  List<Map<String, dynamic>> vehiculos = [];
+  bool loading = false;
+
+  /// Método asíncrono para obtener clientes desde Firebase Firestore.
+  /// Retorna una lista de mapas con los datos de los vehiculos que estan asociados con usuarios almacenados en la colección 'vehiculos'.
+  Future<void> obtenerVehiculos(String idCliente) async {
+    try {
+      loading = true;
+      notifyListeners();
+      QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+          .collection('usuarios') // Colección principal
+          .doc(idCliente) // Documento del usuario específico
+          .collection('vehiculos') // Subcolección
+          .get(); // Obtener datos
+
+      vehiculos = querySnapshot.docs.map((doc) {
+        return doc.data() as Map<String, dynamic>;
+      }).toList();
+
+      Future.delayed(Duration(seconds: 2), () {
+        loading = false;
+        notifyListeners();
+      });
+
+      
+      debugPrint(vehiculos.toString());
+    }
+    catch (e) {
+      // Captura errores en la consulta, los imprime en la consola y retorna una lista vacía.
+      debugPrint("Error al obtener clientes: $e");
+    }
+  }
+
   Future<void> agregarVehiculo(
     String uid, 
     TextEditingController marca, 

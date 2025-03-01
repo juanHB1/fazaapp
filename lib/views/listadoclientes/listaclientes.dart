@@ -3,7 +3,6 @@ import 'package:flutter_application_1/providers/Clientes/cliente.provider.dart';
 import 'package:flutter_application_1/views/RegistroClientes/registroClientes.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_application_1/views/drawer/drawe.dart';
-import 'package:flutter_application_1/views/vehiculos/vehiculo.dart';
 
 class ListaCliente extends StatefulWidget {
   const ListaCliente({super.key});
@@ -19,70 +18,6 @@ class _ListaClienteState extends State<ListaCliente> {
     Future.microtask(() {
       Provider.of<ClientesProvider>(context, listen: false).cargarClientes();
     });
-  }
-
-  // Método para navegar a la vista de vehículos
-  void _agregarCarros(BuildContext context, Map<String, dynamic> cliente) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => Vehiculo(cliente: cliente), // Pasa el cliente
-      ),
-    );
-  }
-
-  void _mostrarPrevisualizacion(BuildContext context, Map<String, dynamic> cliente) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text("Detalles del Cliente", 
-               style: TextStyle(color: Colors.blueGrey[900], fontWeight: FontWeight.bold)),
-        content: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              _infoDialogRow('Nombres:', cliente["nombres"]),
-              _infoDialogRow('Apellidos:', cliente["apellidos"]),
-              _infoDialogRow('Email:', cliente["email"]),
-              _infoDialogRow('Teléfono:', cliente["telefono"]),
-              _infoDialogRow('Rol:', cliente["rol"]),
-              if (cliente["direccion"] != null) 
-                _infoDialogRow('Dirección:', cliente["direccion"]),
-              if (cliente["fechaRegistro"] != null)
-                _infoDialogRow('Registro:', cliente["fechaRegistro"]),
-            ],
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text('OK', style: TextStyle(color: Colors.blueGrey[900])),
-          )
-        ],
-      ),
-    );
-  }
-
-  Widget _infoDialogRow(String label, String value) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4.0),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(label, style: TextStyle(
-            fontWeight: FontWeight.bold, 
-            color: Colors.blueGrey[800],
-            fontSize: 14
-          )),
-          const SizedBox(width: 10),
-          Expanded(
-            child: Text(value,
-                style: TextStyle(color: Colors.blueGrey[700], fontSize: 14)),
-          ),
-        ],
-      ),
-    );
   }
 
   @override
@@ -112,7 +47,36 @@ class _ListaClienteState extends State<ListaCliente> {
       body: Padding(
         padding: const EdgeInsets.all(10),
         child: clientesProvider.clientes.isEmpty
-            ? const Center(child: CircularProgressIndicator())
+            ? 
+            Center(
+                  child: Padding(
+                    padding: const EdgeInsets.all(20.0),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Icon(Icons.person, 
+                            size: 80, 
+                            color: Colors.blueGrey[400]), // Ícono de auto
+                        const SizedBox(height: 16),
+                        Text(
+                          "¡Sin Usuarios registrados!",
+                          style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.blueGrey[800]),
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          "Aún no tienes usuarios registrados.\nAgrega uno ahora y empieza a gestionarlos fácilmente.",
+                          textAlign: TextAlign.center,
+                          style: TextStyle(fontSize: 16, color: Colors.blueGrey[600]),
+                        ),
+                        const SizedBox(height: 20),
+                      ],
+                    ),
+                  ),
+                )
             : ListView.builder(
                 itemCount: clientesProvider.clientes.length,
                 itemBuilder: (context, index) {
@@ -156,11 +120,11 @@ class _ListaClienteState extends State<ListaCliente> {
                             padding: EdgeInsets.zero,
                             constraints: const BoxConstraints(),
                             icon: Icon(Icons.directions_car, color: Colors.green[800]), // Icono de carro
-                            onPressed: () => _agregarCarros(context, cliente), // Navegación a Vehiculo
+                            onPressed: () => clientesProvider.agregarCarros(context, cliente), // Navegación a Vehiculo
                           ),
                           IconButton(
                             icon: Icon(Icons.remove_red_eye, color: Colors.blue[700]),
-                            onPressed: () => _mostrarPrevisualizacion(context, cliente),
+                            onPressed: () => clientesProvider.mostrarPrevisualizacion(context, cliente),
                           ),
                           IconButton(
                             icon: Icon(Icons.edit, color: Colors.amber[800]),
