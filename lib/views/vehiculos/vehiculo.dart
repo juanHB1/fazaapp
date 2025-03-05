@@ -157,7 +157,7 @@ class VehiculoState extends State<Vehiculo> {
                 : ListView.builder(
                     itemCount: vehiculosProvider.vehiculos.length,
                     itemBuilder: (context, index) {
-                      final cliente = vehiculosProvider.vehiculos[index];
+                      final vehiculo = vehiculosProvider.vehiculos[index];
 
                       return Card(
                         margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 10),
@@ -170,13 +170,13 @@ class VehiculoState extends State<Vehiculo> {
                             radius: 28,
                             backgroundColor: Colors.blueGrey[700],
                             child: Text(
-                              cliente["marca"][0],
+                              vehiculo["marca"][0],
                               style: const TextStyle(
                                   fontSize: 22, fontWeight: FontWeight.bold, color: Colors.white),
                             ),
                           ),
                           title: Text(
-                            "${cliente["marca"]}",
+                            "${vehiculo["marca"]}",
                             style: const TextStyle(
                                 fontSize: 18, fontWeight: FontWeight.bold, color: Colors.blueGrey),
                           ),
@@ -184,7 +184,7 @@ class VehiculoState extends State<Vehiculo> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               const SizedBox(height: 5),
-                              _infoRow(Icons.car_rental, cliente["modelo"]),
+                              _infoRow(Icons.car_rental, vehiculo["modelo"]),
                             ],
                           ),
                           trailing: Row(
@@ -192,11 +192,47 @@ class VehiculoState extends State<Vehiculo> {
                             children: [
                               IconButton(
                                 icon: Icon(Icons.remove_red_eye, color: Colors.blue[700]),
-                                onPressed: () {},
+                                  onPressed: () {
+                                    showDialog(
+                                      context: context,
+                                      builder: (BuildContext context) {
+                                        return AlertDialog(
+                                          title: Text("Detalles del Vehículo", textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.bold)),
+                                          content: Column(
+                                            mainAxisSize: MainAxisSize.min,
+                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            children: [
+                                                Text("Marca: ${vehiculo["marca"]}"),
+                                                Text("Modelo: ${vehiculo["modelo"]}"),
+                                                Text("Placa: ${vehiculo["placa"]}"),
+                                                Text("Color: ${vehiculo["color"]}"),
+                                                Text("Kilometraje: ${vehiculo["kilometrajeEntrada"]}"),
+                                                Text("Tipo de Combustible: ${vehiculo["tipoCombustible"]}"),
+                                                Text("Número de Chasis: ${vehiculo["numeroChasis"]}"), // Añadir año
+                                            ],
+                                          ),
+                                          actions: [
+                                            TextButton(
+                                              onPressed: () => Navigator.pop(context),
+                                              child: Text("Cerrar", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                                            ),
+                                          ],
+                                        );
+                                      },
+                                    );
+                                  },
+
                               ),
                               IconButton(
                                 icon: Icon(Icons.edit, color: Colors.amber[800]),
-                                onPressed: () {},
+                                onPressed: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => FormularioVehiculo(cliente: cliente, vehiculo: vehiculo),
+                                    ),
+                                  );
+                                },
                               ),
                             ],
                           ),

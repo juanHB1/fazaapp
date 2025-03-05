@@ -33,10 +33,11 @@ class _FormularioVehiculoState extends State<FormularioVehiculo> {
     modeloController.text = widget.vehiculo?['modelo'] ?? '';
     placaController.text = widget.vehiculo?['placa'] ?? '';
     colorController.text = widget.vehiculo?['color'] ?? '';
-    kilometrajeEntradaController.text = widget.vehiculo?['kilonetraje'] ?? '';
+    kilometrajeEntradaController.text = widget.vehiculo?['kilometrajeEntrada'] ?? '';
     tipoCombustibleController.text = widget.vehiculo?['tipoCombustible'] ?? '';
     numeroChasisController.text = widget.vehiculo?['numeroChasis'] ?? '';
     debugPrint("variable cliente: 👉 ${widget.cliente}");
+    debugPrint("variable vehiculo: 👉 ${widget.vehiculo}");
   }
 
   @override
@@ -284,9 +285,9 @@ class _FormularioVehiculoState extends State<FormularioVehiculo> {
                           
                                               switch (esEdicion) {
                                                 case true:
-                                                  /* vehiculoProvider.editarVehiculo(
-                                                    widget.cliente, 
-                                                    widget.vehiculo?["uid"],
+                                                   vehiculoProvider.editarVehiculo(
+                                                    widget.cliente!, 
+                                                    widget.vehiculo!["uid"],
                                                     marcaController,
                                                     modeloController,
                                                     placaController,
@@ -295,7 +296,7 @@ class _FormularioVehiculoState extends State<FormularioVehiculo> {
                                                     tipoCombustibleController,
                                                     numeroChasisController,
                                                     context, 
-                                                    formKey); */
+                                                    formKey); 
                                                   break;
                                                 case false:
                                                   vehiculoProvider.guardarVehiculo(

@@ -53,7 +53,6 @@ class MyApp extends StatelessWidget {
         '/home': (context) => BienvenidaScreen(),
         '/clientes': (context) => const ListaCliente(),
         '/vehiculos': (context) => const Vehiculo(cliente: {}),
-
       },
 
     );

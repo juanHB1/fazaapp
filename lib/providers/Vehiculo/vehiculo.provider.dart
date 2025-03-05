@@ -39,6 +39,20 @@ class VehiculoProvider extends ChangeNotifier {
     }
   }
 
+//Mostrar previsualización de los vehiculos
+
+  Stream<List<Map<String, dynamic>>> obtenerVehiculosStream(String idCliente) {
+    return FirebaseFirestore.instance
+        .collection('usuarios')
+        .doc(idCliente)
+        .collection('vehiculos')
+        .snapshots()
+        .map((QuerySnapshot snapshot) {
+      return snapshot.docs.map((doc) {
+        return {...doc.data() as Map<String, dynamic>, 'id': doc.id};
+      }).toList();
+    });
+  }
 
   Future<void> guardarVehiculo(
     Map<String, dynamic> cliente,
@@ -73,8 +87,8 @@ class VehiculoProvider extends ChangeNotifier {
               'modelo': modeloController.text,
               'placa': placaController.text,
               'color': colorController.text,
-              'kilometrajeEntreada': kilometrajeEntradaController.text,
-              'tipoComsbustible': tipoCombustibleController.text,
+              'kilometrajeEntrada': kilometrajeEntradaController.text,
+              'tipoCombustible': tipoCombustibleController.text,
               'numeroChasis': numeroChasisController.text
               });
 
@@ -111,4 +125,68 @@ class VehiculoProvider extends ChangeNotifier {
           }
       } 
   }
-}
+
+  Future<void> editarVehiculo(
+
+    Map<String, dynamic> cliente,
+    String idVehiculo,
+    TextEditingController marcaController,
+    TextEditingController modeloController,
+    TextEditingController placaController,
+    TextEditingController colorController,
+    TextEditingController kilometrajeEntradaController,
+    TextEditingController tipoCombustibleController,
+    TextEditingController numeroChasisController,
+    BuildContext context,
+    GlobalKey <FormState> formkey
+    ) async {
+      if (formkey.currentState!.validate()) {
+        try {
+          Map<String, dynamic> clienteTemp = cliente ; 
+
+          loading = true;
+          notifyListeners();
+          await FirebaseFirestore.instance
+              .collection('usuarios')
+              .doc(clienteTemp['id'])
+              .collection('vehiculos')
+              .doc(idVehiculo)
+              .update({
+            'marca': marcaController.text,
+            'modelo': modeloController.text,
+            'placa': placaController.text,
+            'color': colorController.text,
+            'kilometrajeEntrada': kilometrajeEntradaController.text,
+            'tipoCombustible': tipoCombustibleController.text,
+            'numeroChasis': numeroChasisController.text
+          });
+
+          Future.delayed(Duration(seconds: 2), () {
+            loading = false;
+            notifyListeners();
+          });
+
+          formkey.currentState?.reset();
+          marcaController.clear();
+          modeloController.clear();
+          placaController.clear();
+          colorController.clear();
+          kilometrajeEntradaController.clear();
+          tipoCombustibleController.clear();
+          numeroChasisController.clear();
+
+        Navigator.push(context,
+          MaterialPageRoute
+          (builder:(context) => Vehiculo(cliente: clienteTemp),),
+        );
+        
+        const SnackBar(content:Text('Vehículo actualizado con éxito'));
+        } on FirebaseAuthException catch (e) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Error: ${e.message}')),
+          );
+        }
+      }
+    }
+    
+  }
