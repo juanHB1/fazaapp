@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_application_1/servicios/shared_preferences/shared_preferences.dart';
-import 'package:flutter_application_1/views/vehiculos/vehiculo.dart';
+import 'package:flutter_application_1/views/vehiculos/homevehiculos/vehiculo.dart';
 
 
 class ClientesProvider extends ChangeNotifier {

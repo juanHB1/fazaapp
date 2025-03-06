@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/providers/Vehiculo/vehiculo.provider.dart';
 import 'package:flutter_application_1/views/vehiculos/formularioVehiculo/formularioVehiculo.dart';
+import 'package:flutter_application_1/views/vehiculos/vistaordendeservicio/ordenservicio.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_application_1/views/drawer/drawe.dart';
 
@@ -190,6 +191,24 @@ class VehiculoState extends State<Vehiculo> {
                           trailing: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
+
+                              IconButton(
+                                icon: Icon(Icons.list_alt, color: Colors.green[700]),
+                                onPressed: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                     builder: (context) => OrdenesServicio(
+                                        idVehiculo: vehiculo['id'] ?? '',
+                                        vehiculo: vehiculo, // ✅ Pasa los datos del vehiculo aquí
+                                    ),
+                                  )
+                                  
+                                  );
+                                  
+                                },
+                              ),
+
                               IconButton(
                                 icon: Icon(Icons.remove_red_eye, color: Colors.blue[700]),
                                   onPressed: () {
