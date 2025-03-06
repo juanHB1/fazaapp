@@ -44,15 +44,23 @@ class VehiculoState extends State<Vehiculo> {
         backgroundColor: Colors.blueGrey[900],
         elevation: 4,
         shadowColor: Colors.black45,
-        leading: Builder(
-          builder: (context) {
-            return IconButton(
-              icon: Icon(Icons.menu, color: Colors.white, size: 28),
-              tooltip: "Abrir menú",
-              onPressed: () => Scaffold.of(context).openDrawer(),
-            );
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.white), // 🔙 Botón de atrás
+          onPressed: () {
+            Navigator.pop(context);
           },
         ),
+        actions: [
+          Builder(
+            builder: (context) {
+              return IconButton(
+                icon: const Icon(Icons.menu, color: Colors.white, size: 28), // ☰ Menú
+                tooltip: "Abrir menú",
+                onPressed: () => Scaffold.of(context).openDrawer(),
+              );
+            },
+          ),
+        ],
       ),
       drawer: CustomDrawer(),
       body: Padding(
@@ -191,7 +199,7 @@ class VehiculoState extends State<Vehiculo> {
                           trailing: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-
+                              //envia a la vista del listado orden de servicio
                               IconButton(
                                 icon: Icon(Icons.list_alt, color: Colors.green[700]),
                                 onPressed: () {
@@ -199,8 +207,8 @@ class VehiculoState extends State<Vehiculo> {
                                     context,
                                     MaterialPageRoute(
                                      builder: (context) => OrdenesServicio(
-                                        idVehiculo: vehiculo['id'] ?? '',
-                                        vehiculo: vehiculo, // ✅ Pasa los datos del vehiculo aquí
+                                        vehiculo: vehiculo, 
+                                        clienteId: widget.cliente["id"]
                                     ),
                                   )
                                   

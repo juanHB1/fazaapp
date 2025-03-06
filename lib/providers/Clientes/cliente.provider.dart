@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_application_1/servicios/shared_preferences/shared_preferences.dart';
-import 'package:flutter_application_1/views/vehiculos/homevehiculos/vehiculo.dart';
+import 'package:flutter_application_1/views/vehiculos/listaVehiculos/vehiculo.dart';
 
 
 class ClientesProvider extends ChangeNotifier {
@@ -210,7 +210,7 @@ class ClientesProvider extends ChangeNotifier {
       context: context,
       builder: (context) => AlertDialog(
         title: Text("Detalles del Cliente", 
-               style: TextStyle(color: Colors.blueGrey[900], fontWeight: FontWeight.bold)),
+        style: TextStyle(color: Colors.blueGrey[900], fontWeight: FontWeight.bold)),
         content: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,

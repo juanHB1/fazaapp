@@ -78,44 +78,27 @@ class _FormularioVehiculoState extends State<FormularioVehiculo> {
               ),
               centerTitle: true,
               //icono para abrir el drawer( panel izquierdo )
-              leading: Builder(
-                builder: (context) {
-                  return IconButton(
-                    icon: Icon(Icons.menu, color: Colors.white, size: 28),
-                    tooltip: "Abrir menú",
-                    onPressed: () {
-                      Scaffold.of(context).openDrawer(); // Abre el Drawer correctamente
-                    },
-                  );
+              leading: IconButton(
+                icon: const Icon(Icons.arrow_back, color: Colors.white), // 🔙 Botón de atrás
+                onPressed: () {
+                  Navigator.pop(context);
                 },
               ),
+              actions: [
+                Builder(
+                  builder: (context) {
+                    return IconButton(
+                      icon: const Icon(Icons.menu, color: Colors.white, size: 28), // ☰ Menú
+                      tooltip: "Abrir menú",
+                      onPressed: () => Scaffold.of(context).openDrawer(),
+                    );
+                  },
+                ),
+              ],
               
             ),
             drawer: CustomDrawer(),
-            body: Column(
-              crossAxisAlignment: CrossAxisAlignment.start, // Alinea a la izquierda
-              children: [
-                // 🔹 Botón de regreso
-                Padding(
-                  padding: const EdgeInsets.only(top: 40, left: 20), // Ajusta la posición
-                  child: ElevatedButton.icon(
-                    onPressed: () {
-                      Navigator.pop(context); // Regresa a la pantalla anterior
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.blueGrey[800], // Color oscuro
-                      foregroundColor: Colors.white, // Color del ícono y texto
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)), // Bordes redondeados
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10), // Tamaño del botón
-                    ),
-                    icon: const Icon(Icons.arrow_back, size: 24),
-                    label: const Text("Atrás", style: TextStyle(fontSize: 16)),
-                  ),
-                ),
-
-                // 🔹 Contenido principal
-                Expanded(
-                  child: Center(
+            body: Center(
                     child: SingleChildScrollView(
                       child: Padding(
                         padding: const EdgeInsets.all(20.0),
@@ -340,9 +323,6 @@ class _FormularioVehiculoState extends State<FormularioVehiculo> {
                     ),
                   ),
                 ),
-              ],
-            ),
-          ),
-      );
+            );
   }
 }
