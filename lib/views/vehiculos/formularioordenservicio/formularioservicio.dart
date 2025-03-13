@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/views/vehiculos/vistaordendeservicio/ordenservicio.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_application_1/providers/Vehiculo/formularioservicio.provider.dart';
 import 'package:flutter_application_1/views/drawer/drawe.dart';
@@ -7,9 +8,9 @@ import 'package:flutter_application_1/views/drawer/drawe.dart';
 class AgregarOrden extends StatefulWidget {
   final Map<String, dynamic>? vehiculo;
   final Map<String, dynamic>? ordenServicio;
-  final String? clienteId;
+  final Map<String, dynamic>? cliente;
 
-  const AgregarOrden({super.key, this.vehiculo, this.ordenServicio, this.clienteId});
+  const AgregarOrden({super.key, this.vehiculo, this.ordenServicio, this.cliente});
 
   @override
   State<AgregarOrden> createState() => _AgregarOrdenState();
@@ -37,6 +38,7 @@ class _AgregarOrdenState extends State<AgregarOrden> {
 
     debugPrint("variable vehiculo: 👉 ${widget.vehiculo}");
     debugPrint("variable orden servicio: 👉 ${widget.ordenServicio}");
+    debugPrint("variable orden cliente: 👉 ${widget.cliente}");
   }
 
   // Método para mostrar el selector de fecha
@@ -73,7 +75,6 @@ class _AgregarOrdenState extends State<AgregarOrden> {
 
     final ordenServicioProvider = Provider.of<OrdenServicioFormProvider>(context);
     bool esEdicion = widget.ordenServicio != null;
-    debugPrint("cliente ->: ${widget.clienteId}");
 
     return PopScope(
         canPop: false, // Bloquea el botón "Atrás"
@@ -110,7 +111,12 @@ class _AgregarOrdenState extends State<AgregarOrden> {
               leading: IconButton(
                 icon: const Icon(Icons.arrow_back, color: Colors.white), // 🔙 Botón de atrás
                 onPressed: () {
-                  Navigator.pop(context);
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => OrdenesServicio(vehiculo: widget.vehiculo ,cliente: widget.cliente as Map<String, dynamic>)
+                    ),
+                  );
                 },
               ),
               actions: [
@@ -236,7 +242,7 @@ class _AgregarOrdenState extends State<AgregarOrden> {
                                                     case true:
                                                     debugPrint("variable esEdicion en true: 👉 ${widget.ordenServicio}");
                                                       ordenServicioProvider.editarOrdenServicio(
-                                                        widget.clienteId!,
+                                                        widget.cliente!,
                                                         widget.vehiculo!,
                                                         widget.ordenServicio!,
                                                         fechaController,
@@ -248,7 +254,7 @@ class _AgregarOrdenState extends State<AgregarOrden> {
                                                     case false:
                                                       debugPrint("variable esEdicion en false: 👉 ${widget.ordenServicio}");
                                                       ordenServicioProvider.guardarOrdenServicio(
-                                                        widget.clienteId!,
+                                                        widget.cliente!,
                                                         widget.vehiculo!,
                                                         fechaController,
                                                         descripcionController,

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/providers/Vehiculo/vehiculo.provider.dart';
 import 'package:flutter_application_1/views/drawer/drawe.dart';
+import 'package:flutter_application_1/views/vehiculos/listaVehiculos/vehiculo.dart';
 import 'package:provider/provider.dart'; // Importa el Drawer reutilizable
 
 
@@ -81,7 +82,12 @@ class _FormularioVehiculoState extends State<FormularioVehiculo> {
               leading: IconButton(
                 icon: const Icon(Icons.arrow_back, color: Colors.white), // 🔙 Botón de atrás
                 onPressed: () {
-                  Navigator.pop(context);
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => Vehiculo(cliente: widget.cliente as Map<String, dynamic>)
+                    ),
+                  );
                 },
               ),
               actions: [
@@ -253,7 +259,8 @@ class _FormularioVehiculoState extends State<FormularioVehiculo> {
                                           return null;
                                         },
                                       ),
-                            
+
+                                      const SizedBox(height: 20),
                                       // Botón de registro
                                       SizedBox(
                                         width: double.infinity,

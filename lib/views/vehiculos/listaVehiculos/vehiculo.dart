@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/providers/Vehiculo/vehiculo.provider.dart';
+import 'package:flutter_application_1/views/listadoclientes/listaclientes.dart';
 import 'package:flutter_application_1/views/vehiculos/formularioVehiculo/formularioVehiculo.dart';
 import 'package:flutter_application_1/views/vehiculos/vistaordendeservicio/ordenservicio.dart';
 import 'package:provider/provider.dart';
@@ -47,7 +48,12 @@ class VehiculoState extends State<Vehiculo> {
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.white), // 🔙 Botón de atrás
           onPressed: () {
-            Navigator.pop(context);
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => ListaCliente()
+              ),
+            );
           },
         ),
         actions: [
@@ -206,9 +212,9 @@ class VehiculoState extends State<Vehiculo> {
                                   Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                     builder: (context) => OrdenesServicio(
+                                    builder: (context) => OrdenesServicio(
                                         vehiculo: vehiculo, 
-                                        clienteId: widget.cliente["id"]
+                                        cliente: widget.cliente
                                     ),
                                   )
                                   

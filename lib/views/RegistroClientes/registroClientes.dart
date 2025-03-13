@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_application_1/providers/Clientes/cliente.provider.dart';
+import 'package:flutter_application_1/views/listadoclientes/listaclientes.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_application_1/views/drawer/drawe.dart'; // Importa el Drawer reutilizable
 
@@ -60,6 +61,26 @@ class RegistroState extends State<RegistroClientes> {
         },
         child: Scaffold(
             backgroundColor: Colors.blueGrey[50],
+            bottomNavigationBar: BottomNavigationBar(
+              currentIndex: 0, // Puedes cambiar esto si necesitas manejar la navegación
+              selectedItemColor: Colors.blueGrey[800],
+              unselectedItemColor: Colors.blueGrey[400],
+              onTap: (index) {
+                if (index == 0) {
+                  clientesProvider.hacerLlamada(_telefonoController.text, context);
+                }
+              },
+              items: const [
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.phone),
+                  label: 'teléfono',
+                ),
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.messenger_sharp),
+                  label: 'whatsapp',
+                ),
+              ],
+            ),
             //barra de navegacion superior
             appBar: AppBar(
               automaticallyImplyLeading: false,
@@ -85,44 +106,32 @@ class RegistroState extends State<RegistroClientes> {
               ),
               centerTitle: true,
               //icono para abrir el drawer( panel izquierdo )
-              leading: Builder(
-                builder: (context) {
-                  return IconButton(
-                    icon: Icon(Icons.menu, color: Colors.white, size: 28),
-                    tooltip: "Abrir menú",
-                    onPressed: () {
-                      Scaffold.of(context).openDrawer(); // Abre el Drawer correctamente
-                    },
+              leading: IconButton(
+                icon: const Icon(Icons.arrow_back, color: Colors.white), // 🔙 Botón de atrás
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => ListaCliente()
+                    ),
                   );
                 },
               ),
+              actions: [
+                Builder(
+                  builder: (context) {
+                    return IconButton(
+                      icon: const Icon(Icons.menu, color: Colors.white, size: 28), // ☰ Menú
+                      tooltip: "Abrir menú",
+                      onPressed: () => Scaffold.of(context).openDrawer(),
+                    );
+                  },
+                ),
+              ],
               
             ),
             drawer: CustomDrawer(),
-            body: Column(
-              crossAxisAlignment: CrossAxisAlignment.start, // Alinea a la izquierda
-              children: [
-                // 🔹 Botón de regreso
-                Padding(
-                  padding: const EdgeInsets.only(top: 40, left: 20), // Ajusta la posición
-                  child: ElevatedButton.icon(
-                    onPressed: () {
-                      Navigator.pop(context); // Regresa a la pantalla anterior
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.blueGrey[800], // Color oscuro
-                      foregroundColor: Colors.white, // Color del ícono y texto
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)), // Bordes redondeados
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10), // Tamaño del botón
-                    ),
-                    icon: const Icon(Icons.arrow_back, size: 24),
-                    label: const Text("Atrás", style: TextStyle(fontSize: 16)),
-                  ),
-                ),
-
-                // 🔹 Contenido principal
-                Expanded(
-                  child: Center(
+            body: Center(
                     child: SingleChildScrollView(
                       child: Padding(
                         padding: const EdgeInsets.all(20.0),
@@ -357,10 +366,7 @@ class RegistroState extends State<RegistroClientes> {
                       ),
                     ),
                   ),
-                ),
-              ],
             ),
-          ),
       );
 
   }

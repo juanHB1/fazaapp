@@ -1,3 +1,18 @@
+//nueva linea
+/* buildscript {
+    ext.kotlin_version = '1.9.21' // 👈 Agregar esto aquí
+
+    repositories {
+        google()   // 👈 Asegura que estos repositorios estén aquí
+        mavenCentral()
+    }
+
+    dependencies {
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+        classpath 'com.android.tools.build:gradle:8.2.2' // 👈 Agrega esta línea si no está
+    }
+} */
+
 allprojects {
     repositories {
         google()

@@ -13,24 +13,9 @@ class OrdenServicioFormProvider extends ChangeNotifier {
 
   bool loading = false;
 
-  void setFecha(String value) {
-    fecha = value;
-    notifyListeners();
-  }
-
-  void setDescripcion(String value) {
-    descripcion = value;
-    notifyListeners();
-  }
-
-  void setEstado(String value) {
-    estado = value;
-    notifyListeners();
-  }
-
   //Guardar la orden de servicio en Firebase Firestore
   Future<void> guardarOrdenServicio (
-      String clienteId,
+      Map<String, dynamic> cliente,
       Map<String, dynamic> vehiculo,
       TextEditingController fechaController,
       TextEditingController descripcionController,
@@ -50,7 +35,7 @@ class OrdenServicioFormProvider extends ChangeNotifier {
       // ✅ Crea referencia a la subcolección "ordenServicio" dentro del vehículo
       final ordenServicioRef = FirebaseFirestore.instance
         .collection('usuarios') // 🔹 Empezamos desde la colección correcta
-        .doc(clienteId) // 🔹 ID del usuario
+        .doc(cliente['id']) // 🔹 ID del usuario
         .collection('vehiculos')
         .doc(vehiculoId)
         .collection('ordenServicio')
@@ -69,29 +54,33 @@ class OrdenServicioFormProvider extends ChangeNotifier {
         "uid": ordenServicioRef.id, // ID de la orden de servicio
       });
       
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Orden de servicio guardada correctamente.')),
-      );
       
-      loading = false;
-      notifyListeners();
 
-      formKey.currentState?.reset();
-      fechaController.clear();
-      descripcionController.clear();
-      estadoController.clear();
-
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => OrdenesServicio(vehiculo: vehiculo, clienteId: clienteId),
-        ),
-      );
+      await Future.delayed(Duration(seconds: 2), () {
+        
+        formKey.currentState?.reset();
+        fechaController.clear();
+        descripcionController.clear();
+        estadoController.clear();
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => OrdenesServicio(vehiculo: vehiculo, cliente: cliente),
+          ),
+        );
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Orden de servicio guardada correctamente.')),
+        );
+        loading = false;
+        notifyListeners();
+      });
 
       
 
       } catch (e) {
         const SnackBar(content: Text("Error al guardar la orden."));
+        loading = false;
+        notifyListeners();
       }
 
       loading = false;
@@ -101,7 +90,7 @@ class OrdenServicioFormProvider extends ChangeNotifier {
 
   //editar la orden de servicio
   Future<void> editarOrdenServicio (
-      String clienteId,
+      Map<String, dynamic> cliente,
       Map<String, dynamic> vehiculo,
       Map<String, dynamic> ordenServicio,
       TextEditingController fechaController,
@@ -126,7 +115,7 @@ class OrdenServicioFormProvider extends ChangeNotifier {
 
       await FirebaseFirestore.instance
         .collection('usuarios') // 🔹 Empezamos desde la colección correcta
-        .doc(clienteId) // 🔹 ID del usuario
+        .doc(cliente['id']) // 🔹 ID del usuario
         .collection('vehiculos')
         .doc(vehiculoId)
         .collection('ordenServicio')
@@ -137,28 +126,26 @@ class OrdenServicioFormProvider extends ChangeNotifier {
           "estado": estado,
         });
 
-      
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Orden de servicio actualizada correctamente.')),
-      );
-
-      Future.delayed(Duration(seconds: 1), () {
+      await Future.delayed(Duration(seconds: 3), (){
         formKey.currentState?.reset();
         fechaController.clear();
         descripcionController.clear();
         estadoController.clear();
-
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => OrdenesServicio(vehiculo: vehiculo, clienteId: clienteId),
+            builder: (context) => OrdenesServicio(vehiculo: vehiculo, cliente: cliente),
           ),
         );
+        
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Orden de servicio actualizada correctamente.')),
+        );
+        loading = false;
+        notifyListeners();
       });
 
-      
-
-      
+        
 
       } catch (e) {
         const SnackBar(content: Text("Error al guardar la orden."));
@@ -168,5 +155,9 @@ class OrdenServicioFormProvider extends ChangeNotifier {
       notifyListeners();
     }
   }
+
+  
+
+
 
 }

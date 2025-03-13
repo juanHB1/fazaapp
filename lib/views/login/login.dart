@@ -89,19 +89,34 @@ class LoginState extends State<Login> {
                       SizedBox(height: 20),
 
                       // Botón de inicio de sesión
-                      SizedBox(
-                        width: double.infinity,
-                        child: ElevatedButton(
-                          onPressed: () {
-                            loginProvider.iniciarSesion(_emailController, _passwordController, context, _formKey);
-                          },
-                          style: ElevatedButton.styleFrom(
-                            padding: EdgeInsets.symmetric(vertical: 14),
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                            backgroundColor: Colors.blueGrey,
-                          ),
-                          child:Text("Iniciar Sesión", style: TextStyle(fontSize: 18, color: Colors.white)),
-                        ),
+                      Consumer<LoginProvider>(
+                        builder: (context, loginProvider, child) {
+                          return SizedBox(
+                            width: double.infinity,
+                            child: ElevatedButton(
+                              onPressed: loginProvider.loading
+                                  ? null // ⚠️ Evita múltiples toques mientras carga
+                                  : () {
+                                      loginProvider.iniciarSesion(_emailController, _passwordController, context, _formKey);
+                                    },
+                              style: ElevatedButton.styleFrom(
+                                padding: EdgeInsets.symmetric(vertical: 14),
+                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                                backgroundColor: Colors.blueGrey,
+                              ),
+                              child: loginProvider.loading
+                                  ? const SizedBox(
+                                      height: 24,
+                                      width: 24,
+                                      child: CircularProgressIndicator(
+                                        color: Colors.white,
+                                        strokeWidth: 3,
+                                      ),
+                                    )
+                                  : Text("Iniciar Sesión", style: TextStyle(fontSize: 18, color: Colors.white)),
+                            ),
+                          );
+                        },
                       ),
 
                       SizedBox(height: 15),

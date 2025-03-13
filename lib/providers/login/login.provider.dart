@@ -8,6 +8,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 class LoginProvider extends ChangeNotifier {
 
   List<String> optionsDropDownList = ["cliente", "admin"];
+  bool loading = false;
   
   /// Método para iniciar sesión en la aplicación.
   ///
@@ -95,6 +96,10 @@ class LoginProvider extends ChangeNotifier {
   if (!formKey.currentState!.validate()) return; // Verifica si el formulario es válido
 
   try {
+    loading = true;
+    notifyListeners();
+
+
     // 🔹 Iniciar sesión con Firebase Authentication
     UserCredential userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(
       email: email.text.trim(),
@@ -133,14 +138,26 @@ class LoginProvider extends ChangeNotifier {
       break;   
       
       case "admin":
-      formKey.currentState?.reset();
-      email.clear();
-      password.clear();              
-      Navigator.pushNamed(context, '/home');
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Inicio de sesión exitoso. Accediendo a tu cuenta...')),
+      );
+
+
+      Future.delayed(Duration(seconds: 1), () {
+        formKey.currentState?.reset();
+        email.clear();
+        password.clear();
+        loading = false;
+        notifyListeners();
+        Navigator.pushNamed(context, '/home');
+      });
       break;
     }
 
   } on FirebaseAuthException catch (e) {
+    loading = false;
+    notifyListeners();
     String mensajeError = "Error al iniciar sesión";
     switch (e.code) {
       case "user-not-found":

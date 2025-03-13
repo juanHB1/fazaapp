@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_application_1/servicios/shared_preferences/shared_preferences.dart';
 import 'package:flutter_application_1/views/vehiculos/listaVehiculos/vehiculo.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 
 class ClientesProvider extends ChangeNotifier {
@@ -257,6 +258,29 @@ class ClientesProvider extends ChangeNotifier {
         ],
       ),
     );
+  }
+
+  //permite llevar al usuario a la funcionalidad de llamada
+  Future<void> hacerLlamada(String numTelefono, BuildContext context) async {
+    if (numTelefono.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Número de teléfono vacío.')),
+      );
+      return;
+    }
+
+    final Uri url = Uri(scheme: 'tel', path: numTelefono);
+
+    try {
+      bool launched = await launchUrl(url, mode: LaunchMode.externalApplication);
+      if (!launched) {
+        throw 'No se pudo lanzar la URL';
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('No se pudo iniciar la llamada. Error: $e')),
+      );
+    }
   }
 
   Future<void> obtenerCredencialNombre(String key) async {

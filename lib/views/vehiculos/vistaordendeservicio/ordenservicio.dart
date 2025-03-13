@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/views/vehiculos/formularioordenservicio/formularioservicio.dart';
+import 'package:flutter_application_1/views/vehiculos/listaVehiculos/vehiculo.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_application_1/providers/Vehiculo/orderservicio.provider.dart';
 import 'package:flutter_application_1/views/drawer/drawe.dart';
@@ -7,12 +8,12 @@ import 'package:flutter_application_1/views/drawer/drawe.dart';
 
 class OrdenesServicio extends StatefulWidget {
   final Map<String, dynamic>? vehiculo; // ✅ Recibir el vehículo completo
-  final String? clienteId;
+  final Map<String, dynamic>? cliente;
 
   const OrdenesServicio({
     super.key,
     this.vehiculo,
-    this.clienteId
+    this.cliente
   });
 
   @override
@@ -25,15 +26,15 @@ class _OrdenesServicioState extends State<OrdenesServicio> {
   void initState() {
     super.initState();
     Future.microtask(() {
-      Provider.of<OrdenesServicioProvider>(context, listen: false).obtenerOrdenesServicio(widget.vehiculo?['uid'], widget.clienteId.toString());
+      Provider.of<OrdenesServicioProvider>(context, listen: false).obtenerOrdenesServicio(widget.vehiculo?['uid'], widget.cliente as Map<String, dynamic>);
     });
+
   }
 
   @override
   Widget build(BuildContext context) {
     final ordenesProvider = Provider.of<OrdenesServicioProvider>(context);
     final vehiculo = widget.vehiculo;
-    debugPrint("cliente ->: ${widget.clienteId}");
 
     return PopScope(
         canPop: false, // Bloquea el botón "Atrás"
@@ -44,8 +45,9 @@ class _OrdenesServicioState extends State<OrdenesServicio> {
         backgroundColor: Colors.blueGrey[50],
 
         appBar: AppBar(
-        title: const Text('Ordenes de servicio',
-            style: TextStyle(fontWeight: FontWeight.bold, letterSpacing: 1.2, color: Colors.white)),
+        title: const Text(
+          'Ordenes de servicio',
+          style: TextStyle(fontWeight: FontWeight.bold, letterSpacing: 1.2, color: Colors.white)),
         centerTitle: true,
         backgroundColor: Colors.blueGrey[900],
         elevation: 4,
@@ -53,7 +55,12 @@ class _OrdenesServicioState extends State<OrdenesServicio> {
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.white), // 🔙 Botón de atrás
           onPressed: () {
-            Navigator.pop(context);
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => Vehiculo(cliente: widget.cliente as Map<String, dynamic>)
+              ),
+            );
           },
         ),
         actions: [
@@ -81,7 +88,7 @@ class _OrdenesServicioState extends State<OrdenesServicio> {
                     CircleAvatar(
                       backgroundColor: Colors.blueGrey[700],
                       radius: 35,
-                      child: Icon(Icons.directions_car, size: 30, color: const Color.fromARGB(255, 212, 209, 209)), // Ícono dentro // Imagen del cliente
+                      child: Icon(Icons.edit_document, size: 30, color: const Color.fromARGB(255, 212, 209, 209)), // Ícono dentro // Imagen del cliente
                     ),
                   ],
                 ),
@@ -244,7 +251,7 @@ class _OrdenesServicioState extends State<OrdenesServicio> {
                                             ? Colors.yellow[800]
                                             : ordenServicio["estado"] == 'espera'
                                                 ? Colors.red[800]
-                                                : Colors.blue[800], // 📌 Mejor visibilidad del texto
+                                                : Colors.blue[800], // Mejor visibilidad del texto
                                       ),
                                     ),
                                   )
@@ -257,6 +264,10 @@ class _OrdenesServicioState extends State<OrdenesServicio> {
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               IconButton(
+                                icon: Icon(Icons.remove_red_eye, color: Colors.blue[700]),
+                                onPressed: () => ordenesProvider.mostrarPrevisualizacion(context, ordenServicio),
+                              ),
+                              IconButton(
                                 icon: Icon(Icons.edit, color: Colors.amber[800]),
                                 onPressed: () {
                                   Navigator.push(
@@ -265,7 +276,7 @@ class _OrdenesServicioState extends State<OrdenesServicio> {
                                       builder: (context) => AgregarOrden(
                                         vehiculo: vehiculo,
                                         ordenServicio: ordenServicio,
-                                        clienteId: widget.clienteId,
+                                        cliente: widget.cliente,
                                       ),
                                     ),
                                   );
@@ -289,7 +300,7 @@ class _OrdenesServicioState extends State<OrdenesServicio> {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => AgregarOrden(vehiculo: vehiculo, ordenServicio: null, clienteId: widget.clienteId ),
+                  builder: (context) => AgregarOrden(vehiculo: vehiculo, ordenServicio: null, cliente: widget.cliente ),
                 ),
               );
             },
