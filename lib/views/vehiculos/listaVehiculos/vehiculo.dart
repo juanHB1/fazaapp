@@ -15,14 +15,20 @@ class Vehiculo extends StatefulWidget {
   State<Vehiculo> createState() => VehiculoState();
 }
 
+
+
 class VehiculoState extends State<Vehiculo> {
 
   @override
   void initState() {
     super.initState();
     Future.microtask(() {
-      Provider.of<VehiculoProvider>(context, listen: false).obtenerVehiculos(widget.cliente["id"]);
+      Provider.of<VehiculoProvider>(context, listen: false).obtenerVehiculos(widget.cliente["uid"]);
+      Provider.of<VehiculoProvider>(context, listen: false).loadUserRole();
     });
+
+    
+
   }
 
 
@@ -30,6 +36,7 @@ class VehiculoState extends State<Vehiculo> {
   Widget build(BuildContext context) {
     final vehiculosProvider = Provider.of<VehiculoProvider>(context);
     final cliente = widget.cliente;
+    
 
     return PopScope(
         canPop: false, // Bloquea el botón "Atrás"
@@ -94,7 +101,7 @@ class VehiculoState extends State<Vehiculo> {
                         Icon(Icons.person, color: Colors.blueGrey[700], size: 20),
                         SizedBox(width: 6),
                         Text(
-                          "${cliente['nombres']} ${cliente['apellidos']}" ,
+                          "${cliente['nombre']} ${cliente['apellido']}" ,
                           style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: Colors.black87),
                         ),
                       ],
@@ -256,7 +263,7 @@ class VehiculoState extends State<Vehiculo> {
                                   },
 
                               ),
-                              IconButton(
+                              if (vehiculosProvider.rol == 'admin') IconButton(
                                 icon: Icon(Icons.edit, color: Colors.amber[800]),
                                 onPressed: () {
                                   Navigator.push(
@@ -266,7 +273,7 @@ class VehiculoState extends State<Vehiculo> {
                                     ),
                                   );
                                 },
-                              ),
+                              ) else SizedBox(), 
                             ],
                           ),
                         ),
@@ -277,7 +284,8 @@ class VehiculoState extends State<Vehiculo> {
           ],
         ),
       ),
-      floatingActionButton: Align(
+      
+      floatingActionButton: vehiculosProvider.rol == 'admin' ?  Align(
         alignment: Alignment.bottomRight,
         child: FloatingActionButton(
           tooltip: "Agregar nuevo cliente",
@@ -293,7 +301,7 @@ class VehiculoState extends State<Vehiculo> {
           shape: const CircleBorder(),
           child: const Icon(Icons.add, color: Colors.white),
         ),
-      ),
+      ) : null,
     )
     );
   }

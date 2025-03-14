@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter_application_1/servicios/shared_preferences/shared_preferences.dart';
 import 'package:flutter_application_1/views/vehiculos/listaVehiculos/vehiculo.dart';
 
 
@@ -8,10 +9,12 @@ class VehiculoProvider extends ChangeNotifier {
 
   List<Map<String, dynamic>> vehiculos = [];
   bool loading = false;
+  String? rol;
 
   /// Método asíncrono para obtener clientes desde Firebase Firestore.
   /// Retorna una lista de mapas con los datos de los vehiculos que estan asociados con usuarios almacenados en la colección 'vehiculos'.
   Future<void> obtenerVehiculos(String idCliente) async {
+    debugPrint("👉 Datos del metodo desde vehiculo: $idCliente");
     try {
       loading = true;
       notifyListeners();
@@ -75,7 +78,7 @@ class VehiculoProvider extends ChangeNotifier {
 
               final vehiculoRef = FirebaseFirestore.instance
                   .collection('usuarios')
-                  .doc(clienteTemp['id'])
+                  .doc(clienteTemp['uid'])
                   .collection('vehiculos')
                   .doc(); // 🔹 Genera un ID manualmente
 
@@ -128,7 +131,7 @@ class VehiculoProvider extends ChangeNotifier {
 
   Future<void> editarVehiculo(
 
-    Map<String, dynamic> cliente,
+  Map<String, dynamic> cliente,
     String idVehiculo,
     TextEditingController marcaController,
     TextEditingController modeloController,
@@ -148,7 +151,7 @@ class VehiculoProvider extends ChangeNotifier {
           notifyListeners();
           await FirebaseFirestore.instance
               .collection('usuarios')
-              .doc(clienteTemp['id'])
+              .doc(clienteTemp['uid'])
               .collection('vehiculos')
               .doc(idVehiculo)
               .update({
@@ -188,5 +191,10 @@ class VehiculoProvider extends ChangeNotifier {
         }
       }
     }
-    
+  
+
+  Future<void> loadUserRole() async {
+    rol = await Shared.getCredentials('rol'); // Esperamos el resultado
+    notifyListeners();
   }
+}

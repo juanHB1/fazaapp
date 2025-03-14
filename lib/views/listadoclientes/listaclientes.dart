@@ -127,7 +127,7 @@ class _ListaClienteState extends State<ListaCliente> {
                                 radius: 28,
                                 backgroundColor: Colors.blueGrey[700],
                                 child: Text(
-                                  cliente["nombres"][0],
+                                  cliente["nombre"][0],
                                   style: const TextStyle(
                                       fontSize: 22, fontWeight: FontWeight.bold, color: Colors.white),
                                 ),
@@ -135,7 +135,7 @@ class _ListaClienteState extends State<ListaCliente> {
                               const SizedBox(width: 10),
                               Expanded(
                                 child: Text(
-                                  "${cliente["nombres"]} ${cliente["apellidos"]}",
+                                  "${cliente["nombre"]} ${cliente["apellido"]}",
                                   style: const TextStyle(
                                       fontSize: 18, fontWeight: FontWeight.bold, color: Colors.blueGrey),
                                   overflow: TextOverflow.ellipsis, // Evita desbordamiento

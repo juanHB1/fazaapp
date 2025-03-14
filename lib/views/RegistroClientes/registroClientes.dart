@@ -32,8 +32,8 @@ class RegistroState extends State<RegistroClientes> {
   void initState() {
     super.initState();
     // Inicializa los controladores con los datos actuales del cliente
-    _nombresController.text = widget.cliente?['nombres'] ?? '';
-    _apellidoController.text = widget.cliente?['apellidos'] ?? '';
+    _nombresController.text = widget.cliente?['nombre'] ?? '';
+    _apellidoController.text = widget.cliente?['apellido'] ?? '';
     _emailController.text = widget.cliente?['email'] ?? '';
     _passwordController.text = widget.cliente?['password'] ?? '';
     _telefonoController.text = widget.cliente?['telefono'] ?? '';
@@ -316,7 +316,7 @@ class RegistroState extends State<RegistroClientes> {
                                               switch (esEdicion) {
                                                 case true:
                                                   clientesProvider.editarCliente(
-                                                    widget.cliente!["id"], 
+                                                    widget.cliente!["uid"], 
                                                     _nombresController, 
                                                     _apellidoController, 
                                                     _emailController, 

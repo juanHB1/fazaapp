@@ -17,7 +17,7 @@ class OrdenesServicioProvider extends ChangeNotifier {
 
       QuerySnapshot querySnapshot = await FirebaseFirestore.instance
           .collection('usuarios') // 🔹 Empezamos desde la colección correcta
-          .doc(cliente['id']) // 🔹 ID del usuario
+          .doc(cliente['uid']) // 🔹 ID del usuario
           .collection('vehiculos')
           .doc(idVehiculo)
           .collection('ordenServicio')

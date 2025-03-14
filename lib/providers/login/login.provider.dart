@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_application_1/views/login/login.dart';
+import 'package:flutter_application_1/views/vehiculos/listaVehiculos/vehiculo.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 
@@ -120,7 +121,7 @@ class LoginProvider extends ChangeNotifier {
     }
 
     Map<String, dynamic> datosUsuario = usuarioDoc.data() as Map<String, dynamic>;
-
+    debugPrint("👉 Datos del usuario: $datosUsuario");
     // Guardar en SharedPreferences
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString('uid', datosUsuario['uid']);
@@ -134,6 +135,14 @@ class LoginProvider extends ChangeNotifier {
     // 🔹 Navegar según el rol del usuario
     switch (datosUsuario['rol']) {
       case "cliente":
+      Future.delayed(Duration(seconds: 1), () {
+        formKey.currentState?.reset();
+        email.clear();
+        password.clear();
+        loading = false;
+        notifyListeners();
+        Navigator.push(context, MaterialPageRoute(builder: (context) => Vehiculo(cliente: datosUsuario,)));
+      });
       debugPrint("👉 cliente");
       break;   
       

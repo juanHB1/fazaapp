@@ -32,13 +32,13 @@ class ClientesProvider extends ChangeNotifier {
         final data = doc.data() as Map<String, dynamic>;
 
         return {
-          "nombres": data["nombre"] ?? "Sin nombre",
-          "apellidos": data["apellido"] ?? "Sin apellido",
+          "nombre": data["nombre"] ?? "Sin nombre",
+          "apellido": data["apellido"] ?? "Sin apellido",
           "email": data["email"] ?? "Sin email",
           "password": data.containsKey("password") ? data["password"] : "Sin password",
           "rol": data["rol"] ?? "Sin rol",
           "telefono": data["telefono"] ?? "Sin telefono",
-          "id": data["uid"] ?? doc.id, // Usa doc.id si no hay UID en Firestore
+          "uid": data["uid"] ?? doc.id, // Usa doc.id si no hay UID en Firestore
         };
         }).toList();
 
@@ -217,8 +217,8 @@ class ClientesProvider extends ChangeNotifier {
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             children: [
-              _infoDialogRow('Nombres:', cliente["nombres"]),
-              _infoDialogRow('Apellidos:', cliente["apellidos"]),
+              _infoDialogRow('Nombres:', cliente["nombre"]),
+              _infoDialogRow('Apellidos:', cliente["apellido"]),
               _infoDialogRow('Email:', cliente["email"]),
               _infoDialogRow('Teléfono:', cliente["telefono"]),
               _infoDialogRow('Rol:', cliente["rol"]),

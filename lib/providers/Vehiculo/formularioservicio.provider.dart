@@ -35,7 +35,7 @@ class OrdenServicioFormProvider extends ChangeNotifier {
       // ✅ Crea referencia a la subcolección "ordenServicio" dentro del vehículo
       final ordenServicioRef = FirebaseFirestore.instance
         .collection('usuarios') // 🔹 Empezamos desde la colección correcta
-        .doc(cliente['id']) // 🔹 ID del usuario
+        .doc(cliente['uid']) // 🔹 ID del usuario
         .collection('vehiculos')
         .doc(vehiculoId)
         .collection('ordenServicio')
@@ -115,7 +115,7 @@ class OrdenServicioFormProvider extends ChangeNotifier {
 
       await FirebaseFirestore.instance
         .collection('usuarios') // 🔹 Empezamos desde la colección correcta
-        .doc(cliente['id']) // 🔹 ID del usuario
+        .doc(cliente['uid']) // 🔹 ID del usuario
         .collection('vehiculos')
         .doc(vehiculoId)
         .collection('ordenServicio')
