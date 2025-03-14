@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/providers/Vehiculo/vehiculo.provider.dart';
 import 'package:flutter_application_1/views/vehiculos/formularioordenservicio/formularioservicio.dart';
 import 'package:flutter_application_1/views/vehiculos/listaVehiculos/vehiculo.dart';
 import 'package:provider/provider.dart';
@@ -27,6 +28,8 @@ class _OrdenesServicioState extends State<OrdenesServicio> {
     super.initState();
     Future.microtask(() {
       Provider.of<OrdenesServicioProvider>(context, listen: false).obtenerOrdenesServicio(widget.vehiculo?['uid'], widget.cliente as Map<String, dynamic>);
+      Provider.of<VehiculoProvider>(context, listen: false).loadUserRole();
+
     });
 
   }
@@ -267,8 +270,7 @@ class _OrdenesServicioState extends State<OrdenesServicio> {
                                 icon: Icon(Icons.remove_red_eye, color: Colors.blue[700]),
                                 onPressed: () => ordenesProvider.mostrarPrevisualizacion(context, ordenServicio),
                               ),
-                              IconButton(
-                                icon: Icon(Icons.edit, color: Colors.amber[800]),
+                               if(VehiculoProvider().rol == 'admin') IconButton( icon: Icon(Icons.edit, color: Colors.amber[800]),
                                 onPressed: () {
                                   Navigator.push(
                                     context,
@@ -281,7 +283,7 @@ class _OrdenesServicioState extends State<OrdenesServicio> {
                                     ),
                                   );
                                 },
-                              ),
+                              ) else SizedBox(),
                             ],
                           ),
                         ),
@@ -292,7 +294,7 @@ class _OrdenesServicioState extends State<OrdenesServicio> {
           ],
         ),
       ),
-      floatingActionButton: Align(
+      floatingActionButton: VehiculoProvider().rol == 'admin' ? Align(
           alignment: Alignment.bottomRight,
           child: FloatingActionButton(
             tooltip: "Agregar nueva orde de servicio",
@@ -308,7 +310,7 @@ class _OrdenesServicioState extends State<OrdenesServicio> {
             shape: const CircleBorder(),
             child: const Icon(Icons.add, color: Colors.white),
           ),
-        ),
+        ):null,
       ),
     );
     //Boton Flotante para agregar una nueva orden de servicio

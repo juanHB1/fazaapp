@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/providers/Register/registro.provider.dart';
+import 'package:flutter_application_1/providers/Vehiculo/vehiculo.provider.dart';
 import 'package:flutter_application_1/providers/login/login.provider.dart';
 import 'package:provider/provider.dart';
 
@@ -11,6 +12,8 @@ class CustomDrawer extends StatelessWidget {
     
     final loginProvider = Provider.of<LoginProvider>(context, listen: false);
     final registroProvider = Provider.of<RegisterProvider>(context, listen: true);
+    Provider.of<VehiculoProvider>(context, listen: false).loadUserRole();
+
     registroProvider.obtenerCredencialNombre("nombre");
     registroProvider.obtenerCredencialApellido("apellido");
 
@@ -38,13 +41,14 @@ class CustomDrawer extends StatelessWidget {
           ),
 
           // Opciones del menú
-          _buildDrawerItem(
+          if(VehiculoProvider().rol == 'admin')
+          _buildDrawerItem ( 
             icon: Icons.home,
             text: "Clientes",
             onTap: () {
               Navigator.pushReplacementNamed(context, '/clientes');
             },
-          ),
+          ) else SizedBox(),
           _buildDrawerItem(
             icon: Icons.settings,
             text: "Configuración",

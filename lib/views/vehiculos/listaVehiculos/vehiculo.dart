@@ -52,7 +52,9 @@ class VehiculoState extends State<Vehiculo> {
         backgroundColor: Colors.blueGrey[900],
         elevation: 4,
         shadowColor: Colors.black45,
-        leading: IconButton(
+        leading: 
+        
+          VehiculoProvider().rol == 'admin' ? IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.white), // 🔙 Botón de atrás
           onPressed: () {
             Navigator.push(
@@ -62,7 +64,7 @@ class VehiculoState extends State<Vehiculo> {
               ),
             );
           },
-        ),
+        ):null,
         actions: [
           Builder(
             builder: (context) {
