@@ -54,7 +54,9 @@ class VehiculoState extends State<Vehiculo> {
         shadowColor: Colors.black45,
         leading: 
         
-          VehiculoProvider().rol == 'admin' ? IconButton(
+        vehiculosProvider.rol == 'admin' ?
+           
+          IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.white), // 🔙 Botón de atrás
           onPressed: () {
             Navigator.push(
@@ -64,11 +66,12 @@ class VehiculoState extends State<Vehiculo> {
               ),
             );
           },
-        ):null,
+        ): SizedBox(),
         actions: [
           Builder(
             builder: (context) {
-              return IconButton(
+              return 
+              IconButton(
                 icon: const Icon(Icons.menu, color: Colors.white, size: 28), // ☰ Menú
                 tooltip: "Abrir menú",
                 onPressed: () => Scaffold.of(context).openDrawer(),
@@ -162,6 +165,7 @@ class VehiculoState extends State<Vehiculo> {
                             color: Colors.blueGrey[400]), // Ícono de auto
                         const SizedBox(height: 16),
                         Text(
+                          
                           "¡Sin vehículos registrados!",
                           style: TextStyle(
                               fontSize: 20,
@@ -170,7 +174,9 @@ class VehiculoState extends State<Vehiculo> {
                         ),
                         const SizedBox(height: 8),
                         Text(
-                          "Este usuario aún no tiene vehículos registrados.\nAgrega uno ahora y empieza a gestionarlos fácilmente.",
+                          vehiculosProvider.rol == 'admin' ?
+                          "Este usuario aún no tiene vehículos registrados.\nAgrega uno ahora y empieza a gestionarlos fácilmente."
+                          : "",
                           textAlign: TextAlign.center,
                           style: TextStyle(fontSize: 16, color: Colors.blueGrey[600]),
                         ),

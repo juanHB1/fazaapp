@@ -12,7 +12,11 @@ class CustomDrawer extends StatelessWidget {
     
     final loginProvider = Provider.of<LoginProvider>(context, listen: false);
     final registroProvider = Provider.of<RegisterProvider>(context, listen: true);
+    final vehiculoProvider = Provider.of<VehiculoProvider>(context, listen: false);
     Provider.of<VehiculoProvider>(context, listen: false).loadUserRole();
+
+
+    vehiculoProvider.loadUserRole();
 
     registroProvider.obtenerCredencialNombre("nombre");
     registroProvider.obtenerCredencialApellido("apellido");
@@ -41,7 +45,7 @@ class CustomDrawer extends StatelessWidget {
           ),
 
           // Opciones del menú
-          if(VehiculoProvider().rol == 'admin')
+          if (vehiculoProvider.rol == 'admin')
           _buildDrawerItem ( 
             icon: Icons.home,
             text: "Clientes",
