@@ -21,6 +21,8 @@ class _AgregarOrdenState extends State<AgregarOrden> {
   final TextEditingController fechaController = TextEditingController();
   final TextEditingController descripcionController = TextEditingController();
   final TextEditingController estadoController = TextEditingController();
+   final TextEditingController fechaCambioAceiteController = TextEditingController();
+  final TextEditingController proximoCambioAceiteController = TextEditingController();
   final formKey = GlobalKey<FormState>();
   String? selectedOption; //opcion seleccionada
 
@@ -31,6 +33,8 @@ class _AgregarOrdenState extends State<AgregarOrden> {
     fechaController.text = widget.ordenServicio?['fecha'] ?? '';
     descripcionController.text = widget.ordenServicio?['descripcion'] ?? '';
     estadoController.text = widget.ordenServicio?['estado'] ?? '';
+    fechaCambioAceiteController.text = widget.ordenServicio?['fechaCambioAceite'] ?? '';
+    proximoCambioAceiteController.text = widget.ordenServicio?['proximoCambioAceite'] ?? '';
 
     if (widget.ordenServicio?['estado'] != null) {
       selectedOption = widget.ordenServicio!['estado'];
@@ -41,34 +45,34 @@ class _AgregarOrdenState extends State<AgregarOrden> {
     debugPrint("variable orden cliente: 👉 ${widget.cliente}");
   }
 
-  // Método para mostrar el selector de fecha
-  Future<void> _seleccionarFecha(BuildContext context) async {
-      // Convertir el texto del controlador a un objeto DateTime si es válido
-      DateTime? fechaInicial;
-      if (fechaController.text.isNotEmpty) {
-        try {
-          fechaInicial = DateTime.parse(fechaController.text);
-        } catch (e) {
-          fechaInicial = DateTime.now(); // Si hay un error, usar la fecha actual
-        }
-      } else {
-        fechaInicial = DateTime.now();
-      }
-
-    DateTime? fechaSeleccionada = await showDatePicker(
-      context: context,
-      initialDate: fechaInicial,
-      firstDate: DateTime(1900),
-      lastDate: DateTime(2100),
-      locale: Locale('es', 'ES'),
-    );
-
-    if (fechaSeleccionada != null) {
-      setState(() {
-        fechaController.text = fechaSeleccionada.toLocal().toString().split(' ')[0];
-      });
+// Método para mostrar el selector de fecha
+Future<void> _seleccionarFecha(BuildContext context, TextEditingController controller) async {
+  // Convertir el texto del controlador a un objeto DateTime si es válido
+  DateTime? fechaInicial;
+  if (controller.text.isNotEmpty) {
+    try {
+      fechaInicial = DateTime.parse(controller.text);
+    } catch (e) {
+      fechaInicial = DateTime.now(); // Si hay un error, usar la fecha actual
     }
+  } else {
+    fechaInicial = DateTime.now();
   }
+
+  DateTime? fechaSeleccionada = await showDatePicker(
+    context: context,
+    initialDate: fechaInicial,
+    firstDate: DateTime(1900),
+    lastDate: DateTime(2100),
+    locale: Locale('es', 'ES'),
+  );
+
+  if (fechaSeleccionada != null) {
+    setState(() {
+      controller.text = fechaSeleccionada.toLocal().toString().split(' ')[0];
+    });
+  }
+}
 
   @override
   Widget build(BuildContext context) {
@@ -169,7 +173,7 @@ class _AgregarOrdenState extends State<AgregarOrden> {
                                               border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
                                             ),
                                             readOnly: true,
-                                            onTap: () => _seleccionarFecha(context),
+                                            onTap: () => _seleccionarFecha(context, fechaController),
                                             validator: (value) {
                                               if (value == null || value.isEmpty) {
                                                 return "Por favor, seleccione una fecha";
@@ -200,7 +204,46 @@ class _AgregarOrdenState extends State<AgregarOrden> {
                                           ),
                                 
                                           const SizedBox(height: 10),
-                                
+
+                                          // Campo de fecha de cambio de aceite
+                                          TextFormField(
+                                            controller: fechaCambioAceiteController,
+                                            decoration: InputDecoration(
+                                              labelText: "Fecha de cambio de aceite",
+                                              prefixIcon: Icon(Icons.calendar_today, color: Colors.blueGrey),
+                                              border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+                                            ),
+                                            readOnly: true,
+                                            onTap: () => _seleccionarFecha(context, fechaCambioAceiteController),
+                                            validator: (value) {
+                                              if (value == null || value.isEmpty) {
+                                                return "Por favor, seleccione una fecha";
+                                              }
+                                              return null;
+                                            },
+                                          ),
+
+                                          const SizedBox(height: 10),
+
+                                          // Campo de fecha de próximo cambio de aceite
+                                          TextFormField(
+                                            controller: proximoCambioAceiteController,
+                                            decoration: InputDecoration(
+                                              labelText: "Próximo cambio de aceite",
+                                              prefixIcon: Icon(Icons.calendar_today, color: Colors.blueGrey),
+                                              border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+                                            ),
+                                            readOnly: true,
+                                            onTap: () => _seleccionarFecha(context, proximoCambioAceiteController),
+                                            validator: (value) {
+                                              if (value == null || value.isEmpty) {
+                                                return "Por favor, seleccione una fecha";
+                                              }
+                                              return null;
+                                            },
+                                          ),
+                                            
+                                            const SizedBox(height: 10),
                                         // Dropdown para seleccionar el estado
                                           DropdownButtonFormField<String>(
                                             value: selectedOption,
@@ -235,37 +278,42 @@ class _AgregarOrdenState extends State<AgregarOrden> {
                                                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                                                 backgroundColor: Colors.blueGrey,
                                               ),
+                                              
                                               onPressed: () {
                                                 if (formKey.currentState!.validate()) {
-                              
-                                                  switch (esEdicion) {
-                                                    case true:
+                                                switch (esEdicion) {
+                                                  case true:
                                                     debugPrint("variable esEdicion en true: 👉 ${widget.ordenServicio}");
-                                                      ordenServicioProvider.editarOrdenServicio(
-                                                        widget.cliente!,
-                                                        widget.vehiculo!,
-                                                        widget.ordenServicio!,
-                                                        fechaController,
-                                                        descripcionController,
-                                                        estadoController,
-                                                        context, 
-                                                        formKey);
-                                                      break;
-                                                    case false:
-                                                      debugPrint("variable esEdicion en false: 👉 ${widget.ordenServicio}");
-                                                      ordenServicioProvider.guardarOrdenServicio(
-                                                        widget.cliente!,
-                                                        widget.vehiculo!,
-                                                        fechaController,
-                                                        descripcionController,
-                                                        estadoController,
-                                                        context, 
-                                                        formKey);
-                                                      break;
-                                                  }
-                                                  
+                                                    ordenServicioProvider.editarOrdenServicio(
+                                                      widget.cliente!,
+                                                      widget.vehiculo!,
+                                                      widget.ordenServicio!,
+                                                      fechaController,
+                                                      descripcionController,
+                                                      estadoController,
+                                                      context,
+                                                      formKey,
+                                                      fechaCambioAceiteController, // Asegurarse de pasar este controlador
+                                                      proximoCambioAceiteController, // Asegurarse de pasar este controlador
+                                                    );
+                                                    break;
+                                                  case false:
+                                                    debugPrint("variable esEdicion en false: 👉 ${widget.ordenServicio}");
+                                                    ordenServicioProvider.guardarOrdenServicio(
+                                                      widget.cliente!,
+                                                      widget.vehiculo!,
+                                                      fechaController,
+                                                      descripcionController,
+                                                      estadoController,
+                                                      context,
+                                                      formKey,
+                                                      fechaCambioAceiteController, // Asegurarse de pasar este controlador
+                                                      proximoCambioAceiteController, // Asegurarse de pasar este controlador
+                                                    );
+                                                    break;
                                                 }
-                                              },
+                                              }
+                                            },
                                               child: ordenServicioProvider.loading ?
                                               const SizedBox(
                                                 height: 24,

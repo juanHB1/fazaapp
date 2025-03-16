@@ -10,73 +10,72 @@ class OrdenServicioFormProvider extends ChangeNotifier {
   String estado = 'Pendiente';
   List<String> optionsDropDownList = ["ingresado", "espera", "terminado"];
 
-
   bool loading = false;
 
   //Guardar la orden de servicio en Firebase Firestore
-  Future<void> guardarOrdenServicio (
-      Map<String, dynamic> cliente,
-      Map<String, dynamic> vehiculo,
-      TextEditingController fechaController,
-      TextEditingController descripcionController,
-      TextEditingController estadoController,
-      BuildContext context,
-      GlobalKey<FormState> formKey
-    ) async {
-
+  Future<void> guardarOrdenServicio(
+    Map<String, dynamic> cliente,
+    Map<String, dynamic> vehiculo,
+    TextEditingController fechaController,
+    TextEditingController descripcionController,
+    TextEditingController estadoController,
+    BuildContext context,
+    GlobalKey<FormState> formKey,
+    TextEditingController fechaCambioAceiteController, // Nuevo controlador
+    TextEditingController proximoCambioAceiteController, // Nuevo controlador
+  ) async {
     if (formKey.currentState!.validate()) {
       try {
-      
-      loading = true;
-      notifyListeners();
+        loading = true;
+        notifyListeners();
 
-      String vehiculoId = vehiculo['uid']; // ✅ Usa el ID del vehículo
+        String vehiculoId = vehiculo['uid']; // ✅ Usa el ID del vehículo
 
-      // ✅ Crea referencia a la subcolección "ordenServicio" dentro del vehículo
-      final ordenServicioRef = FirebaseFirestore.instance
-        .collection('usuarios') // 🔹 Empezamos desde la colección correcta
-        .doc(cliente['uid']) // 🔹 ID del usuario
-        .collection('vehiculos')
-        .doc(vehiculoId)
-        .collection('ordenServicio')
-        .doc(); // 🔹 Genera un ID único para la orden
+        // ✅ Crea referencia a la subcolección "ordenServicio" dentro del vehículo
+        final ordenServicioRef = FirebaseFirestore.instance
+            .collection('usuarios') // 🔹 Empezamos desde la colección correcta
+            .doc(cliente['uid']) // 🔹 ID del usuario
+            .collection('vehiculos')
+            .doc(vehiculoId)
+            .collection('ordenServicio')
+            .doc(); // 🔹 Genera un ID único para la orden
 
         // ✅ Obtiene valores de los controladores
         String fecha = fechaController.text.trim();
         String descripcion = descripcionController.text.trim();
         String estado = estadoController.text.trim();
+        String fechaCambioAceite = fechaCambioAceiteController.text.trim(); // Nuevo valor
+        String proximoCambioAceite = proximoCambioAceiteController.text.trim(); // Nuevo valor
 
-      // ✅ Guarda la orden en la subcolección correcta
-      await ordenServicioRef.set({
-        "fecha": fecha,
-        "descripcion": descripcion,
-        "estado": estado,
-        "uid": ordenServicioRef.id, // ID de la orden de servicio
-      });
-      
-      
+        // ✅ Guarda la orden en la subcolección correcta
+        await ordenServicioRef.set({
+          "fecha": fecha,
+          "descripcion": descripcion,
+          "estado": estado,
+          "fechaCambioAceite": fechaCambioAceite, // Nuevo campo
+          "proximoCambioAceite": proximoCambioAceite, // Nuevo campo
+          "uid": ordenServicioRef.id, // ID de la orden de servicio
+        });
 
-      await Future.delayed(Duration(seconds: 2), () {
-        
-        formKey.currentState?.reset();
-        fechaController.clear();
-        descripcionController.clear();
-        estadoController.clear();
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => OrdenesServicio(vehiculo: vehiculo, cliente: cliente),
-          ),
-        );
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Orden de servicio guardada correctamente.')),
-        );
-        loading = false;
-        notifyListeners();
-      });
-
-      
-
+        await Future.delayed(Duration(seconds: 2), () {
+          formKey.currentState?.reset();
+          fechaController.clear();
+          descripcionController.clear();
+          estadoController.clear();
+          fechaCambioAceiteController.clear(); // Limpiar nuevo controlador
+          proximoCambioAceiteController.clear(); // Limpiar nuevo controlador
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => OrdenesServicio(vehiculo: vehiculo, cliente: cliente),
+            ),
+          );
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Orden de servicio guardada correctamente.')),
+          );
+          loading = false;
+          notifyListeners();
+        });
       } catch (e) {
         const SnackBar(content: Text("Error al guardar la orden."));
         loading = false;
@@ -89,64 +88,67 @@ class OrdenServicioFormProvider extends ChangeNotifier {
   }
 
   //editar la orden de servicio
-  Future<void> editarOrdenServicio (
-      Map<String, dynamic> cliente,
-      Map<String, dynamic> vehiculo,
-      Map<String, dynamic> ordenServicio,
-      TextEditingController fechaController,
-      TextEditingController descripcionController,
-      TextEditingController estadoController,
-      BuildContext context,
-      GlobalKey<FormState> formKey
-    ) async {
-
+  Future<void> editarOrdenServicio(
+    Map<String, dynamic> cliente,
+    Map<String, dynamic> vehiculo,
+    Map<String, dynamic> ordenServicio,
+    TextEditingController fechaController,
+    TextEditingController descripcionController,
+    TextEditingController estadoController,
+    BuildContext context,
+    GlobalKey<FormState> formKey,
+    TextEditingController fechaCambioAceiteController, // Nuevo controlador
+    TextEditingController proximoCambioAceiteController, // Nuevo controlador
+  ) async {
     if (formKey.currentState!.validate()) {
       try {
-      
-      loading = true;
-      notifyListeners();
+        loading = true;
+        notifyListeners();
 
-      String vehiculoId = vehiculo['uid']; // ✅ Usa el ID del vehículo
+        String vehiculoId = vehiculo['uid']; // ✅ Usa el ID del vehículo
 
         // ✅ Obtiene valores de los controladores
         String fecha = fechaController.text.trim();
         String descripcion = descripcionController.text.trim();
         String estado = estadoController.text.trim();
+        String fechaCambioAceite = fechaCambioAceiteController.text.trim(); // Nuevo valor
+        String proximoCambioAceite = proximoCambioAceiteController.text.trim(); // Nuevo valor
 
-      await FirebaseFirestore.instance
-        .collection('usuarios') // 🔹 Empezamos desde la colección correcta
-        .doc(cliente['uid']) // 🔹 ID del usuario
-        .collection('vehiculos')
-        .doc(vehiculoId)
-        .collection('ordenServicio')
-        .doc(ordenServicio['uid'])
-        .update({
+        await FirebaseFirestore.instance
+            .collection('usuarios') // 🔹 Empezamos desde la colección correcta
+            .doc(cliente['uid']) // 🔹 ID del usuario
+            .collection('vehiculos')
+            .doc(vehiculoId)
+            .collection('ordenServicio')
+            .doc(ordenServicio['uid'])
+            .update({
           "fecha": fecha,
           "descripcion": descripcion,
           "estado": estado,
+          "fechaCambioAceite": fechaCambioAceite, // Nuevo campo
+          "proximoCambioAceite": proximoCambioAceite, // Nuevo campo
         });
 
-      await Future.delayed(Duration(seconds: 3), (){
-        formKey.currentState?.reset();
-        fechaController.clear();
-        descripcionController.clear();
-        estadoController.clear();
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => OrdenesServicio(vehiculo: vehiculo, cliente: cliente),
-          ),
-        );
-        
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Orden de servicio actualizada correctamente.')),
-        );
-        loading = false;
-        notifyListeners();
-      });
+        await Future.delayed(Duration(seconds: 3), () {
+          formKey.currentState?.reset();
+          fechaController.clear();
+          descripcionController.clear();
+          estadoController.clear();
+          fechaCambioAceiteController.clear(); // Limpiar nuevo controlador
+          proximoCambioAceiteController.clear(); // Limpiar nuevo controlador
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => OrdenesServicio(vehiculo: vehiculo, cliente: cliente),
+            ),
+          );
 
-        
-
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Orden de servicio actualizada correctamente.')),
+          );
+          loading = false;
+          notifyListeners();
+        });
       } catch (e) {
         const SnackBar(content: Text("Error al guardar la orden."));
       }
@@ -155,9 +157,4 @@ class OrdenServicioFormProvider extends ChangeNotifier {
       notifyListeners();
     }
   }
-
-  
-
-
-
 }

@@ -110,7 +110,52 @@ class OrdenesServicioProvider extends ChangeNotifier {
                     ),
                   ],
                 ),
-              )
+              ),
+
+              // //Fecha cambio de aceite
+
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 4.0),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('Fecha cambio de aceite:', style: TextStyle(
+                      fontWeight: FontWeight.bold, 
+                      color: Colors.blueGrey[800],
+                      fontSize: 14
+                    )),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: Text(ordenServicio["fechaCambioAceite"] ?? 'No tienes fecha de cambio de aceite',
+                          style: TextStyle(color: Colors.blueGrey[700], fontSize: 14)),
+                    ),
+                  ],
+                ),
+              ),
+              
+              //Proximo cambio de aceite
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 4.0),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('Próximo cambio de aceite:', style: TextStyle(
+                      fontWeight: FontWeight.bold, 
+                      color: Colors.blueGrey[800],
+                      fontSize: 14
+                    )),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: Text(ordenServicio["proximoCambioAceite"] ?? 'No tienes fecha de cambio de aceite',
+                          style: TextStyle(color: Colors.blueGrey[700], fontSize: 14)),
+                    ),
+                  ],
+                ),
+              ),
+
+              
+
+
             ],
           ),
         ),
@@ -124,7 +169,7 @@ class OrdenesServicioProvider extends ChangeNotifier {
     );
   }
 
-  Widget _infoDialogRow(String label, String value) {
+  Widget _infoDialogRow (String label, String value) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4.0),
       child: Row(
