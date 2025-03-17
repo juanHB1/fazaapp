@@ -23,6 +23,8 @@ class OrdenServicioFormProvider extends ChangeNotifier {
     GlobalKey<FormState> formKey,
     TextEditingController fechaCambioAceiteController, // Nuevo controlador
     TextEditingController proximoCambioAceiteController, // Nuevo controlador
+    TextEditingController estadoPagoController, // Nuevo controlador
+
   ) async {
     if (formKey.currentState!.validate()) {
       try {
@@ -46,7 +48,7 @@ class OrdenServicioFormProvider extends ChangeNotifier {
         String estado = estadoController.text.trim();
         String fechaCambioAceite = fechaCambioAceiteController.text.trim(); // Nuevo valor
         String proximoCambioAceite = proximoCambioAceiteController.text.trim(); // Nuevo valor
-
+        String estadoPago = estadoPagoController.text.trim(); // Nuevo valor
         // ✅ Guarda la orden en la subcolección correcta
         await ordenServicioRef.set({
           "fecha": fecha,
@@ -54,6 +56,7 @@ class OrdenServicioFormProvider extends ChangeNotifier {
           "estado": estado,
           "fechaCambioAceite": fechaCambioAceite, // Nuevo campo
           "proximoCambioAceite": proximoCambioAceite, // Nuevo campo
+          "estadoPago": estadoPago, // Nuevo campo
           "uid": ordenServicioRef.id, // ID de la orden de servicio
         });
 
@@ -64,6 +67,7 @@ class OrdenServicioFormProvider extends ChangeNotifier {
           estadoController.clear();
           fechaCambioAceiteController.clear(); // Limpiar nuevo controlador
           proximoCambioAceiteController.clear(); // Limpiar nuevo controlador
+          estadoPagoController.clear(); // Limpiar nuevo controlador
           Navigator.push(
             context,
             MaterialPageRoute(
@@ -99,6 +103,7 @@ class OrdenServicioFormProvider extends ChangeNotifier {
     GlobalKey<FormState> formKey,
     TextEditingController fechaCambioAceiteController, // Nuevo controlador
     TextEditingController proximoCambioAceiteController, // Nuevo controlador
+    TextEditingController estadoPagoController, // Nuevo controlador
   ) async {
     if (formKey.currentState!.validate()) {
       try {
@@ -113,7 +118,7 @@ class OrdenServicioFormProvider extends ChangeNotifier {
         String estado = estadoController.text.trim();
         String fechaCambioAceite = fechaCambioAceiteController.text.trim(); // Nuevo valor
         String proximoCambioAceite = proximoCambioAceiteController.text.trim(); // Nuevo valor
-
+        String estadoPago = estadoPagoController.text.trim(); // Nuevo valor
         await FirebaseFirestore.instance
             .collection('usuarios') // 🔹 Empezamos desde la colección correcta
             .doc(cliente['uid']) // 🔹 ID del usuario
@@ -127,6 +132,7 @@ class OrdenServicioFormProvider extends ChangeNotifier {
           "estado": estado,
           "fechaCambioAceite": fechaCambioAceite, // Nuevo campo
           "proximoCambioAceite": proximoCambioAceite, // Nuevo campo
+          "estadoPago": estadoPago, // Nuevo campo
         });
 
         await Future.delayed(Duration(seconds: 3), () {
@@ -136,6 +142,7 @@ class OrdenServicioFormProvider extends ChangeNotifier {
           estadoController.clear();
           fechaCambioAceiteController.clear(); // Limpiar nuevo controlador
           proximoCambioAceiteController.clear(); // Limpiar nuevo controlador
+          estadoPagoController.clear(); // Limpiar nuevo controlador
           Navigator.push(
             context,
             MaterialPageRoute(

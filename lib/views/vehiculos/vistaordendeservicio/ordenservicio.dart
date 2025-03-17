@@ -6,7 +6,6 @@ import 'package:provider/provider.dart';
 import 'package:flutter_application_1/providers/Vehiculo/orderservicio.provider.dart';
 import 'package:flutter_application_1/views/drawer/drawe.dart';
 
-
 class OrdenesServicio extends StatefulWidget {
   final Map<String, dynamic>? vehiculo; // ✅ Recibir el vehículo completo
   final Map<String, dynamic>? cliente;
@@ -19,7 +18,6 @@ class OrdenesServicio extends StatefulWidget {
 
   @override
   State<OrdenesServicio> createState() => _OrdenesServicioState();
-  
 }
 
 class _OrdenesServicioState extends State<OrdenesServicio> {
@@ -32,7 +30,6 @@ class _OrdenesServicioState extends State<OrdenesServicio> {
       Provider.of<VehiculoProvider>(context, listen: false).loadUserRole();
     });
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -261,6 +258,42 @@ class _OrdenesServicioState extends State<OrdenesServicio> {
                                   )
                                 ],
                               ),
+                              const SizedBox(height: 10),
+                              // Nuevo campo: Estado de pago
+                              Row(
+                                children: [
+                                  Icon(
+                                    ordenServicio["estadoPago"] == 'Pagado'
+                                        ? Icons.check_circle
+                                        : Icons.hourglass_bottom,
+                                    color: ordenServicio["estadoPago"] == 'Pagado'
+                                        ? Colors.green[800]
+                                        : Colors.orange[800],
+                                    size: 24,
+                                  ),
+                                  const SizedBox(width: 6),
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12), // 📌 Espaciado interno
+                                    decoration: BoxDecoration(
+                                      color: (ordenServicio["estadoPago"] == 'Pagado'
+                                          ? Colors.green
+                                          : Colors.orange
+                                      ).withAlpha(50), // 📌 Fondo con opacidad (valor entre 0 y 255)
+                                      borderRadius: BorderRadius.circular(10), // 📌 Bordes redondeados
+                                    ),
+                                    child: Text(
+                                      ordenServicio["estadoPago"] ?? "No especificado",
+                                      style: TextStyle(
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.bold,
+                                        color: ordenServicio["estadoPago"] == 'Pagado'
+                                            ? Colors.green[800]
+                                            : Colors.orange[800], // Mejor visibilidad del texto
+                                      ),
+                                    ),
+                                  )
+                                ],
+                              ),
                             ],
                           ),
 
@@ -316,12 +349,6 @@ class _OrdenesServicioState extends State<OrdenesServicio> {
         ): null,
       ),
     );
-    //Boton Flotante para agregar una nueva orden de servicio
-    
-    
-
-
-
   }
 
   Widget _infoRow(IconData icon, String text) {

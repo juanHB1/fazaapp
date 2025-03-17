@@ -112,7 +112,7 @@ class OrdenesServicioProvider extends ChangeNotifier {
                 ),
               ),
 
-              // //Fecha cambio de aceite
+              //Fecha cambio de aceite
 
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 4.0),
@@ -153,7 +153,26 @@ class OrdenesServicioProvider extends ChangeNotifier {
                 ),
               ),
 
-              
+              //Estado de pago
+
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 4.0),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('Estado de pago:', style: TextStyle(
+                      fontWeight: FontWeight.bold, 
+                      color: Colors.blueGrey[800],
+                      fontSize: 14
+                    )),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: Text(ordenServicio["estadoPago"] ?? 'No tienes estado de pago',
+                          style: TextStyle(color: Colors.blueGrey[700], fontSize: 14)),
+                    ),
+                  ],
+                ),
+              ),
 
 
             ],

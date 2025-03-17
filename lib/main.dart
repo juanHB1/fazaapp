@@ -5,7 +5,6 @@ import 'package:flutter_application_1/providers/Vehiculo/orderservicio.provider.
 import 'package:flutter_application_1/providers/Vehiculo/vehiculo.provider.dart';
 import 'package:flutter_application_1/providers/Clientes/cliente.provider.dart';
 import 'package:flutter_application_1/providers/login/login.provider.dart';
-//import 'package:flutter_application_1/views/RegistroClientes/registroClientes.dart';
 import 'package:flutter_application_1/views/home/home.dart';
 import 'package:flutter_application_1/views/listadoclientes/listaclientes.dart';
 import 'package:flutter_application_1/views/login/login.dart';
@@ -13,9 +12,11 @@ import 'package:flutter_application_1/views/vehiculos/listaVehiculos/vehiculo.da
 import 'package:provider/provider.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 
-
+final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+      FlutterLocalNotificationsPlugin();
 
 Future<void> main() async {
 

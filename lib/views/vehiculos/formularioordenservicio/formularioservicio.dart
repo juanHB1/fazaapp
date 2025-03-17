@@ -21,8 +21,9 @@ class _AgregarOrdenState extends State<AgregarOrden> {
   final TextEditingController fechaController = TextEditingController();
   final TextEditingController descripcionController = TextEditingController();
   final TextEditingController estadoController = TextEditingController();
-   final TextEditingController fechaCambioAceiteController = TextEditingController();
+  final TextEditingController fechaCambioAceiteController = TextEditingController();
   final TextEditingController proximoCambioAceiteController = TextEditingController();
+  final TextEditingController estadoPagoController = TextEditingController();
   final formKey = GlobalKey<FormState>();
   String? selectedOption; //opcion seleccionada
 
@@ -244,6 +245,34 @@ Future<void> _seleccionarFecha(BuildContext context, TextEditingController contr
                                           ),
                                             
                                             const SizedBox(height: 10),
+
+                                           //Campo de estado de pago
+
+                                          DropdownButtonFormField<String>(
+                                          value: estadoPagoController.text.isNotEmpty ? estadoPagoController.text : null,
+                                          hint: const Text("Seleccione el estado de pago"),
+                                          onChanged: (newValue) {
+                                            setState(() {
+                                              estadoPagoController.text = newValue ?? "";
+                                            });
+                                          },
+                                          validator: (value) => value == null || value.isEmpty ? "Seleccione un estado de pago" : null,
+                                          items: ["Pagado", "Pendiente"].map((String estado) {
+                                            return DropdownMenuItem<String>(
+                                              value: estado,
+                                              child: Text(estado),
+                                            );
+                                          }).toList(),
+                                          decoration: InputDecoration(
+                                            border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+                                            contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
+                                          ),
+                                        ),
+
+                                        const SizedBox(height: 10),
+
+
+                                            const SizedBox(height: 10),
                                         // Dropdown para seleccionar el estado
                                           DropdownButtonFormField<String>(
                                             value: selectedOption,
@@ -295,6 +324,7 @@ Future<void> _seleccionarFecha(BuildContext context, TextEditingController contr
                                                       formKey,
                                                       fechaCambioAceiteController, // Asegurarse de pasar este controlador
                                                       proximoCambioAceiteController, // Asegurarse de pasar este controlador
+                                                      estadoPagoController, // Asegurarse de pasar este controlador
                                                     );
                                                     break;
                                                   case false:
@@ -309,6 +339,7 @@ Future<void> _seleccionarFecha(BuildContext context, TextEditingController contr
                                                       formKey,
                                                       fechaCambioAceiteController, // Asegurarse de pasar este controlador
                                                       proximoCambioAceiteController, // Asegurarse de pasar este controlador
+                                                      estadoPagoController, // Asegurarse de pasar este controlador
                                                     );
                                                     break;
                                                 }
