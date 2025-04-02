@@ -115,7 +115,7 @@ class LoginProvider extends ChangeNotifier {
 
     // 🔹 Obtener datos del usuario desde Firestore
     DocumentSnapshot usuarioDoc = await FirebaseFirestore.instance.collection('usuarios').doc(user.uid).get();
-
+    
     if (!usuarioDoc.exists) {
       throw FirebaseAuthException(code: "user-not-found", message: "No se encontraron datos en Firestore.");
     }
