@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/providers/Vehiculo/vehiculo.provider.dart';
 import 'package:flutter_application_1/views/vehiculos/formularioordenservicio/formularioservicio.dart';
@@ -5,6 +6,8 @@ import 'package:flutter_application_1/views/vehiculos/listaVehiculos/vehiculo.da
 import 'package:provider/provider.dart';
 import 'package:flutter_application_1/providers/Vehiculo/orderservicio.provider.dart';
 import 'package:flutter_application_1/views/drawer/drawe.dart';
+import 'package:intl/intl.dart';
+
 
 class OrdenesServicio extends StatefulWidget {
   final Map<String, dynamic>? vehiculo; // ✅ Recibir el vehículo completo
@@ -202,7 +205,7 @@ class _OrdenesServicioState extends State<OrdenesServicio> {
                               ),
                               const SizedBox(height: 5),
                               Text(
-                                "Fecha de ingreso: ${ordenServicio["fecha"]}",
+                                "Fecha de ingreso: ${ordenServicio["fecha"] is Timestamp ? DateFormat('dd/MM/yyyy').format(ordenServicio["fecha"].toDate()) : 'Sin fecha'}",
                                 style: const TextStyle(
                                   fontSize: 18,
                                   fontWeight: FontWeight.bold,
@@ -219,14 +222,14 @@ class _OrdenesServicioState extends State<OrdenesServicio> {
                               Row(
                                 children: [
                                   Icon(
-                                    ordenServicio["estado"] == 'ingresado'
+                                    ordenServicio["estadoServicio"] == 'ingresado'
                                         ? Icons.playlist_add_check
-                                        : ordenServicio["estado"] == 'espera'
+                                        : ordenServicio["estadoServicio"] == 'espera'
                                             ? Icons.hourglass_bottom
                                             : Icons.check_circle,
-                                    color: ordenServicio["estado"] == 'ingresado'
+                                    color: ordenServicio["estadoServicio"] == 'ingresado'
                                         ? Colors.yellow[800]
-                                        : ordenServicio["estado"] == 'espera'
+                                        : ordenServicio["estadoServicio"] == 'espera'
                                             ? Colors.red[800]
                                             : Colors.blue[800],
                                     size: 24,
@@ -235,22 +238,22 @@ class _OrdenesServicioState extends State<OrdenesServicio> {
                                   Container(
                                     padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12), // 📌 Espaciado interno
                                     decoration: BoxDecoration(
-                                      color: (ordenServicio["estado"] == 'ingresado'
+                                      color: (ordenServicio["estadoServicio"] == 'ingresado'
                                           ? Colors.yellow
-                                          : ordenServicio["estado"] == 'espera'
+                                          : ordenServicio["estadoServicio"] == 'espera'
                                               ? Colors.red
                                               : Colors.blue
                                       ).withAlpha(50), // 📌 Fondo con opacidad (valor entre 0 y 255)
                                       borderRadius: BorderRadius.circular(10), // 📌 Bordes redondeados
                                     ),
                                     child: Text(
-                                      ordenServicio["estado"],
+                                      ordenServicio["estadoServicio"],
                                       style: TextStyle(
                                         fontSize: 20,
                                         fontWeight: FontWeight.bold,
-                                        color: ordenServicio["estado"] == 'ingresado'
+                                        color: ordenServicio["estadoServicio"] == 'ingresado'
                                             ? Colors.yellow[800]
-                                            : ordenServicio["estado"] == 'espera'
+                                            : ordenServicio["estadoServicio"] == 'espera'
                                                 ? Colors.red[800]
                                                 : Colors.blue[800], // Mejor visibilidad del texto
                                       ),

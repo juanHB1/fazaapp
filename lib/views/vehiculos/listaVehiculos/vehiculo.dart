@@ -296,7 +296,7 @@ class VehiculoState extends State<Vehiculo> {
       floatingActionButton: vehiculosProvider.rol == 'admin' ?  Align(
         alignment: Alignment.bottomRight,
         child: FloatingActionButton(
-          tooltip: "Agregar nuevo cliente",
+          tooltip: "Agregar nuevo vehiculo",
           onPressed: () {
             Navigator.push(
               context,

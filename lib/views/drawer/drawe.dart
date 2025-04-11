@@ -60,6 +60,14 @@ class CustomDrawer extends StatelessWidget {
             },
           ),
 
+          _buildDrawerItem(
+            icon: Icons.exit_to_app,
+            text: "proximos cambios de aceite",
+            onTap: () {
+               Navigator.pushReplacementNamed(context, '/notificacionCambioAceiteProximo');
+            },
+          ),
+
           // Separador
           Divider(),
 

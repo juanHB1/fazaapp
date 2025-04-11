@@ -5,9 +5,11 @@ import 'package:flutter_application_1/providers/Vehiculo/orderservicio.provider.
 import 'package:flutter_application_1/providers/Vehiculo/vehiculo.provider.dart';
 import 'package:flutter_application_1/providers/Clientes/cliente.provider.dart';
 import 'package:flutter_application_1/providers/login/login.provider.dart';
+import 'package:flutter_application_1/providers/notificacionCambioAceiteProximo/notificacionCambioAceiteProximoProvider.dart';
 import 'package:flutter_application_1/views/home/home.dart';
 import 'package:flutter_application_1/views/listadoclientes/listaclientes.dart';
 import 'package:flutter_application_1/views/login/login.dart';
+import 'package:flutter_application_1/views/notificacionCambioAceiteProximo/notificacionCambioAceiteProximo.dart';
 import 'package:flutter_application_1/views/vehiculos/listaVehiculos/vehiculo.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -51,6 +53,7 @@ Future<void> main() async {
         ChangeNotifierProvider(create: (_) => ClientesProvider()),
         ChangeNotifierProvider(create: (_) => OrdenesServicioProvider()),
         ChangeNotifierProvider(create: (_) => OrdenServicioFormProvider()),
+        ChangeNotifierProvider(create: (_) => NotificacionCambioAceiteProximoProvider()),
       ],
       child: const MyApp(),
     ),
@@ -82,6 +85,7 @@ class MyApp extends StatelessWidget {
         '/home': (context) => BienvenidaScreen(),
         '/clientes': (context) => const ListaCliente(),
         '/vehiculos': (context) => const Vehiculo(cliente: {}),
+        '/notificacionCambioAceiteProximo': (context) => const NotificacionCambioAceiteProximo(),
       },
     );
   }

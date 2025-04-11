@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:intl/intl.dart';
 
 class OrdenesServicioProvider extends ChangeNotifier {
 
@@ -77,13 +78,13 @@ class OrdenesServicioProvider extends ChangeNotifier {
                     )),
                     const SizedBox(width: 10),
                     Expanded(
-                      child: Text(ordenServicio["estado"],
+                      child: Text(ordenServicio["estadoServicio"],
                         style: TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.bold,
-                            color: ordenServicio["estado"] == 'ingresado'
+                            color: ordenServicio["estadoServicio"] == 'ingresado'
                                 ? Colors.yellow[800]
-                                : ordenServicio["estado"] == 'espera'
+                                : ordenServicio["estadoServicio"] == 'espera'
                                     ? Colors.red[800]
                                     : Colors.blue[800], // Mejor visibilidad del texto
                           ),
@@ -105,7 +106,10 @@ class OrdenesServicioProvider extends ChangeNotifier {
                     )),
                     const SizedBox(width: 10),
                     Expanded(
-                      child: Text(ordenServicio["fecha"],
+                      child: Text(
+                            ordenServicio["fecha"] is Timestamp
+                                ? DateFormat('dd/MM/yyyy').format(ordenServicio["fecha"].toDate())
+                                : "sin fecha",
                           style: TextStyle(color: Colors.blueGrey[700], fontSize: 14)),
                     ),
                   ],
@@ -126,7 +130,10 @@ class OrdenesServicioProvider extends ChangeNotifier {
                     )),
                     const SizedBox(width: 10),
                     Expanded(
-                      child: Text(ordenServicio["fechaCambioAceite"] ?? 'No tienes fecha de cambio de aceite',
+                      child: Text(
+                            ordenServicio["fechaCambioAceite"] is Timestamp
+                                ? DateFormat('dd/MM/yyyy').format(ordenServicio["fechaCambioAceite"].toDate())
+                                : "sin fecha",
                           style: TextStyle(color: Colors.blueGrey[700], fontSize: 14)),
                     ),
                   ],
@@ -146,9 +153,13 @@ class OrdenesServicioProvider extends ChangeNotifier {
                     )),
                     const SizedBox(width: 10),
                     Expanded(
-                      child: Text(ordenServicio["proximoCambioAceite"] ?? 'No tienes fecha de cambio de aceite',
-                          style: TextStyle(color: Colors.blueGrey[700], fontSize: 14)),
-                    ),
+                      child: Text(
+                            ordenServicio["proximoCambioAceite"] is Timestamp
+                                ? DateFormat('dd/MM/yyyy').format(ordenServicio["proximoCambioAceite"].toDate())
+                                : "sin fecha",
+                            style: TextStyle(color: Colors.blueGrey[700], fontSize: 14)
+                          ),
+                        ),
                   ],
                 ),
               ),
