@@ -1,29 +1,35 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/providers/Register/registro.provider.dart';
-import 'package:flutter_application_1/providers/Vehiculo/formularioservicio.provider.dart';
-import 'package:flutter_application_1/providers/Vehiculo/orderservicio.provider.dart';
-import 'package:flutter_application_1/providers/Vehiculo/vehiculo.provider.dart';
-import 'package:flutter_application_1/providers/Clientes/cliente.provider.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:provider/provider.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+
+// Importación de todos los providers usados globalmente
 import 'package:flutter_application_1/providers/login/login.provider.dart';
+import 'package:flutter_application_1/providers/Register/registro.provider.dart';
+import 'package:flutter_application_1/providers/Vehiculo/vehiculo.provider.dart';
+import 'package:flutter_application_1/providers/Vehiculo/orderservicio.provider.dart';
+import 'package:flutter_application_1/providers/Vehiculo/formularioservicio.provider.dart';
+import 'package:flutter_application_1/providers/Clientes/cliente.provider.dart';
 import 'package:flutter_application_1/providers/notificacionCambioAceiteProximo/notificacionCambioAceiteProximoProvider.dart';
+
+// Importación de vistas
+import 'package:flutter_application_1/views/login/login.dart';
 import 'package:flutter_application_1/views/home/home.dart';
 import 'package:flutter_application_1/views/listadoclientes/listaclientes.dart';
-import 'package:flutter_application_1/views/login/login.dart';
-import 'package:flutter_application_1/views/notificacionCambioAceiteProximo/notificacionCambioAceiteProximo.dart';
 import 'package:flutter_application_1/views/vehiculos/listaVehiculos/vehiculo.dart';
-import 'package:provider/provider.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:permission_handler/permission_handler.dart';
+import 'package:flutter_application_1/views/notificacionCambioAceiteProximo/notificacionCambioAceiteProximo.dart';
 
+// Instancia global para notificaciones locales
 final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
     FlutterLocalNotificationsPlugin();
 
 Future<void> main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
+  WidgetsFlutterBinding.ensureInitialized(); // Asegura que Flutter esté completamente inicializado
+  await Firebase.initializeApp(); // Inicializa Firebase
 
+  // Configuración para notificaciones locales en Android
   const AndroidInitializationSettings initializationSettingsAndroid =
       AndroidInitializationSettings('@mipmap/ic_launcher');
 
@@ -31,19 +37,13 @@ Future<void> main() async {
     android: initializationSettingsAndroid,
   );
 
-  await flutterLocalNotificationsPlugin.initialize(
-    initializationSettings,
-    onDidReceiveNotificationResponse: (NotificationResponse response) async {
-      if (response.payload != null) {
-        debugPrint('notification payload: ${response.payload}');
-      }
-    },
-  );
+  // Inicialización del plugin de notificaciones
+  await flutterLocalNotificationsPlugin.initialize(initializationSettings);
 
-
-  // Solicitar permisos de notificación
+  // Solicita permisos de notificación al usuario
   await Permission.notification.request();
 
+  // Inicialización de la app con MultiProvider para usar Provider globalmente
   runApp(
     MultiProvider(
       providers: [
@@ -66,20 +66,20 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo juan',
-      supportedLocales: [
-        Locale('es', 'ES'), // Español
+      title: 'Faza Ingeniería', // Título global de la app
+      supportedLocales: const [
+        Locale('es', 'ES'), // Soporte para español
       ],
-      localizationsDelegates: [
+      localizationsDelegates: const [
         GlobalMaterialLocalizations.delegate,
         GlobalWidgetsLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,
       ],
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple), // Tema base
         useMaterial3: true,
       ),
-      initialRoute: '/',
+      initialRoute: '/', // Ruta inicial: Login
       routes: {
         '/': (context) => const Login(),
         '/home': (context) => BienvenidaScreen(),

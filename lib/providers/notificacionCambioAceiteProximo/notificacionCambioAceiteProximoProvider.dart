@@ -1,58 +1,75 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-
 class NotificacionCambioAceiteProximoProvider extends ChangeNotifier {
+  List<Map<String, dynamic>> _ordenesProximas = [];
+  bool _cargando = false;
 
-Future<void> obtenerOrdenesProximas() async {
-  final FirebaseFirestore db = FirebaseFirestore.instance;
-  final DateTime hoy = DateTime.now();
-  final DateTime dentroDe7Dias = hoy.add(Duration(days: 7)); // o cualquier rango que quieras
+  List<Map<String, dynamic>> get ordenesProximas => _ordenesProximas;
+  bool get cargando => _cargando;
 
-  final List<Map<String, dynamic>> resultados = [];
+  Future<void> obtenerOrdenesProximas() async {
+    _cargando = true;
+    notifyListeners();
 
-  // 1. Obtener todos los usuarios
-  final usuariosSnap = await db.collection('usuarios').get();
+    final FirebaseFirestore db = FirebaseFirestore.instance;
+    final DateTime hoy = DateTime.now();
+    final DateTime dentroDe7Dias = hoy.add(Duration(days: 7));
 
-  for (var usuarioDoc in usuariosSnap.docs) {
-    final usuarioId = usuarioDoc.id;
+    final List<Map<String, dynamic>> resultados = [];
 
-    // 2. Obtener vehículos de cada usuario
-    final vehiculosSnap = await db
-        .collection('usuarios')
-        .doc(usuarioId)
-        .collection('vehiculos')
-        .get();
+    final usuariosSnap = await db.collection('usuarios').get();
 
-    for (var vehiculoDoc in vehiculosSnap.docs) {
-      final vehiculoId = vehiculoDoc.id;
+    for (var usuarioDoc in usuariosSnap.docs) {
+      final usuarioId = usuarioDoc.id;
+      final nombreUsuario = usuarioDoc.data()['nombre'];
+      final apellidoUsuario = usuarioDoc.data()['apellido'];
+      final telefonoUsuario = usuarioDoc.data()['telefono'];
 
-      // 3. Obtener órdenes de servicio con filtros
-      final ordenesSnap = await db
+      final vehiculosSnap = await db
           .collection('usuarios')
           .doc(usuarioId)
           .collection('vehiculos')
-          .doc(vehiculoId)
-          .collection('ordenServicio')
-          .where('estadoPago', isEqualTo: 'Pagado')
-          .where('estadoServicio', isEqualTo: 'terminado')
-          .where('proximoCambioAceite', isLessThanOrEqualTo: Timestamp.fromDate(dentroDe7Dias))
           .get();
 
-      for (var orden in ordenesSnap.docs) {
-        resultados.add({
-          'usuarioId': usuarioId,
-          'vehiculoId': vehiculoId,
-          'ordenId': orden.id,
-          'data': orden.data(),
-        });
+      for (var vehiculoDoc in vehiculosSnap.docs) {
+        final vehiculoId = vehiculoDoc.id;
+        final vehiculoPlaca = vehiculoDoc.data()['placa'];
+        final vehiculoNombre = vehiculoDoc.data()['marca'];
+        final vehiculoModelo = vehiculoDoc.data()['modelo'];
+        final vehiculoKilometrajeActual = vehiculoDoc.data()['kilometrajeEntrada'];
+        
+        final ordenesSnap = await db
+            .collection('usuarios')
+            .doc(usuarioId)
+            .collection('vehiculos')
+            .doc(vehiculoId)
+            .collection('ordenServicio')
+            .where('estadoPago', isEqualTo: 'Pagado')
+            .where('estadoServicio', isEqualTo: 'terminado')
+            .where('proximoCambioAceite', isLessThanOrEqualTo: Timestamp.fromDate(dentroDe7Dias))
+            .get();
+
+        for (var orden in ordenesSnap.docs) {
+          resultados.add({
+            'usuarioId': usuarioId,
+            'nombreUsuario': nombreUsuario,
+            'apellidoUsuario': apellidoUsuario,
+            'telefonoUsuario': telefonoUsuario,
+            'vehiculoId': vehiculoId,
+            'vehiculoPlaca': vehiculoPlaca,
+            'vehiculoNombre': vehiculoNombre,
+            'vehiculoModelo': vehiculoModelo,
+            'vehiculoKilometrajeActual': vehiculoKilometrajeActual,
+            'ordenId': orden.id,
+            'data': orden.data(),
+          });
+        }
       }
     }
+
+    _ordenesProximas = resultados;
+    _cargando = false;
+    notifyListeners();
   }
-
-  debugPrint("Órdenes encontradas: ${resultados}");
-  // Aquí puedes usar `resultados` como necesites
-}
-
-  
 }

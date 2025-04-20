@@ -5,323 +5,370 @@ import 'package:flutter_application_1/views/vehiculos/formularioVehiculo/formula
 import 'package:flutter_application_1/views/vehiculos/vistaordendeservicio/ordenservicio.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_application_1/views/drawer/drawe.dart';
+import 'package:intl/intl.dart';
+
 
 class Vehiculo extends StatefulWidget {
   final Map<String, dynamic> cliente;
-
   const Vehiculo({super.key, required this.cliente});
 
   @override
   State<Vehiculo> createState() => VehiculoState();
 }
 
-
-
 class VehiculoState extends State<Vehiculo> {
-
   @override
   void initState() {
     super.initState();
     Future.microtask(() {
-      Provider.of<VehiculoProvider>(context, listen: false).obtenerVehiculos(widget.cliente["uid"]);
-      Provider.of<VehiculoProvider>(context, listen: false).loadUserRole();
+      final provider = Provider.of<VehiculoProvider>(context, listen: false);
+      provider.obtenerVehiculos(widget.cliente["uid"]);
+      provider.loadUserRole();
     });
-
-    
-
   }
-
 
   @override
   Widget build(BuildContext context) {
     final vehiculosProvider = Provider.of<VehiculoProvider>(context);
     final cliente = widget.cliente;
-    
+    // screenWidth is not strictly needed for responsiveness with flexible widgets
 
     return PopScope(
-        canPop: false, // Bloquea el botón "Atrás"
-        onPopInvokedWithResult: (didPop, result) {
-          if (didPop) return;
-        },
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) {
+        if (didPop) return;
+        // Potentially show a confirmation dialog before popping if in admin view
+      },
       child: Scaffold(
-      backgroundColor: Colors.blueGrey[50],
-      appBar: AppBar(
-        title: const Text('Lista de vehículos',
-            style: TextStyle(fontWeight: FontWeight.bold, letterSpacing: 1.2, color: Colors.white)),
-        centerTitle: true,
-        backgroundColor: Colors.blueGrey[900],
-        elevation: 4,
-        shadowColor: Colors.black45,
-        leading: 
-        
-        vehiculosProvider.rol == 'admin' ?
-           
-          IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.white), // 🔙 Botón de atrás
-          onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => ListaCliente()
+        backgroundColor: Colors.blueGrey[50],
+        appBar: AppBar(
+          title: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+               Icon(Icons.directions_car_filled_outlined, color: Colors.amber, size: 28), // Icon for vehicles list
+               SizedBox(width: 8),
+              Text(
+                'Lista de vehículos',
+                style: TextStyle(fontWeight: FontWeight.bold, letterSpacing: 1.2, color: Colors.white, fontSize: 22),
+                 overflow: TextOverflow.ellipsis, // Handle potential overflow
               ),
-            );
-          },
-        ): SizedBox(),
-        actions: [
-          Builder(
-            builder: (context) {
-              return 
-              IconButton(
-                icon: const Icon(Icons.menu, color: Colors.white, size: 28), // ☰ Menú
-                tooltip: "Abrir menú",
-                onPressed: () => Scaffold.of(context).openDrawer(),
-              );
-            },
+            ],
           ),
-        ],
+          centerTitle: true,
+          backgroundColor: Colors.blueGrey[900],
+          elevation: 4,
+          shadowColor: Colors.black45,
+          leading: vehiculosProvider.rol == 'admin'
+              ? IconButton(
+                  icon: const Icon(Icons.arrow_back, color: Colors.white),
+                   tooltip: "Regresar a lista de clientes", // Added tooltip
+                  onPressed: () {
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => ListaCliente()));
+                  },
+                )
+              : const SizedBox.shrink(), // Use SizedBox.shrink for better practice
+          actions: [
+            Builder(
+              builder: (context) {
+                return IconButton(
+                  icon: const Icon(Icons.menu, color: Colors.white, size: 28),
+                  tooltip: "Abrir menú",
+                  onPressed: () => Scaffold.of(context).openDrawer(),
+                );
+              },
+            ),
+          ],
+        ),
+        drawer: CustomDrawer(),
+        bottomNavigationBar: BottomAppBar(
+        color: const Color.fromARGB(255, 108, 112, 114),
+        shape: const CircularNotchedRectangle(),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 5),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              ElevatedButton.icon(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => FormularioVehiculo(cliente: cliente),
+                      
+                    ),
+                  );
+                },
+                icon: const Icon(Icons.add, color: Colors.white),
+                label: const Text('Agregar vehículo',
+                    style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.green,
+                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                  textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  foregroundColor: Colors.white,
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
-      drawer: CustomDrawer(),
-      body: Padding(
+        body: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _clienteInfoSection(cliente), // Pass only client
+              const SizedBox(height: 20),
+              Expanded(
+                child: vehiculosProvider.loading
+                    ? const Center(child: CircularProgressIndicator()) // Use CircularProgressIndicator for loading
+                    : vehiculosProvider.vehiculos.isEmpty
+                        ? _sinVehiculosUI(vehiculosProvider)
+                        : _listaVehiculosUI(vehiculosProvider, cliente),
+              ),
+            ],
+          ),
+        ),
+        
+      ),
+    );
+  }
+
+  Widget _clienteInfoSection(Map<String, dynamic> cliente) {
+    return Card( // Wrapped client info in a Card
+      elevation: 4,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      child: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: Column(
+        child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(
-              children: [
-                Stack(
-                  children: [
-                    CircleAvatar(
-                      backgroundColor: Colors.blueGrey[700],
-                      radius: 35,
-                      child: Icon(Icons.person, size: 30, color: const Color.fromARGB(255, 212, 209, 209)), // Ícono dentro // Imagen del cliente
-                    ),
-                  ],
-                ),
-                SizedBox(width: 16),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        Icon(Icons.person, color: Colors.blueGrey[700], size: 20),
-                        SizedBox(width: 6),
-                        Text(
-                          "${cliente['nombre']} ${cliente['apellido']}" ,
-                          style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: Colors.black87),
-                        ),
-                      ],
-                    ),
-                    SizedBox(height: 8),
-                    Row(
-                      children: [
-                        Icon(Icons.mail, color: Colors.blueGrey[700], size: 20),
-                        SizedBox(width: 6),
-                        Text(
-                          cliente['email'] ?? "email",
-                          style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: Colors.black54),
-                        ),
-                      ],
-                    ),
-                    SizedBox(height: 8),
-                    Row(
-                      children: [
-                        Icon(Icons.phone, color: Colors.blueGrey[700], size: 18),
-                        SizedBox(width: 6),
-                        Text(
-                          cliente['telefono'] ?? "No registrado",
-                          style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: Colors.black54),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ],
+            CircleAvatar(
+              backgroundColor: Colors.blueGrey[700],
+              radius: 30, // Adjusted size slightly
+              child: Icon(Icons.person_outline, size: 30, color: Colors.white), // Icon for person
             ),
-            SizedBox(height: 20),
+            const SizedBox(width: 16),
             Expanded(
-            child: vehiculosProvider.loading ? 
-            Center(
-              child: Text(
-                "LOADING...",
-                style: TextStyle(
-                  fontSize: 28,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.blueGrey[900],
-                  letterSpacing: 2,
-                  fontFamily: 'RobotoMono',
-                ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _infoRow(Icons.person_outline, "${cliente['nombre']} ${cliente['apellido']}", isBold: true), // Use outline icon
+                  _infoRow(Icons.mail_outline, cliente['email'] ?? "email"), // Use outline icon
+                  _infoRow(Icons.phone_outlined, cliente['telefono'] ?? "No registrado"), // Use outline icon
+                ],
               ),
-            ) :
-            vehiculosProvider.vehiculos.isEmpty
-                ? Center(
-                  child: Padding(
-                    padding: const EdgeInsets.all(20.0),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Icon(Icons.directions_car_filled_outlined, 
-                            size: 80, 
-                            color: Colors.blueGrey[400]), // Ícono de auto
-                        const SizedBox(height: 16),
-                        Text(
-                          
-                          "¡Sin vehículos registrados!",
-                          style: TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.blueGrey[800]),
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          vehiculosProvider.rol == 'admin' ?
-                          "Este usuario aún no tiene vehículos registrados.\nAgrega uno ahora y empieza a gestionarlos fácilmente."
-                          : "",
-                          textAlign: TextAlign.center,
-                          style: TextStyle(fontSize: 16, color: Colors.blueGrey[600]),
-                        ),
-                      ],
-                    ),
-                  ),
-                )
-                : ListView.builder(
-                    itemCount: vehiculosProvider.vehiculos.length,
-                    itemBuilder: (context, index) {
-                      final vehiculo = vehiculosProvider.vehiculos[index];
-
-                      return Card(
-                        margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 10),
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(15)),
-                        elevation: 6,
-                        child: ListTile(
-                          contentPadding: const EdgeInsets.all(15),
-                          leading: CircleAvatar(
-                            radius: 28,
-                            backgroundColor: Colors.blueGrey[700],
-                            child: Text(
-                              vehiculo["marca"][0],
-                              style: const TextStyle(
-                                  fontSize: 22, fontWeight: FontWeight.bold, color: Colors.white),
-                            ),
-                          ),
-                          title: Text(
-                            "${vehiculo["marca"]}",
-                            style: const TextStyle(
-                                fontSize: 18, fontWeight: FontWeight.bold, color: Colors.blueGrey),
-                          ),
-                          subtitle: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const SizedBox(height: 5),
-                              _infoRow(Icons.car_rental, vehiculo["modelo"]),
-                            ],
-                          ),
-                          trailing: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              //envia a la vista del listado orden de servicio
-                              IconButton(
-                                icon: Icon(Icons.list_alt, color: Colors.green[700]),
-                                onPressed: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                    builder: (context) => OrdenesServicio(
-                                        vehiculo: vehiculo, 
-                                        cliente: widget.cliente
-                                    ),
-                                  )
-                                  
-                                  );
-                                  
-                                },
-                              ),
-
-                              IconButton(
-                                icon: Icon(Icons.remove_red_eye, color: Colors.blue[700]),
-                                  onPressed: () {
-                                    showDialog(
-                                      context: context,
-                                      builder: (BuildContext context) {
-                                        return AlertDialog(
-                                          title: Text("Detalles del Vehículo", textAlign: TextAlign.center, style: TextStyle(fontWeight: FontWeight.bold)),
-                                          content: Column(
-                                            mainAxisSize: MainAxisSize.min,
-                                            crossAxisAlignment: CrossAxisAlignment.start,
-                                            children: [
-                                                Text("Marca: ${vehiculo["marca"]}"),
-                                                Text("Modelo: ${vehiculo["modelo"]}"),
-                                                Text("Placa: ${vehiculo["placa"]}"),
-                                                Text("Color: ${vehiculo["color"]}"),
-                                                Text("Kilometraje: ${vehiculo["kilometrajeEntrada"]}"),
-                                                Text("Tipo de Combustible: ${vehiculo["tipoCombustible"]}"),
-                                                Text("Número de Chasis: ${vehiculo["numeroChasis"]}"), // Añadir año
-                                            ],
-                                          ),
-                                          actions: [
-                                            TextButton(
-                                              onPressed: () => Navigator.pop(context),
-                                              child: Text("Cerrar", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-                                            ),
-                                          ],
-                                        );
-                                      },
-                                    );
-                                  },
-
-                              ),
-                              if (vehiculosProvider.rol == 'admin') IconButton(
-                                icon: Icon(Icons.edit, color: Colors.amber[800]),
-                                onPressed: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => FormularioVehiculo(cliente: cliente, vehiculo: vehiculo),
-                                    ),
-                                  );
-                                },
-                              ) else SizedBox(), 
-                            ],
-                          ),
-                        ),
-                      );
-                    },
-                  ),
-                ),
+            ),
           ],
         ),
       ),
-      
-      floatingActionButton: vehiculosProvider.rol == 'admin' ?  Align(
-        alignment: Alignment.bottomRight,
-        child: FloatingActionButton(
-          tooltip: "Agregar nuevo vehiculo",
-          onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => FormularioVehiculo(cliente: cliente, vehiculo: null,),
+    );
+  }
+
+   // Helper for displaying a row of info with icon and text
+   Widget _infoRow(IconData icon, String text, {bool isBold = false}) {
+     return Padding(
+       padding: const EdgeInsets.only(bottom: 4), // Adjusted padding
+       child: Row(
+         crossAxisAlignment: CrossAxisAlignment.start, // Align text to top
+         children: [
+           Icon(icon, size: 18, color: Colors.blueGrey[700]), // Adjusted icon size
+           const SizedBox(width: 8), // Consistent spacing
+           Expanded(
+             child: Text(
+               text,
+               style: TextStyle(
+                 fontSize: 14,
+                 fontWeight: isBold ? FontWeight.bold : FontWeight.w500,
+                 color: isBold ? Colors.black87 : Colors.black54,
+               ),
+               overflow: TextOverflow.ellipsis, // Prevent overflow
+                maxLines: 2, // Allow text to wrap
+             ),
+           ),
+         ],
+       ),
+     );
+   }
+
+
+  Widget _sinVehiculosUI(VehiculoProvider provider) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.directions_car_outlined, size: 80, color: Colors.blueGrey[400]), // Outline icon for empty state
+            const SizedBox(height: 16),
+            Text("¡Sin vehículos registrados!",
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.blueGrey[800])),
+            const SizedBox(height: 8),
+            if (provider.rol == 'admin')
+              Text(
+                "Este usuario aún no tiene vehículos registrados.\nAgrega uno ahora y empieza a gestionarlos fácilmente.",
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 16, color: Colors.blueGrey[600]),
               ),
-            );
-          },
-          backgroundColor: Colors.blueGrey[700],
-          shape: const CircleBorder(),
-          child: const Icon(Icons.add, color: Colors.white),
+            if (provider.rol == 'cliente') // Message for clients
+              Text(
+                "Aún no tienes vehículos registrados.\nContacta al administrador para agregar uno.",
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 16, color: Colors.blueGrey[600]),
+              ),
+          ],
         ),
-      ) : null,
-    )
+      ),
+    );
+  }
+
+  Widget _listaVehiculosUI(VehiculoProvider provider, Map<String, dynamic> cliente) {
+    return ListView.builder(
+      itemCount: provider.vehiculos.length,
+      itemBuilder: (context, index) {
+        final vehiculo = provider.vehiculos[index];
+        return Card(
+          margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 4), // Adjusted horizontal margin
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+          elevation: 6,
+          child: Padding( // Use Padding instead of ListTile for more control
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row( // Header row with avatar and title
+                  children: [
+                    CircleAvatar(
+                      radius: 28,
+                      backgroundColor: Colors.blueGrey[700],
+                       child: Icon(Icons.car_repair, size: 30, color: Colors.white), // Icon instead of letter
+                    ),
+                    const SizedBox(width: 12), // Adjusted spacing
+                    Expanded(
+                      child: Text(
+                        "${vehiculo["marca"]} ${vehiculo["modelo"]}", // Combine make and model in title
+                        style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.blueGrey),
+                        overflow: TextOverflow.ellipsis,
+                         maxLines: 1,
+                      ),
+                    ),
+                  ],
+                ),
+                 const Divider(height: 20, thickness: 1, color: Colors.blueGrey), // Separator
+                // Vehicle details rows
+                _infoRow(Icons.badge, "Placa: ${vehiculo["placa"] ?? 'Sin placa'}"),
+                _infoRow(Icons.color_lens_outlined, "Color: ${vehiculo["color"] ?? 'Sin color'}"),
+                 _infoRow(Icons.speed_outlined, "Kilometraje de entrada: ${vehiculo["kilometrajeEntrada"] ?? 'Sin kilometraje'}"), // Corrected label
+                 _infoRow(Icons.local_gas_station_outlined, "Combustible: ${vehiculo["tipoCombustible"] ?? 'Sin información'}"), // Icon for fuel type
+                 //_infoRow(Icons.vpn_key_outlined, "Chasis: ${vehiculo["numeroChasis"] ?? 'Sin número'}"), // Icon for chassis
+
+                const SizedBox(height: 10),
+                Align( // Align buttons to the right
+                   alignment: Alignment.bottomRight,
+                   child: Wrap( // Use Wrap for buttons
+                     spacing: 8, // Spacing between buttons
+                     runSpacing: 4, // Spacing between rows of buttons if they wrap
+                     children: [
+                       IconButton(
+                         tooltip: "Ver órdenes de servicio", // Added tooltip
+                         icon: Icon(Icons.list_alt_outlined, color: Colors.green[700]), // Outline icon
+                         onPressed: () {
+                           Navigator.push(
+                             context,
+                             MaterialPageRoute(
+                               builder: (context) => OrdenesServicio(vehiculo: vehiculo, cliente: cliente),
+                             ),
+                           );
+                         },
+                       ),
+                       IconButton(
+                         tooltip: "Ver detalles", // Added tooltip
+                         icon: Icon(Icons.remove_red_eye_outlined, color: Colors.blue[700]), // Outline icon
+                         onPressed: () => _mostrarDetallesVehiculo(context, vehiculo),
+                       ),
+                       if (provider.rol == 'admin')
+                         IconButton(
+                           tooltip: "Editar vehículo", // Added tooltip
+                           icon: Icon(Icons.edit_outlined, color: Colors.amber[800]), // Outline icon
+                           onPressed: () {
+                             Navigator.push(
+                               context,
+                               MaterialPageRoute(
+                                 builder: (context) => FormularioVehiculo(cliente: cliente, vehiculo: vehiculo),
+                               ),
+                             );
+                           },
+                         ),
+                     ],
+                   ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+   // Helper for creating detail rows in the vehicle details dialog
+  Widget _buildDialogDetailRow(IconData icon, String label, String value) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4.0),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(icon, size: 18, color: Colors.blueGrey[600]),
+          const SizedBox(width: 10),
+          Text('$label: ', style: TextStyle(
+            fontWeight: FontWeight.bold,
+            color: Colors.blueGrey[800],
+            fontSize: 14,
+          )),
+          Expanded(
+            child: Text(
+              value,
+              style: TextStyle(color: Colors.blueGrey[700], fontSize: 14),
+              overflow: TextOverflow.ellipsis,
+              maxLines: 3,
+            ),
+          ),
+        ],
+      ),
     );
   }
 
 
-  Widget _infoRow(IconData icon, String text) {
-    return Row(
-      children: [
-        Icon(icon, size: 18, color: Colors.blueGrey[500]),
-        const SizedBox(width: 6),
-        Text(text, style: TextStyle(color: Colors.blueGrey[700])),
-      ],
+  void _mostrarDetallesVehiculo(BuildContext context, Map<String, dynamic> vehiculo) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text("Detalles del Vehículo", textAlign: TextAlign.center),
+          content: SingleChildScrollView( // Added SingleChildScrollView for content
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildDialogDetailRow(Icons.directions_car_outlined, "Marca", vehiculo["marca"] ?? 'Sin información'),
+                _buildDialogDetailRow(Icons.model_training_outlined, "Modelo", vehiculo["modelo"] ?? 'Sin información'), // Icon for model
+                _buildDialogDetailRow(Icons.badge, "Placa", vehiculo["placa"] ?? 'Sin placa'),
+                _buildDialogDetailRow(Icons.color_lens_outlined, "Color", vehiculo["color"] ?? 'Sin color'),
+                _buildDialogDetailRow(Icons.speed_outlined, "Kilometraje de entrada",  vehiculo["kilometrajeEntrada"] ?? 'Sin kilometraje'),
+                _buildDialogDetailRow(Icons.local_gas_station_outlined, "Tipo de Combustible", vehiculo["tipoCombustible"] ?? 'Sin información'),
+                //_buildDialogDetailRow(Icons.vpn_key_outlined, "Número de Chasis", vehiculo["numeroChasis"] ?? 'Sin número'),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text("Cerrar", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+            ),
+          ],
+        );
+      },
     );
   }
+
 }

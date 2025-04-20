@@ -2,9 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_application_1/providers/login/login.provider.dart';
 import 'package:provider/provider.dart';
 
-
 class Login extends StatefulWidget {
-  
   const Login({super.key});
 
   @override
@@ -12,18 +10,21 @@ class Login extends StatefulWidget {
 }
 
 class LoginState extends State<Login> {
-
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
 
   @override
-  Widget build(BuildContext context) {
-    
-    final loginProvider = Provider.of<LoginProvider>(context, listen: false);
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
 
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.blueGrey[50], // Fondo suave
+      backgroundColor: Colors.blueGrey[50],
       body: Center(
         child: SingleChildScrollView(
           child: Padding(
@@ -38,7 +39,6 @@ class LoginState extends State<Login> {
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      // Icono y título
                       Icon(Icons.lock, size: 60, color: Colors.blueGrey),
                       SizedBox(height: 10),
                       Text(
@@ -46,7 +46,6 @@ class LoginState extends State<Login> {
                         style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.blueGrey),
                       ),
                       SizedBox(height: 20),
-                      // Campo de correo
                       TextFormField(
                         controller: _emailController,
                         decoration: InputDecoration(
@@ -64,10 +63,7 @@ class LoginState extends State<Login> {
                           return null;
                         },
                       ),
-
                       SizedBox(height: 15),
-
-                      // Campo de contraseña
                       TextFormField(
                         controller: _passwordController,
                         decoration: InputDecoration(
@@ -85,17 +81,14 @@ class LoginState extends State<Login> {
                           return null;
                         },
                       ),
-
                       SizedBox(height: 20),
-
-                      // Botón de inicio de sesión
                       Consumer<LoginProvider>(
                         builder: (context, loginProvider, child) {
                           return SizedBox(
                             width: double.infinity,
                             child: ElevatedButton(
                               onPressed: loginProvider.loading
-                                  ? null // ⚠️ Evita múltiples toques mientras carga
+                                  ? null
                                   : () {
                                       loginProvider.iniciarSesion(_emailController, _passwordController, context, _formKey);
                                     },
@@ -103,6 +96,7 @@ class LoginState extends State<Login> {
                                 padding: EdgeInsets.symmetric(vertical: 14),
                                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                                 backgroundColor: Colors.blueGrey,
+                                foregroundColor: Colors.white, // Added for text color
                               ),
                               child: loginProvider.loading
                                   ? const SizedBox(
@@ -118,10 +112,7 @@ class LoginState extends State<Login> {
                           );
                         },
                       ),
-
                       SizedBox(height: 15),
-
-                      // Mensaje informativo sobre la creación de cuenta
                       Padding(
                         padding: const EdgeInsets.symmetric(vertical: 10),
                         child: Text(
@@ -140,6 +131,5 @@ class LoginState extends State<Login> {
         ),
       ),
     );
-    
   }
 }

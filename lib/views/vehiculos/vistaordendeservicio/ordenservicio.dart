@@ -1,35 +1,36 @@
+// Importaciones necesarias
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/providers/Vehiculo/vehiculo.provider.dart';
-import 'package:flutter_application_1/views/vehiculos/formularioordenservicio/formularioservicio.dart';
-import 'package:flutter_application_1/views/vehiculos/listaVehiculos/vehiculo.dart';
 import 'package:provider/provider.dart';
-import 'package:flutter_application_1/providers/Vehiculo/orderservicio.provider.dart';
-import 'package:flutter_application_1/views/drawer/drawe.dart';
 import 'package:intl/intl.dart';
 
+// Providers
+import 'package:flutter_application_1/providers/Vehiculo/vehiculo.provider.dart';
+import 'package:flutter_application_1/providers/Vehiculo/orderservicio.provider.dart'; // Assuming this is the correct provider for orders
 
+// Vistas
+import 'package:flutter_application_1/views/vehiculos/formularioordenservicio/formularioservicio.dart';
+import 'package:flutter_application_1/views/vehiculos/listaVehiculos/vehiculo.dart';
+import 'package:flutter_application_1/views/drawer/drawe.dart';
+
+// Pantalla que muestra las órdenes de servicio asociadas a un vehículo
 class OrdenesServicio extends StatefulWidget {
-  final Map<String, dynamic>? vehiculo; // ✅ Recibir el vehículo completo
+  final Map<String, dynamic>? vehiculo;
   final Map<String, dynamic>? cliente;
 
-  const OrdenesServicio({
-    super.key,
-    this.vehiculo,
-    this.cliente
-  });
+  const OrdenesServicio({super.key, this.vehiculo, this.cliente});
 
   @override
   State<OrdenesServicio> createState() => _OrdenesServicioState();
 }
 
 class _OrdenesServicioState extends State<OrdenesServicio> {
-  
   @override
   void initState() {
     super.initState();
     Future.microtask(() {
-      Provider.of<OrdenesServicioProvider>(context, listen: false).obtenerOrdenesServicio(widget.vehiculo?['uid'], widget.cliente as Map<String, dynamic>);
+      Provider.of<OrdenesServicioProvider>(context, listen: false)
+          .obtenerOrdenesServicio(widget.vehiculo?['uid'], widget.cliente!);
       Provider.of<VehiculoProvider>(context, listen: false).loadUserRole();
     });
   }
@@ -41,325 +42,298 @@ class _OrdenesServicioState extends State<OrdenesServicio> {
     final vehiculoProvider = Provider.of<VehiculoProvider>(context);
 
     return PopScope(
-        canPop: false, // Bloquea el botón "Atrás"
-        onPopInvokedWithResult: (didPop, result) {
-          if (didPop) return;
-        },
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) {
+        if (didPop) return;
+        // Potentially show a confirmation dialog if needed before popping
+      },
       child: Scaffold(
         backgroundColor: Colors.blueGrey[50],
-
         appBar: AppBar(
-        title: const Text(
-          'Ordenes de servicio',
-          style: TextStyle(fontWeight: FontWeight.bold, letterSpacing: 1.2, color: Colors.white)),
-        centerTitle: true,
-        backgroundColor: Colors.blueGrey[900],
-        elevation: 4,
-        shadowColor: Colors.black45,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.white), // 🔙 Botón de atrás
-          onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => Vehiculo(cliente: widget.cliente as Map<String, dynamic>)
+          title: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(Icons.assignment_turned_in_outlined, color: Colors.amber, size: 28), // Icon for service orders
+              SizedBox(width: 8),
+              Text(
+                'Ordenes de servicio',
+                style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white, fontSize: 22),
+                overflow: TextOverflow.ellipsis, // Handle potential overflow
               ),
-            );
-          },
-        ),
-        actions: [
-          Builder(
-            builder: (context) {
-              return IconButton(
-                icon: const Icon(Icons.menu, color: Colors.white, size: 28), // ☰ Menú
-                tooltip: "Abrir menú",
-                onPressed: () => Scaffold.of(context).openDrawer(),
+            ],
+          ),
+          centerTitle: true,
+          backgroundColor: Colors.blueGrey[900],
+          elevation: 4,
+          shadowColor: Colors.black45,
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back, color: Colors.white),
+            tooltip: "Regresar", // Added tooltip
+            onPressed: () {
+              // Regresar a la vista de vehículos
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => Vehiculo(cliente: widget.cliente!)),
               );
             },
           ),
-        ],
-      ),
-      drawer: CustomDrawer(),
+          actions: [
+            Builder(
+              builder: (context) => IconButton(
+                icon: const Icon(Icons.menu, color: Colors.white, size: 28),
+                tooltip: "Abrir menú",
+                onPressed: () => Scaffold.of(context).openDrawer(),
+              ),
+            ),
+          ],
+        ),
+        drawer: CustomDrawer(),
         body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Encabezado con datos del vehículo
+              Card( // Wrapped vehicle header in a Card for better structure
+                elevation: 4,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Row(
+                    children: [
+                       CircleAvatar(
+                        backgroundColor: Colors.blueGrey[700], // Darker blue-grey for avatar background
+                        radius: 35,
+                        child: Icon(Icons.car_repair, size: 30, color: Colors.white), // Vehicle icon in avatar
+                      ),
+                      const SizedBox(width: 16),
+                      Expanded( // Use Expanded to take available space
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            _infoRow(Icons.directions_car_filled_outlined, "${vehiculo!['marca']} ${vehiculo['modelo']}", ""), // Car icon
+                            _infoRow(Icons.badge, vehiculo['placa'] ?? "Placa no disponible",""), // Plate icon
+                            _infoRow(Icons.color_lens_outlined, vehiculo['color'] ?? "Color no disponible",""), // Color icon
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+
+              const SizedBox(height: 20),
+
+              // Lista de órdenes o mensaje vacío
+              Expanded(
+                child: ordenesProvider.loading
+                    ? const Center(child: CircularProgressIndicator()) // Use CircularProgressIndicator for loading
+                    : ordenesProvider.ordenes.isEmpty
+                        ? _sinOrdenesUI()
+                        : _listaOrdenesUI(ordenesProvider, vehiculo, vehiculoProvider),
+              ),
+            ],
+          ),
+        ),
+        // Botón para agregar nueva orden (solo si es admin)
+        floatingActionButton: vehiculoProvider.rol == 'admin'
+            ? FloatingActionButton(
+                tooltip: "Agregar nueva orden de servicio",
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => AgregarOrden(
+                        vehiculo: vehiculo,
+                        ordenServicio: null,
+                        cliente: widget.cliente,
+                      ),
+                    ),
+                  );
+                },
+                backgroundColor: Colors.blueGrey[700],
+                child: const Icon(Icons.add, color: Colors.white),
+              )
+            : null,
+      ),
+    );
+  }
+
+  // Muestra las órdenes en tarjetas mejoradas
+  Widget _listaOrdenesUI(OrdenesServicioProvider provider, Map<String, dynamic>? vehiculo, VehiculoProvider vehiculoProvider) {
+    return ListView.builder(
+      itemCount: provider.ordenes.length,
+      itemBuilder: (context, index) {
+        final orden = provider.ordenes[index];
+        final fecha = orden["fecha"] is Timestamp
+            ? DateFormat('dd/MM/yyyy').format(orden["fecha"].toDate())
+            : 'Sin fecha';
+
+        // Determine status colors and icons
+        final estadoServicio = orden["estadoServicio"] ?? 'Desconocido';
+        final estadoPago = orden["estadoPago"] ?? 'Desconocido';
+
+        IconData estadoServicioIcon;
+        Color estadoServicioColorText;
+        Color estadoServicioColorBg;
+
+        if (estadoServicio == 'ingresado') {
+          estadoServicioIcon = Icons.playlist_add_check_outlined;
+          estadoServicioColorText = Colors.yellow[800]!;
+          estadoServicioColorBg = Colors.yellow[100]!;
+        } else if (estadoServicio == 'espera') {
+          estadoServicioIcon = Icons.hourglass_empty_outlined;
+          estadoServicioColorText = Colors.red[800]!;
+          estadoServicioColorBg = Colors.red[100]!;
+        } else if (estadoServicio == 'finalizado') {
+           estadoServicioIcon = Icons.check_circle_outline;
+           estadoServicioColorText = Colors.green[800]!;
+           estadoServicioColorBg = Colors.green[100]!;
+        }
+         else { // Default or 'proceso' etc
+          estadoServicioIcon = Icons.settings_outlined;
+          estadoServicioColorText = Colors.blue[800]!;
+          estadoServicioColorBg = Colors.blue[100]!;
+        }
+
+
+        IconData estadoPagoIcon = estadoPago == 'Pagado' ? Icons.payment_outlined : Icons.money_off_csred_outlined;
+        Color estadoPagoColorText = estadoPago == 'Pagado' ? Colors.green[800]! : Colors.orange[800]!;
+        Color estadoPagoColorBg = estadoPago == 'Pagado' ? Colors.green[100]! : Colors.orange[100]!;
+
+
+        return Card(
+          margin: const EdgeInsets.symmetric(vertical: 8),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+          elevation: 6,
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Stack(
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    CircleAvatar(
-                      backgroundColor: Colors.blueGrey[700],
-                      radius: 35,
-                      child: Icon(Icons.edit_document, size: 30, color: const Color.fromARGB(255, 212, 209, 209)), // Ícono dentro // Imagen del cliente
+                    Row( // Icon and Title
+                      children: [
+                         Icon(Icons.assignment_outlined, size: 24, color: Colors.blueGrey[700]), // Icon for order title
+                         SizedBox(width: 8),
+                        Text("Orden de Servicio #${index + 1}",
+                            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.blueGrey[800])), // Larger title
+                      ],
+                    ),
+                    Row( // Action buttons
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        IconButton(
+                          tooltip: "Ver detalles", // Added tooltip
+                          icon: Icon(Icons.remove_red_eye, color: Colors.blue[700]),
+                          onPressed: () => provider.mostrarPrevisualizacion(context, orden),
+                        ),
+                        if (vehiculoProvider.rol == 'admin')
+                          IconButton(
+                            tooltip: "Editar orden", // Added tooltip
+                            icon: Icon(Icons.edit, color: Colors.amber[800]),
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => AgregarOrden(
+                                    vehiculo: vehiculo,
+                                    ordenServicio: orden,
+                                    cliente: widget.cliente,
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
+                      ],
                     ),
                   ],
                 ),
-                SizedBox(width: 16),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                const Divider(height: 20, thickness: 1, color: Colors.blueGrey), // Separator
+                _infoRow(Icons.calendar_today_outlined, "Fecha de ingreso:", fecha), // Date with label
+                const SizedBox(height: 8),
+                // Use Rows with icons and colored containers for status and payment
+                Row(
                   children: [
-                    Row(
-                      children: [
-                        Icon(Icons.directions_car, color: Colors.blueGrey[700], size: 20),
-                        SizedBox(width: 6),
-                        Text(
-                          "${vehiculo!['marca']} ${vehiculo['modelo']}" ,
-                          style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: Colors.black87),
-                        ),
-                      ],
+                    Icon(estadoServicioIcon, size: 20, color: estadoServicioColorText),
+                    const SizedBox(width: 6),
+                    Container(
+                      padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 10),
+                      decoration: BoxDecoration(
+                        color: estadoServicioColorBg,
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Text("Estado del servicio: $estadoServicio",
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold, fontSize: 15, color: estadoServicioColorText)), // Adjusted font size
                     ),
-                    SizedBox(height: 8),
-                    Row(
-                      children: [
-                        Icon(Icons.confirmation_number, color: Colors.blueGrey[700], size: 20),
-                        SizedBox(width: 6),
-                        Text(
-                          vehiculo['placa'] ?? "placa",
-                          style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: Colors.black54),
-                        ),
-                      ],
-                    ),
-                    SizedBox(height: 8),
-                    Row(
-                      children: [
-                        Icon(Icons.color_lens, color: Colors.blueGrey[700], size: 18),
-                        SizedBox(width: 6),
-                        Text(
-                          vehiculo['color'] ?? "Color",
-                          style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500, color: Colors.black54),
-                        ),
-                      ],
+                  ],
+                ),
+                const SizedBox(height: 8),
+                Row(
+                   children: [
+                    Icon(estadoPagoIcon, size: 20, color: estadoPagoColorText),
+                    const SizedBox(width: 6),
+                    Container(
+                      padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 10),
+                      decoration: BoxDecoration(
+                        color: estadoPagoColorBg,
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Text("Estado de pago: $estadoPago",
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold, fontSize: 15, color: estadoPagoColorText)), // Adjusted font size
                     ),
                   ],
                 ),
               ],
             ),
-            SizedBox(height: 20),
-            Expanded(
-            child: ordenesProvider.loading ?
-            Center(
-              child: Text(
-                "LOADING...",
-                style: TextStyle(
-                  fontSize: 28,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.blueGrey[900],
-                  letterSpacing: 2,
-                  fontFamily: 'RobotoMono',
-                ),
-              ),
-            ) :
-            ordenesProvider.ordenes.isEmpty
-                ? Center(
-                  child: Padding(
-                    padding: const EdgeInsets.all(20.0),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Icon(Icons.directions_car_filled_outlined, 
-                            size: 80, 
-                            color: Colors.blueGrey[400]), // Ícono de auto
-                        const SizedBox(height: 16),
-                        Text(
-                          "¡Sin ordenes de servicio registrados!",
-                          style: TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.blueGrey[800]),
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          "Este vehiculo aún no tiene ordenes de servicio registrados.\nAgrega uno ahora y empieza a gestionarlos fácilmente.",
-                          textAlign: TextAlign.center,
-                          style: TextStyle(fontSize: 16, color: Colors.blueGrey[600]),
-                        ),
-                      ],
-                    ),
-                  ),
-                )
-                : ListView.builder(
-                    itemCount: ordenesProvider.ordenes.length,
-                    itemBuilder: (context, index) {
+          ),
+        );
+      },
+    );
+  }
 
-                      final ordenServicio = ordenesProvider.ordenes[index];
-                      return Card(
-                        margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 10),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-                        elevation: 6,
-                        child: ListTile(
-                          contentPadding: const EdgeInsets.all(15),
-
-                          title: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                "Orden de Servicio #${index+1}", // ✅ Título
-                                style: const TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.black54,
-                                ),
-                              ),
-                              const SizedBox(height: 5),
-                              Text(
-                                "Fecha de ingreso: ${ordenServicio["fecha"] is Timestamp ? DateFormat('dd/MM/yyyy').format(ordenServicio["fecha"].toDate()) : 'Sin fecha'}",
-                                style: const TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.blueGrey,
-                                ),
-                              ),
-                            ],
-                          ),
-
-                          subtitle: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const SizedBox(height: 5),
-                              Row(
-                                children: [
-                                  Icon(
-                                    ordenServicio["estadoServicio"] == 'ingresado'
-                                        ? Icons.playlist_add_check
-                                        : ordenServicio["estadoServicio"] == 'espera'
-                                            ? Icons.hourglass_bottom
-                                            : Icons.check_circle,
-                                    color: ordenServicio["estadoServicio"] == 'ingresado'
-                                        ? Colors.yellow[800]
-                                        : ordenServicio["estadoServicio"] == 'espera'
-                                            ? Colors.red[800]
-                                            : Colors.blue[800],
-                                    size: 24,
-                                  ),
-                                  const SizedBox(width: 6),
-                                  Container(
-                                    padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12), // 📌 Espaciado interno
-                                    decoration: BoxDecoration(
-                                      color: (ordenServicio["estadoServicio"] == 'ingresado'
-                                          ? Colors.yellow
-                                          : ordenServicio["estadoServicio"] == 'espera'
-                                              ? Colors.red
-                                              : Colors.blue
-                                      ).withAlpha(50), // 📌 Fondo con opacidad (valor entre 0 y 255)
-                                      borderRadius: BorderRadius.circular(10), // 📌 Bordes redondeados
-                                    ),
-                                    child: Text(
-                                      ordenServicio["estadoServicio"],
-                                      style: TextStyle(
-                                        fontSize: 20,
-                                        fontWeight: FontWeight.bold,
-                                        color: ordenServicio["estadoServicio"] == 'ingresado'
-                                            ? Colors.yellow[800]
-                                            : ordenServicio["estadoServicio"] == 'espera'
-                                                ? Colors.red[800]
-                                                : Colors.blue[800], // Mejor visibilidad del texto
-                                      ),
-                                    ),
-                                  )
-                                ],
-                              ),
-                              const SizedBox(height: 10),
-                              // Nuevo campo: Estado de pago
-                              Row(
-                                children: [
-                                  Icon(
-                                    ordenServicio["estadoPago"] == 'Pagado'
-                                        ? Icons.check_circle
-                                        : Icons.hourglass_bottom,
-                                    color: ordenServicio["estadoPago"] == 'Pagado'
-                                        ? Colors.green[800]
-                                        : Colors.orange[800],
-                                    size: 24,
-                                  ),
-                                  const SizedBox(width: 6),
-                                  Container(
-                                    padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12), // 📌 Espaciado interno
-                                    decoration: BoxDecoration(
-                                      color: (ordenServicio["estadoPago"] == 'Pagado'
-                                          ? Colors.green
-                                          : Colors.orange
-                                      ).withAlpha(50), // 📌 Fondo con opacidad (valor entre 0 y 255)
-                                      borderRadius: BorderRadius.circular(10), // 📌 Bordes redondeados
-                                    ),
-                                    child: Text(
-                                      ordenServicio["estadoPago"] ?? "No especificado",
-                                      style: TextStyle(
-                                        fontSize: 20,
-                                        fontWeight: FontWeight.bold,
-                                        color: ordenServicio["estadoPago"] == 'Pagado'
-                                            ? Colors.green[800]
-                                            : Colors.orange[800], // Mejor visibilidad del texto
-                                      ),
-                                    ),
-                                  )
-                                ],
-                              ),
-                            ],
-                          ),
-
-                          trailing: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              IconButton(
-                                icon: Icon(Icons.remove_red_eye, color: Colors.blue[700]),
-                                onPressed: () => ordenesProvider.mostrarPrevisualizacion(context, ordenServicio),
-                              ),
-                               
-                               if (vehiculoProvider.rol == 'admin')
-                               IconButton( icon: Icon(Icons.edit, color: Colors.amber[800]),
-                                onPressed: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => AgregarOrden(
-                                        vehiculo: vehiculo,
-                                        ordenServicio: ordenServicio,
-                                        cliente: widget.cliente,
-                                      ),
-                                    ),
-                                  );
-                                },
-                              ),
-                            ],
-                          ),
-                        ),
-                      );
-                    },
-                  ),
-                ),
+  // UI si no hay órdenes
+  Widget _sinOrdenesUI() {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(20.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.assignment_turned_in_outlined, size: 80, color: Colors.blueGrey[400]),
+            const SizedBox(height: 16),
+            const Text("¡Sin órdenes de servicio registradas!",
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.blueGrey)),
+            const SizedBox(height: 8),
+            const Text("Este vehículo aún no tiene órdenes de servicio. Agrega una para comenzar.",
+                textAlign: TextAlign.center, style: TextStyle(fontSize: 16, color: Colors.blueGrey)),
           ],
         ),
-      ),
-      floatingActionButton: vehiculoProvider.rol == 'admin' ? Align(
-          alignment: Alignment.bottomRight,
-          child: FloatingActionButton(
-            tooltip: "Agregar nueva orde de servicio",
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => AgregarOrden(vehiculo: vehiculo, ordenServicio: null, cliente: widget.cliente ),
-                ),
-              );
-            },
-            backgroundColor: Colors.blueGrey[700],
-            shape: const CircleBorder(),
-            child: const Icon(Icons.add, color: Colors.white),
-          ),
-        ): null,
       ),
     );
   }
 
-  Widget _infoRow(IconData icon, String text) {
+   // Mini helper para los datos del vehículo y dentro de las tarjetas de orden
+  Widget _infoRow(IconData icon, String label, String value) {
     return Row(
+      crossAxisAlignment: CrossAxisAlignment.start, // Align text to the top if it wraps
       children: [
         Icon(icon, size: 18, color: Colors.blueGrey[500]),
-        const SizedBox(width: 6),
-        Text(text, style: TextStyle(color: Colors.blueGrey[700])),
+        const SizedBox(width: 8), // Increased spacing slightly
+        Text("$label ", style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.black87, fontSize: 15)), // Label bold
+        Expanded( // Use Expanded for the value text
+          child: Text(
+            value,
+            style: const TextStyle(color: Colors.black87, fontSize: 15), // Consistent font size
+            overflow: TextOverflow.ellipsis, // Prevent overflow
+            maxLines: 2, // Allow text to wrap to two lines
+          ),
+        ),
       ],
     );
   }

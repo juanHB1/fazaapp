@@ -1,4 +1,3 @@
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/views/vehiculos/vistaordendeservicio/ordenservicio.dart';
@@ -6,7 +5,6 @@ import 'package:provider/provider.dart';
 import 'package:flutter_application_1/providers/Vehiculo/formularioservicio.provider.dart';
 import 'package:flutter_application_1/views/drawer/drawe.dart';
 import 'package:intl/intl.dart';
-
 
 class AgregarOrden extends StatefulWidget {
   final Map<String, dynamic>? vehiculo;
@@ -29,7 +27,6 @@ class _AgregarOrdenState extends State<AgregarOrden> with WidgetsBindingObserver
   final ValueNotifier<bool> checkboxController = ValueNotifier(false);
 
   final formKey = GlobalKey<FormState>();
-  //String? selectedOption; //opcion seleccionada
   final DateFormat _displayFormat = DateFormat('dd/MM/yyyy');
 
   @override
@@ -40,22 +37,22 @@ class _AgregarOrdenState extends State<AgregarOrden> with WidgetsBindingObserver
     final format = DateFormat('dd/MM/yyyy');
 
     fechaController.text = widget.ordenServicio?['fecha'] is Timestamp
-    ? format.format(widget.ordenServicio!['fecha'].toDate())
-    : widget.ordenServicio?['fecha'] ?? '';
-    
+        ? format.format(widget.ordenServicio!['fecha'].toDate())
+        : widget.ordenServicio?['fecha'] ?? '';
+
     descripcionController.text = widget.ordenServicio?['descripcion'] ?? '';
     estadoServicioController.text = widget.ordenServicio?['estadoServicio'] ?? '';
     fechaCambioAceiteController.text = widget.ordenServicio?['fechaCambioAceite'] is Timestamp
-    ? format.format(widget.ordenServicio!['fechaCambioAceite'].toDate())
-    : widget.ordenServicio?['fechaCambioAceite'] ?? '';
+        ? format.format(widget.ordenServicio!['fechaCambioAceite'].toDate())
+        : widget.ordenServicio?['fechaCambioAceite'] ?? '';
 
     proximoCambioAceiteController.text = widget.ordenServicio?['proximoCambioAceite'] is Timestamp
         ? format.format(widget.ordenServicio!['proximoCambioAceite'].toDate())
         : widget.ordenServicio?['proximoCambioAceite'] ?? '';
-    
+
     estadoPagoController.text = widget.ordenServicio?['estadoPago'] ?? '';
     checkboxController.value = widget.ordenServicio?['estadoChecked'] ?? false;
-    
+
     Future.microtask(() {
       Provider.of<OrdenServicioFormProvider>(context, listen: false).verificarEstadoCheckSelector(
         checkboxController.value,
@@ -65,10 +62,6 @@ class _AgregarOrdenState extends State<AgregarOrden> with WidgetsBindingObserver
         proximoCambioAceiteController,
       );
     });
-
-    debugPrint("variable vehiculo: 👉 ${widget.vehiculo}");
-    debugPrint("variable orden servicio: 👉 ${widget.ordenServicio}");
-    debugPrint("variable orden cliente: 👉 ${widget.cliente}");
   }
 
   @override
@@ -80,6 +73,7 @@ class _AgregarOrdenState extends State<AgregarOrden> with WidgetsBindingObserver
     fechaCambioAceiteController.dispose();
     proximoCambioAceiteController.dispose();
     estadoPagoController.dispose();
+    checkboxController.dispose(); // Dispose the ValueNotifier
     super.dispose();
   }
 
@@ -87,16 +81,10 @@ class _AgregarOrdenState extends State<AgregarOrden> with WidgetsBindingObserver
   void didChangeAppLifecycleState(AppLifecycleState state) {
     super.didChangeAppLifecycleState(state);
     switch (state) {
-      
       case AppLifecycleState.resumed:
-        // Usar listen: false es importante al llamar a Provider fuera del método build
-        // o dentro de callbacks como initState, didChangeDependencies o didChangeAppLifecycleState
-        // si solo necesitas leer el valor o llamar un método una vez.
         final provider = Provider.of<OrdenServicioFormProvider>(context, listen: false);
-        
         if (provider.volviendoDeWhatsApp) {
-          debugPrint("App resumed y volviendoDeWhatsApp es true. Navegando a OrdenesServicio...");
-          // 🔹 Acción específica al volver de WhatsApp (o lo que sea que active el flag)
+          // Acción específica al volver de WhatsApp
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(
@@ -104,30 +92,18 @@ class _AgregarOrdenState extends State<AgregarOrden> with WidgetsBindingObserver
             ),
           );
           provider.volviendoDeWhatsApp = false; // Resetea la bandera
-        } else {
-          debugPrint("App resumed, pero volviendoDeWhatsApp es false.");
         }
-        // Aquí podrías poner código que SIEMPRE se ejecuta al reanudar la app,
-        // independientemente del flag. Por ejemplo, refrescar datos.
-      break;
-      // ... otros casos (inactive, paused, detached, hidden)
-      // Es bueno tener logs para entender el flujo si es necesario.
+        break;
       case AppLifecycleState.inactive:
-        print("App in inactive state");
-        break;
       case AppLifecycleState.paused:
-        print("App in paused state"); // La app pasa a segundo plano
-        break;
       case AppLifecycleState.detached:
-        print("App in detached state"); // El engine de Flutter se está desconectando (raro en móviles)
-        break;
       case AppLifecycleState.hidden:
-         print("App in hidden state"); // Nuevo estado, similar a paused pero puede no ser visible en absoluto.
+        // Handle other states if necessary
         break;
     }
   }
 
-   // Método para mostrar el selector de fecha
+  // Método para mostrar el selector de fecha
   Future<void> _seleccionarFecha(
       BuildContext context, TextEditingController controller) async {
     DateTime initialDate = DateTime.now(); // Por defecto, la fecha actual
@@ -137,14 +113,12 @@ class _AgregarOrdenState extends State<AgregarOrden> with WidgetsBindingObserver
       try {
         // Usa parseStrict para asegurar que el formato sea exactamente dd/MM/yyyy
         initialDate = _displayFormat.parseStrict(controller.text);
-      } on FormatException catch (e) {
-        // Si el formato no es correcto, usa la fecha actual y muestra un mensaje (opcional)
-        debugPrint("Error al parsear la fecha inicial '${controller.text}' con formato ${_displayFormat.pattern}: $e. Usando fecha actual.");
+      } on FormatException {
+        // Si el formato no es correcto, usa la fecha actual
         initialDate = DateTime.now();
-      } catch(e) {
-         // Otro error inesperado durante el parseo
-         debugPrint("Error inesperado al parsear la fecha inicial: $e. Usando fecha actual.");
-         initialDate = DateTime.now();
+      } catch (e) {
+        // Otro error inesperado durante el parseo
+        initialDate = DateTime.now();
       }
     }
 
@@ -163,17 +137,17 @@ class _AgregarOrdenState extends State<AgregarOrden> with WidgetsBindingObserver
     }
   }
 
-  
   @override
   Widget build(BuildContext context) {
     final ordenServicioProvider = Provider.of<OrdenServicioFormProvider>(context);
-    
+
     bool esEdicion = widget.ordenServicio != null;
 
     return PopScope(
       canPop: false, // Bloquea el botón "Atrás"
       onPopInvokedWithResult: (didPop, result) {
         if (didPop) return;
+        // Aquí podrías añadir una confirmación antes de salir si el formulario tiene cambios
       },
       child: Scaffold(
         backgroundColor: Colors.blueGrey[50],
@@ -185,17 +159,21 @@ class _AgregarOrdenState extends State<AgregarOrden> with WidgetsBindingObserver
           shadowColor: Colors.black45,
           title: Row(
             mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min, // Added to center the row content
             children: [
               Icon(Icons.car_repair, color: Colors.amber, size: 28), // Ícono llamativo
               SizedBox(width: 8),
               //texto con el nombre de la empresa e icono
-              Text(
-                "Faza Ingeniería",
-                style: TextStyle(
-                  fontSize: 22,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
-                  letterSpacing: 1.2, // Espaciado para mejor estética
+              Flexible( // Wrap Text in Flexible to prevent overflow
+                child: Text(
+                  "Faza Ingeniería",
+                  style: TextStyle(
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                    letterSpacing: 1.2, // Espaciado para mejor estética
+                  ),
+                  overflow: TextOverflow.ellipsis, // Handle overflow with ellipsis
                 ),
               ),
             ],
@@ -204,6 +182,7 @@ class _AgregarOrdenState extends State<AgregarOrden> with WidgetsBindingObserver
           //icono para abrir el drawer( panel izquierdo )
           leading: IconButton(
             icon: const Icon(Icons.arrow_back, color: Colors.white), // 🔙 Botón de atrás
+            tooltip: "Volver", // Added tooltip
             onPressed: () {
               Navigator.push(
                 context,
@@ -233,6 +212,8 @@ class _AgregarOrdenState extends State<AgregarOrden> with WidgetsBindingObserver
             child: Padding(
               padding: const EdgeInsets.all(20.0),
               child: Column(
+                mainAxisAlignment: MainAxisAlignment.center, // Center column content vertically
+                crossAxisAlignment: CrossAxisAlignment.stretch, // Stretch column children horizontally
                 children: [
                   // Tarjeta con el formulario
                   Card(
@@ -247,7 +228,7 @@ class _AgregarOrdenState extends State<AgregarOrden> with WidgetsBindingObserver
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             // Icono y título
-                            Icon(Icons.person, size: 60, color: Colors.blueGrey),
+                            Icon(Icons.description_outlined, size: 60, color: Colors.blueGrey), // Changed icon to reflect "service order"
                             const SizedBox(height: 10),
                             Text(
                               esEdicion
@@ -269,6 +250,7 @@ class _AgregarOrdenState extends State<AgregarOrden> with WidgetsBindingObserver
                                     color: Colors.blueGrey),
                                 border: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(10)),
+                                hintText: 'DD/MM/YYYY', // Added hint
                               ),
                               readOnly: true,
                               onTap: () =>
@@ -287,12 +269,13 @@ class _AgregarOrdenState extends State<AgregarOrden> with WidgetsBindingObserver
                             TextFormField(
                               controller: descripcionController,
                               decoration: InputDecoration(
-                                labelText: "Descripción",
-                                prefixIcon: Icon(Icons.person_outline,
+                                labelText: "Descripción del servicio", // Improved label text
+                                prefixIcon: Icon(Icons.notes, // Changed icon
                                     color: Colors.blueGrey),
                                 border: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(10)),
                                 alignLabelWithHint: true,
+                                hintText: 'Detalles del servicio realizado', // Added hint
                               ),
                               maxLines: 5, // Permite varias líneas de texto
                               keyboardType: TextInputType.multiline, // Teclado adecuado para texto largo
@@ -306,34 +289,6 @@ class _AgregarOrdenState extends State<AgregarOrden> with WidgetsBindingObserver
 
                             const SizedBox(height: 10),
 
-                            /* SizedBox(
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                children: [
-                                  Checkbox(
-                                    value: ordenServicioProvider.isCheckedController,
-                                    activeColor:
-                                        Colors.green, // Color cuando está marcado
-                                    checkColor: Colors.white, // Color de la marca ✔
-                                    onChanged: (bool? value) {
-                                      ordenServicioProvider.verificarEstadoCheckSelector(
-                                          value,
-                                          context,
-                                          formKey,
-                                          fechaCambioAceiteController,
-                                          proximoCambioAceiteController);
-                                    },
-                                  ),
-                                  const SizedBox(width: 10),
-                                  const Text(
-                                    "¿Cambio de aceite realizado?",
-                                    style: TextStyle(fontSize: 16),
-                                  ),
-                                ],
-                              ),
-                            ),
- */
-                            
                             SizedBox(
                               child: ValueListenableBuilder<bool>(
                                 valueListenable: checkboxController,
@@ -354,77 +309,91 @@ class _AgregarOrdenState extends State<AgregarOrden> with WidgetsBindingObserver
                                           formKey,
                                           fechaCambioAceiteController,
                                           proximoCambioAceiteController);
-                                          checkboxController.value = nuevoValor!;
+                                      checkboxController.value = nuevoValor!;
                                     },
                                   );
                                 },
                               ),
                             ),
 
-                            
                             const SizedBox(height: 10),
 
-                            // Campo de fecha de cambio de aceite
-
-                            Column(
-                              children: [
-                                if (checkboxController.value)
-                                  TextFormField(
-                                    controller: fechaCambioAceiteController,
-                                    decoration: InputDecoration(
-                                      labelText: "Fecha de cambio de aceite",
-                                      prefixIcon: Icon(Icons.calendar_today,
-                                          color: Colors.blueGrey),
-                                      border: OutlineInputBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(10)),
+                            // Campos de fecha de cambio de aceite y próximo cambio de aceite
+                            ValueListenableBuilder<bool>( // Use ValueListenableBuilder to rebuild when checkbox changes
+                              valueListenable: checkboxController,
+                              builder: (context, isOilChangeChecked, child) {
+                                if (!isOilChangeChecked) {
+                                  // Clear the date fields if the checkbox is unchecked
+                                  fechaCambioAceiteController.clear();
+                                  proximoCambioAceiteController.clear();
+                                  return const SizedBox.shrink(); // Hide the fields
+                                }
+                                return Column(
+                                  children: [
+                                    TextFormField(
+                                      controller: fechaCambioAceiteController,
+                                      decoration: InputDecoration(
+                                        labelText: "Fecha de cambio de aceite",
+                                        prefixIcon: Icon(Icons.oil_barrel, // Changed icon
+                                            color: Colors.blueGrey),
+                                        border: OutlineInputBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(10)),
+                                        hintText: 'DD/MM/YYYY', // Added hint
+                                      ),
+                                      readOnly: true,
+                                      onTap: () => _seleccionarFecha(
+                                          context, fechaCambioAceiteController),
+                                      validator: (value) {
+                                        if (checkboxController.value && (value == null || value.isEmpty)) {
+                                          return "Por favor, seleccione una fecha";
+                                        }
+                                        return null;
+                                      },
                                     ),
-                                    readOnly: true,
-                                    onTap: () => _seleccionarFecha(
-                                        context, fechaCambioAceiteController),
-                                    validator: (value) {
-                                      if (value == null || value.isEmpty) {
-                                        return "Por favor, seleccione una fecha";
-                                      }
-                                      return null;
-                                    },
-                                  ),
-                                if (checkboxController.value)
-                                  const SizedBox(height: 10),
-                                if (checkboxController.value)
-                                  TextFormField(
-                                    controller: proximoCambioAceiteController,
-                                    decoration: InputDecoration(
-                                      labelText: "Próximo cambio de aceite",
-                                      prefixIcon: Icon(Icons.calendar_today,
-                                          color: Colors.blueGrey),
-                                      border: OutlineInputBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(10)),
+                                    const SizedBox(height: 10),
+                                    TextFormField(
+                                      controller: proximoCambioAceiteController,
+                                      decoration: InputDecoration(
+                                        labelText: "Próximo cambio de aceite",
+                                        prefixIcon: Icon(Icons.access_time, // Changed icon
+                                            color: Colors.blueGrey),
+                                        border: OutlineInputBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(10)),
+                                        hintText: 'DD/MM/YYYY', // Added hint
+                                      ),
+                                      readOnly: true,
+                                      onTap: () => _seleccionarFecha(
+                                          context, proximoCambioAceiteController),
+                                      validator: (value) {
+                                         if (checkboxController.value && (value == null || value.isEmpty)) {
+                                          return "Por favor, seleccione una fecha";
+                                        }
+                                        return null;
+                                      },
                                     ),
-                                    readOnly: true,
-                                    onTap: () => _seleccionarFecha(
-                                        context, proximoCambioAceiteController),
-                                    validator: (value) {
-                                      if (value == null || value.isEmpty) {
-                                        return "Por favor, seleccione una fecha";
-                                      }
-                                      return null;
-                                    },
-                                  ),
-                                if (checkboxController.value)
-                                  const SizedBox(height: 10),
-                                // Otros widgets que no dependen de la condición...
-                              ],
+                                  ],
+                                );
+                              },
                             ),
 
-                            //Campo de estado de pago
 
+                            const SizedBox(height: 10),
+
+                            //Campo de estado de pago
                             DropdownButtonFormField<String>(
                               value: estadoPagoController.text.isNotEmpty
                                   ? estadoPagoController.text
                                   : null,
-                              hint: const Text("Seleccione el estado de pago"),
+                              hint: const Text("Estado de pago"),
+                              decoration: InputDecoration(
+                                border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(10)),
+                                contentPadding: const EdgeInsets.symmetric(
+                                    horizontal: 12, vertical: 14),
+                                prefixIcon: Icon(Icons.payment, color: Colors.blueGrey), // Added icon
+                              ),
                               onChanged: (newValue) {
                                 setState(() {
                                   estadoPagoController.text = newValue ?? "";
@@ -439,31 +408,30 @@ class _AgregarOrdenState extends State<AgregarOrden> with WidgetsBindingObserver
                                   child: Text(estado),
                                 );
                               }).toList(),
+                            ),
+
+                            const SizedBox(height: 10),
+
+                             // Dropdown para seleccionar el estado del servicio
+                            DropdownButtonFormField<String>(
+                              value: estadoServicioController.text.isNotEmpty
+                                  ? estadoServicioController.text
+                                  : null,
+                              hint: const Text("Estado del servicio"),
                               decoration: InputDecoration(
                                 border: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(10)),
                                 contentPadding: const EdgeInsets.symmetric(
                                     horizontal: 12, vertical: 14),
+                                prefixIcon: Icon(Icons.build_circle_outlined, color: Colors.blueGrey), // Added icon
                               ),
-                            ),
-
-                            const SizedBox(height: 10),
-
-                            const SizedBox(height: 10),
-                            // Dropdown para seleccionar el estado
-                            DropdownButtonFormField<String>(
-                              value: estadoServicioController.text.isNotEmpty
-                                  ? estadoServicioController.text
-                                  : null,
-                              hint: const Text("Seleccione el estado del servicio"),
                               onChanged: (newValue) {
                                 setState(() {
-                                  //selectedOption = newValue;
                                   estadoServicioController.text = newValue ?? "";
                                 });
                               },
                               validator: (value) => value == null || value.isEmpty
-                                  ? "Seleccione un rol"
+                                  ? "Seleccione un estado del servicio"
                                   : null,
                               items: ordenServicioProvider.optionsOrdenServicios
                                   .map((String role) {
@@ -472,12 +440,6 @@ class _AgregarOrdenState extends State<AgregarOrden> with WidgetsBindingObserver
                                   child: Text(role),
                                 );
                               }).toList(),
-                              decoration: InputDecoration(
-                                border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(10)),
-                                contentPadding: const EdgeInsets.symmetric(
-                                    horizontal: 12, vertical: 14),
-                              ),
                             ),
 
                             const SizedBox(height: 20),
@@ -492,13 +454,14 @@ class _AgregarOrdenState extends State<AgregarOrden> with WidgetsBindingObserver
                                   shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(10)),
                                   backgroundColor: Colors.blueGrey,
+                                  foregroundColor: Colors.white, // Text color
                                 ),
-                                onPressed: () {
+                                onPressed: ordenServicioProvider.loading
+                                    ? null // Disable button while loading
+                                    : () {
                                   if (formKey.currentState!.validate()) {
                                     switch (esEdicion) {
                                       case true:
-                                        debugPrint(
-                                            "variable esEdicion en true: 👉 ${widget.ordenServicio}");
                                         ordenServicioProvider.verificar(
                                           "modificar",
                                           widget.cliente!,
@@ -512,30 +475,14 @@ class _AgregarOrdenState extends State<AgregarOrden> with WidgetsBindingObserver
                                           fechaCambioAceiteController,
                                           proximoCambioAceiteController,
                                           estadoPagoController,
-                                          
                                         );
-                                        /* ordenServicioProvider.editarOrdenServicio(
-                                          widget.cliente!,
-                                          widget.vehiculo!,
-                                          widget.ordenServicio!,
-                                          fechaController,
-                                          descripcionController,
-                                          estadoController,
-                                          context,
-                                          formKey,
-                                          fechaCambioAceiteController, // Asegurarse de pasar este controlador
-                                          proximoCambioAceiteController, // Asegurarse de pasar este controlador
-                                          estadoPagoController, // Asegurarse de pasar este controlador
-                                        ); */
                                         break;
                                       case false:
-                                        debugPrint(
-                                            "variable esEdicion en false: 👉 ${widget.ordenServicio}");
                                         ordenServicioProvider.verificar(
                                           "guardar",
                                           widget.cliente!,
                                           widget.vehiculo!,
-                                          <String, dynamic>{},
+                                          <String, dynamic>{}, // Pass empty map for new order
                                           fechaController,
                                           descripcionController,
                                           estadoServicioController,
@@ -545,18 +492,6 @@ class _AgregarOrdenState extends State<AgregarOrden> with WidgetsBindingObserver
                                           proximoCambioAceiteController,
                                           estadoPagoController,
                                         );
-                                        /* ordenServicioProvider.guardarOrdenServicio(
-                                          widget.cliente!,
-                                          widget.vehiculo!,
-                                          fechaController,
-                                          descripcionController,
-                                          estadoController,
-                                          context,
-                                          formKey,
-                                          fechaCambioAceiteController, // Asegurarse de pasar este controlador
-                                          proximoCambioAceiteController, // Asegurarse de pasar este controlador
-                                          estadoPagoController, // Asegurarse de pasar este controlador
-                                        ); */
                                         break;
                                     }
                                   }

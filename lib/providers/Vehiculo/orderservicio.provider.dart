@@ -3,22 +3,17 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
 
 class OrdenesServicioProvider extends ChangeNotifier {
-
-
   List<Map<String, dynamic>> ordenes = [];
   bool loading = false;
 
-
   Future<void> obtenerOrdenesServicio(String idVehiculo, Map<String, dynamic> cliente) async {
-    debugPrint(cliente.toString());
     try {
-      
       loading = true;
       notifyListeners();
 
       QuerySnapshot querySnapshot = await FirebaseFirestore.instance
-          .collection('usuarios') // 🔹 Empezamos desde la colección correcta
-          .doc(cliente['uid']) // 🔹 ID del usuario
+          .collection('usuarios')
+          .doc(cliente['uid'])
           .collection('vehiculos')
           .doc(idVehiculo)
           .collection('ordenServicio')
@@ -27,165 +22,101 @@ class OrdenesServicioProvider extends ChangeNotifier {
       ordenes = querySnapshot.docs.map((doc) {
         return doc.data() as Map<String, dynamic>;
       }).toList();
-      debugPrint(ordenes.toString());
+
       loading = false;
       notifyListeners();
     } catch (e) {
-      debugPrint("Error al obtener órdenes de servicio: $e");
+      // Error handling can be added here if needed, but user requested to remove debug prints
     }
   }
 
   void mostrarPrevisualizacion(BuildContext context, Map<String, dynamic> ordenServicio) {
+    // Determine status colors and icons for the dialog
+    final estadoServicio = ordenServicio["estadoServicio"] ?? 'Desconocido';
+    final estadoPago = ordenServicio["estadoPago"] ?? 'Desconocido';
+
+    IconData estadoServicioIcon;
+    Color estadoServicioColorText;
+
+    if (estadoServicio == 'ingresado') {
+      estadoServicioIcon = Icons.playlist_add_check_outlined;
+      estadoServicioColorText = Colors.yellow[800]!;
+    } else if (estadoServicio == 'espera') {
+      estadoServicioIcon = Icons.hourglass_empty_outlined;
+      estadoServicioColorText = Colors.red[800]!;
+    } else if (estadoServicio == 'finalizado') {
+       estadoServicioIcon = Icons.check_circle_outline;
+       estadoServicioColorText = Colors.green[800]!;
+    }
+     else { // Default or 'proceso' etc
+      estadoServicioIcon = Icons.settings_outlined;
+      estadoServicioColorText = Colors.blue[800]!;
+    }
+
+
+    IconData estadoPagoIcon = estadoPago == 'Pagado' ? Icons.payment_outlined : Icons.money_off_csred_outlined;
+    Color estadoPagoColorText = estadoPago == 'Pagado' ? Colors.green[800]! : Colors.orange[800]!;
+
+
+    // Format dates for display
+     final fechaIngresoFormatted = ordenServicio["fecha"] is Timestamp
+         ? DateFormat('dd/MM/yyyy').format(ordenServicio["fecha"].toDate())
+         : "sin fecha";
+     final fechaCambioAceiteFormatted = ordenServicio["fechaCambioAceite"] is Timestamp
+         ? DateFormat('dd/MM/yyyy').format(ordenServicio["fechaCambioAceite"].toDate())
+         : "sin fecha";
+     final proximoCambioAceiteFormatted = ordenServicio["proximoCambioAceite"] is Timestamp
+         ? DateFormat('dd/MM/yyyy').format(ordenServicio["proximoCambioAceite"].toDate())
+         : "sin fecha";
+
+
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text("Detalles del Cliente", 
-        style: TextStyle(color: Colors.blueGrey[900], fontWeight: FontWeight.bold)),
+        title: Text(
+          "Detalles de la Orden de Servicio", // Changed title
+          style: TextStyle(color: Colors.blueGrey[900], fontWeight: FontWeight.bold),
+        ),
         content: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             children: [
-
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 4.0),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text("Orden de servicio:", style: TextStyle(
-                      fontWeight: FontWeight.bold, 
-                      color: Colors.blueGrey[800],
-                      fontSize: 14
-                    )),
-                    const SizedBox(width: 10),
-                    Expanded(
-                      child: Text(ordenServicio["descripcion"],
-                          style: TextStyle(color: Colors.blueGrey[700], fontSize: 20)),
-                    ),
-                  ],
-                ),
+              _buildDetailRow(
+                Icons.description_outlined, // Icon for description
+                'Descripción:',
+                ordenServicio["descripcion"],
               ),
-
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 4.0),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text('Estado del servicio:', style: TextStyle(
-                      fontWeight: FontWeight.bold, 
-                      color: Colors.blueGrey[800],
-                      fontSize: 14
-                    )),
-                    const SizedBox(width: 10),
-                    Expanded(
-                      child: Text(ordenServicio["estadoServicio"],
-                        style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                            color: ordenServicio["estadoServicio"] == 'ingresado'
-                                ? Colors.yellow[800]
-                                : ordenServicio["estadoServicio"] == 'espera'
-                                    ? Colors.red[800]
-                                    : Colors.blue[800], // Mejor visibilidad del texto
-                          ),
-                      ),
-                    ),
-                  ],
-                ),
+              _buildDetailRow(
+                 estadoServicioIcon, // Dynamic icon for service status
+                'Estado del servicio:',
+                 estadoServicio,
+                 valueColor: estadoServicioColorText // Apply color to the value text
               ),
-
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 4.0),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text('Fecha de ingreso:', style: TextStyle(
-                      fontWeight: FontWeight.bold, 
-                      color: Colors.blueGrey[800],
-                      fontSize: 14
-                    )),
-                    const SizedBox(width: 10),
-                    Expanded(
-                      child: Text(
-                            ordenServicio["fecha"] is Timestamp
-                                ? DateFormat('dd/MM/yyyy').format(ordenServicio["fecha"].toDate())
-                                : "sin fecha",
-                          style: TextStyle(color: Colors.blueGrey[700], fontSize: 14)),
-                    ),
-                  ],
-                ),
+              _buildDetailRow(
+                Icons.calendar_today_outlined, // Icon for date
+                'Fecha de ingreso:',
+                fechaIngresoFormatted,
               ),
-
-              //Fecha cambio de aceite
-
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 4.0),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text('Fecha cambio de aceite:', style: TextStyle(
-                      fontWeight: FontWeight.bold, 
-                      color: Colors.blueGrey[800],
-                      fontSize: 14
-                    )),
-                    const SizedBox(width: 10),
-                    Expanded(
-                      child: Text(
-                            ordenServicio["fechaCambioAceite"] is Timestamp
-                                ? DateFormat('dd/MM/yyyy').format(ordenServicio["fechaCambioAceite"].toDate())
-                                : "sin fecha",
-                          style: TextStyle(color: Colors.blueGrey[700], fontSize: 14)),
-                    ),
-                  ],
-                ),
-              ),
-              
-              //Proximo cambio de aceite
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 4.0),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text('Próximo cambio de aceite:', style: TextStyle(
-                      fontWeight: FontWeight.bold, 
-                      color: Colors.blueGrey[800],
-                      fontSize: 14
-                    )),
-                    const SizedBox(width: 10),
-                    Expanded(
-                      child: Text(
-                            ordenServicio["proximoCambioAceite"] is Timestamp
-                                ? DateFormat('dd/MM/yyyy').format(ordenServicio["proximoCambioAceite"].toDate())
-                                : "sin fecha",
-                            style: TextStyle(color: Colors.blueGrey[700], fontSize: 14)
-                          ),
-                        ),
-                  ],
-                ),
-              ),
-
-              //Estado de pago
-
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 4.0),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text('Estado de pago:', style: TextStyle(
-                      fontWeight: FontWeight.bold, 
-                      color: Colors.blueGrey[800],
-                      fontSize: 14
-                    )),
-                    const SizedBox(width: 10),
-                    Expanded(
-                      child: Text(ordenServicio["estadoPago"] ?? 'No tienes estado de pago',
-                          style: TextStyle(color: Colors.blueGrey[700], fontSize: 14)),
-                    ),
-                  ],
-                ),
-              ),
-
-
+              // Conditionally show oil change dates if they exist
+              if (ordenServicio["fechaCambioAceite"] != null)
+                 _buildDetailRow(
+                   Icons.oil_barrel_outlined, // Icon for oil change date
+                   'Fecha cambio de aceite:',
+                   fechaCambioAceiteFormatted,
+                 ),
+              if (ordenServicio["proximoCambioAceite"] != null)
+                _buildDetailRow(
+                   Icons.access_time_outlined, // Icon for next oil change
+                   'Próximo cambio de aceite:',
+                   proximoCambioAceiteFormatted,
+                 ),
+               _buildDetailRow(
+                  estadoPagoIcon, // Dynamic icon for payment status
+                 'Estado de pago:',
+                 estadoPago,
+                 valueColor: estadoPagoColorText // Apply color to the value text
+               ),
             ],
           ),
         ),
@@ -199,25 +130,53 @@ class OrdenesServicioProvider extends ChangeNotifier {
     );
   }
 
-  Widget _infoDialogRow (String label, String value) {
+  // Helper widget for creating detail rows in the dialog
+  Widget _buildDetailRow(IconData icon, String label, String value, {Color? valueColor}) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4.0),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(label, style: TextStyle(
-            fontWeight: FontWeight.bold, 
+          Icon(icon, size: 18, color: Colors.blueGrey[600]), // Slightly darker icon
+          const SizedBox(width: 10), // Consistent spacing
+          Text('$label ', style: TextStyle(
+            fontWeight: FontWeight.bold,
             color: Colors.blueGrey[800],
-            fontSize: 14
+            fontSize: 14,
           )),
-          const SizedBox(width: 10),
           Expanded(
-            child: Text(value,
-                style: TextStyle(color: Colors.blueGrey[700], fontSize: 14)),
+            child: Text(
+              value,
+              style: TextStyle(
+                color: valueColor ?? Colors.blueGrey[700], // Use provided color or default
+                fontSize: 14,
+              ),
+              overflow: TextOverflow.ellipsis, // Prevent overflow
+              maxLines: 100, // Allow value text to wrap
+            ),
           ),
         ],
       ),
     );
   }
 
+  // Mini helper for the vehicle header section (reused from previous refactor)
+  Widget _infoRowVehicle(IconData icon, String value) {
+      return Row(
+        children: [
+          Icon(icon, size: 18, color: Colors.blueGrey[500]),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Text(
+              value,
+              style: const TextStyle(color: Colors.black87, fontSize: 15),
+              overflow: TextOverflow.ellipsis,
+              maxLines: 1,
+            ),
+          ),
+        ],
+      );
+    }
+ 
+  
 }

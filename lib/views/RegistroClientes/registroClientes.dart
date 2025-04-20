@@ -61,26 +61,7 @@ class RegistroState extends State<RegistroClientes> {
         },
         child: Scaffold(
             backgroundColor: Colors.blueGrey[50],
-            bottomNavigationBar: BottomNavigationBar(
-              currentIndex: 0, // Puedes cambiar esto si necesitas manejar la navegación
-              selectedItemColor: Colors.blueGrey[800],
-              unselectedItemColor: Colors.blueGrey[400],
-              onTap: (index) {
-                if (index == 0) {
-                  clientesProvider.hacerLlamada(_telefonoController.text, context);
-                }
-              },
-              items: const [
-                BottomNavigationBarItem(
-                  icon: Icon(Icons.phone),
-                  label: 'teléfono',
-                ),
-                BottomNavigationBarItem(
-                  icon: Icon(Icons.messenger_sharp),
-                  label: 'whatsapp',
-                ),
-              ],
-            ),
+            
             //barra de navegacion superior
             appBar: AppBar(
               automaticallyImplyLeading: false,

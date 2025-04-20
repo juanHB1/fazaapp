@@ -27,12 +27,28 @@ class _ListaClienteState extends State<ListaCliente> {
     return Scaffold(
       backgroundColor: Colors.blueGrey[50],
       appBar: AppBar(
-        title: const Text('Lista de Clientes',
-            style: TextStyle(fontWeight: FontWeight.bold, letterSpacing: 1.2, color: Colors.white)),
-        centerTitle: true,
         backgroundColor: Colors.blueGrey[900],
         elevation: 4,
         shadowColor: Colors.black45,
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(Icons.people_alt_outlined, color: Colors.amber, size: 28),
+            SizedBox(width: 8),
+            Text(
+              'Lista de Clientes',
+              style: TextStyle(
+                fontSize: 22,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+                letterSpacing: 1.2,
+              ),
+              overflow: TextOverflow.ellipsis,
+            ),
+          ],
+        ),
+        centerTitle: true,
         leading: Builder(
           builder: (context) {
             return IconButton(
@@ -44,69 +60,69 @@ class _ListaClienteState extends State<ListaCliente> {
         ),
       ),
       drawer: CustomDrawer(),
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: 0, // Puedes cambiar esto si necesitas manejar la navegación
-        selectedItemColor: Colors.blueGrey[800],
-        unselectedItemColor: Colors.blueGrey[400],
-        onTap: (index) {
-          if (index == 1) {
-            // Navegar a la pantalla de registro de clientes
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => const RegistroClientes(cliente: null),
+      bottomNavigationBar: BottomAppBar(
+        color: const Color.fromARGB(255, 108, 112, 114),
+        shape: const CircularNotchedRectangle(),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 5),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              ElevatedButton.icon(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const RegistroClientes(cliente: null),
+                    ),
+                  );
+                },
+                icon: const Icon(Icons.add, color: Colors.white),
+                label: const Text('Agregar Cliente',
+                    style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.green,
+                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                  textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  foregroundColor: Colors.white,
+                ),
               ),
-            );
-          }
-        },
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.phone),
-            label: 'teléfono',
+            ],
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.add_circle, size: 30, color: Colors.green),
-            label: 'Agregar Cliente',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.messenger_sharp),
-            label: 'whatsapp',
-          ),
-        ],
+        ),
       ),
       body: Padding(
         padding: const EdgeInsets.all(10),
         child: clientesProvider.clientes.isEmpty
-            ? 
-            Center(
-                  child: Padding(
-                    padding: const EdgeInsets.all(20.0),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Icon(Icons.person, 
-                            size: 80, 
-                            color: Colors.blueGrey[400]), // Ícono de auto
-                        const SizedBox(height: 16),
-                        Text(
-                          "¡Sin Usuarios registrados!",
-                          style: TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.blueGrey[800]),
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          "Aún no tienes usuarios registrados.\nAgrega uno ahora y empieza a gestionarlos fácilmente.",
-                          textAlign: TextAlign.center,
-                          style: TextStyle(fontSize: 16, color: Colors.blueGrey[600]),
-                        ),
-                        const SizedBox(height: 20),
-                      ],
-                    ),
+            ? Center(
+                child: Padding(
+                  padding: const EdgeInsets.all(20.0),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Icon(Icons.person_off_outlined,
+                          size: 80,
+                          color: Colors.blueGrey[400]),
+                      const SizedBox(height: 16),
+                      Text(
+                        "¡Sin Usuarios registrados!",
+                        style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.blueGrey[800]),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        "Aún no tienes usuarios registrados.\nAgrega uno ahora y empieza a gestionarlos fácilmente.",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(fontSize: 16, color: Colors.blueGrey[600]),
+                      ),
+                      const SizedBox(height: 20),
+                    ],
                   ),
-                )
+                ),
+              )
             : ListView.builder(
                 itemCount: clientesProvider.clientes.length,
                 itemBuilder: (context, index) {
@@ -127,7 +143,7 @@ class _ListaClienteState extends State<ListaCliente> {
                                 radius: 28,
                                 backgroundColor: Colors.blueGrey[700],
                                 child: Text(
-                                  cliente["nombre"][0],
+                                  cliente["nombre"][0].toUpperCase(),
                                   style: const TextStyle(
                                       fontSize: 22, fontWeight: FontWeight.bold, color: Colors.white),
                                 ),
@@ -138,43 +154,57 @@ class _ListaClienteState extends State<ListaCliente> {
                                   "${cliente["nombre"]} ${cliente["apellido"]}",
                                   style: const TextStyle(
                                       fontSize: 18, fontWeight: FontWeight.bold, color: Colors.blueGrey),
-                                  overflow: TextOverflow.ellipsis, // Evita desbordamiento
+                                  overflow: TextOverflow.ellipsis,
                                   maxLines: 1,
                                 ),
                               ),
                             ],
                           ),
                           const SizedBox(height: 10),
-                          _infoRow(Icons.email, cliente["email"]),
-                          _infoRow(Icons.phone, cliente["telefono"]),
-                          _infoRow(Icons.person, "Rol: ${cliente["rol"]}"),
+                          _infoRow(Icons.email_outlined, cliente["email"]),
+                          _infoRow(Icons.phone_outlined, cliente["telefono"]),
+                          _infoRow(Icons.assignment_ind_outlined, "Rol: ${cliente["rol"]}"),
                           const SizedBox(height: 10),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.end,
-                            children: [
-                              IconButton(
-                                iconSize: 22,
-                                padding: EdgeInsets.zero,
-                                constraints: const BoxConstraints(),
-                                icon: Icon(Icons.directions_car, color: Colors.green[800]),
-                                onPressed: () => clientesProvider.agregarCarros(context, cliente),
-                              ),
-                              IconButton(
-                                icon: Icon(Icons.remove_red_eye, color: Colors.blue[700]),
-                                onPressed: () => clientesProvider.mostrarPrevisualizacion(context, cliente),
-                              ),
-                              IconButton(
-                                icon: Icon(Icons.edit, color: Colors.amber[800]),
-                                onPressed: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => RegistroClientes(cliente: cliente),
-                                    ),
-                                  );
-                                },
-                              ),
-                            ],
+                          Align( // Align buttons to the right
+                            alignment: Alignment.bottomRight,
+                            child: Wrap( // Use Wrap for better responsiveness of buttons
+                              spacing: 8, // Horizontal spacing between buttons
+                              runSpacing: 4, // Vertical spacing if buttons wrap
+                              children: [
+                                IconButton(
+                                  tooltip: "Llamar",
+                                  icon: Icon(Icons.phone_outlined, color: Colors.black), // Outline icon for consistency
+                                  onPressed: (){
+                                    clientesProvider.hacerLlamada(cliente["telefono"], context);
+                                  }
+                                ),
+                                IconButton(
+                                  tooltip: "Ver vehículos",
+                                  iconSize: 22,
+                                  padding: EdgeInsets.zero,
+                                  constraints: const BoxConstraints(),
+                                  icon: Icon(Icons.directions_car_outlined, color: Colors.green[800]), // Outline icon
+                                  onPressed: () => clientesProvider.agregarCarros(context, cliente),
+                                ),
+                                IconButton(
+                                  tooltip: "Previsualizar",
+                                  icon: Icon(Icons.remove_red_eye_outlined, color: Colors.blue[700]), // Outline icon
+                                  onPressed: () => clientesProvider.mostrarPrevisualizacion(context, cliente),
+                                ),
+                                IconButton(
+                                  tooltip: "Editar",
+                                  icon: Icon(Icons.edit_outlined, color: Colors.amber[800]), // Outline icon
+                                  onPressed: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => RegistroClientes(cliente: cliente),
+                                      ),
+                                    );
+                                  },
+                                ),
+                              ],
+                            ),
                           ),
                         ],
                       ),
@@ -186,13 +216,25 @@ class _ListaClienteState extends State<ListaCliente> {
     );
   }
 
+  // Helper for displaying a row of info with icon and text
   Widget _infoRow(IconData icon, String text) {
-    return Row(
-      children: [
-        Icon(icon, size: 18, color: Colors.blueGrey[500]),
-        const SizedBox(width: 6),
-        Text(text, style: TextStyle(color: Colors.blueGrey[700])),
-      ],
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 4), // Adjusted padding
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start, // Align text to top
+        children: [
+          Icon(icon, size: 18, color: Colors.blueGrey[500]),
+          const SizedBox(width: 8), // Consistent spacing
+          Expanded(
+            child: Text(
+              text,
+              style: TextStyle(color: Colors.blueGrey[700], fontSize: 14), // Consistent font size
+              overflow: TextOverflow.ellipsis,
+              maxLines: 2, // Allow text to wrap
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

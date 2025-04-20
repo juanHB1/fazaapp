@@ -10,19 +10,18 @@ class VehiculoProvider extends ChangeNotifier {
   List<Map<String, dynamic>> vehiculos = [];
   bool loading = false;
   String? rol;
+    Set<String> _placasExistentes = Set<String>(); // Lista para las placas existentes
 
-  /// Método asíncrono para obtener clientes desde Firebase Firestore.
-  /// Retorna una lista de mapas con los datos de los vehiculos que estan asociados con usuarios almacenados en la colección 'vehiculos'.
+
   Future<void> obtenerVehiculos(String idCliente) async {
-    debugPrint("👉 Datos del metodo desde vehiculo: $idCliente");
     try {
       loading = true;
       notifyListeners();
       QuerySnapshot querySnapshot = await FirebaseFirestore.instance
-          .collection('usuarios') // Colección principal
-          .doc(idCliente) // Documento del usuario específico
-          .collection('vehiculos') // Subcolección
-          .get(); // Obtener datos
+          .collection('usuarios')
+          .doc(idCliente)
+          .collection('vehiculos')
+          .get();
 
       vehiculos = querySnapshot.docs.map((doc) {
         return doc.data() as Map<String, dynamic>;
@@ -33,16 +32,11 @@ class VehiculoProvider extends ChangeNotifier {
         notifyListeners();
       });
 
-      
-      debugPrint(vehiculos.toString());
     }
     catch (e) {
-      // Captura errores en la consulta, los imprime en la consola y retorna una lista vacía.
-      debugPrint("Error al obtener clientes: $e");
+      // Error handling
     }
   }
-
-//Mostrar previsualización de los vehiculos
 
   Stream<List<Map<String, dynamic>>> obtenerVehiculosStream(String idCliente) {
     return FirebaseFirestore.instance
@@ -65,68 +59,65 @@ class VehiculoProvider extends ChangeNotifier {
     TextEditingController colorController,
     TextEditingController kilometrajeEntradaController,
     TextEditingController tipoCombustibleController,
-    TextEditingController numeroChasisController,
+    //TextEditingController numeroChasisController,
     BuildContext context,
     GlobalKey<FormState> formKey
     ) async {
-    
+
         if (formKey.currentState!.validate()) {
           try {
-              loading = true;
-              notifyListeners();
-              Map<String, dynamic> clienteTemp = cliente ; 
+             loading = true;
+             notifyListeners();
+             Map<String, dynamic> clienteTemp = cliente ;
 
-              final vehiculoRef = FirebaseFirestore.instance
-                  .collection('usuarios')
-                  .doc(clienteTemp['uid'])
-                  .collection('vehiculos')
-                  .doc(); // 🔹 Genera un ID manualmente
+             final vehiculoRef = FirebaseFirestore.instance
+                 .collection('usuarios')
+                 .doc(clienteTemp['uid'])
+                 .collection('vehiculos')
+                 .doc();
 
-              String vehiculoId = vehiculoRef.id; // 🔹 Obtiene el ID generado
+             String vehiculoId = vehiculoRef.id;
 
-              await vehiculoRef.set({ // 🔹 Guarda los datos con el ID
-              'uid': vehiculoId,
-              'marca': marcaController.text,
-              'modelo': modeloController.text,
-              'placa': placaController.text,
-              'color': colorController.text,
-              'kilometrajeEntrada': kilometrajeEntradaController.text,
-              'tipoCombustible': tipoCombustibleController.text,
-              'numeroChasis': numeroChasisController.text
-              });
+             await vehiculoRef.set({
+             'uid': vehiculoId,
+             'marca': marcaController.text,
+             'modelo': modeloController.text,
+             'placa': placaController.text,
+             'color': colorController.text,
+             'kilometrajeEntrada': kilometrajeEntradaController.text,
+             'tipoCombustible': tipoCombustibleController.text,
+             //'numeroChasis': numeroChasisController.text
+             });
 
-              Future.delayed(Duration(seconds: 2), () {
-                loading = false;
-                notifyListeners();
-              });
+             Future.delayed(Duration(seconds: 2), () {
+               loading = false;
+               notifyListeners();
+             });
 
-              // Resetea el formulario y limpia los campos
-              formKey.currentState?.reset();
-              marcaController.clear();
-              modeloController.clear();
-              placaController.clear();
-              colorController.clear();
-              kilometrajeEntradaController.clear();
-              tipoCombustibleController.clear();
-              numeroChasisController.clear();
-              
-              Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => Vehiculo(cliente: clienteTemp),
-                ),
-              );
-              //notifyListeners();
-              //Navigator.pushNamed(context, '/vehiculos');
+             formKey.currentState?.reset();
+             marcaController.clear();
+             modeloController.clear();
+             placaController.clear();
+             colorController.clear();
+             kilometrajeEntradaController.clear();
+             tipoCombustibleController.clear();
+             //numeroChasisController.clear();
 
-              const SnackBar(content: Text('Vehvuículo agregado con éxito'));
+             Navigator.push(
+             context,
+             MaterialPageRoute(
+                 builder: (context) => Vehiculo(cliente: clienteTemp),
+               ),
+             );
+
+             const SnackBar(content: Text('Vehículo agregado con éxito'));
 
           } on FirebaseAuthException catch (e) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(content: Text('Error: ${e.message}')),
             );
           }
-      } 
+      }
   }
 
   Future<void> editarVehiculo(
@@ -139,13 +130,13 @@ class VehiculoProvider extends ChangeNotifier {
     TextEditingController colorController,
     TextEditingController kilometrajeEntradaController,
     TextEditingController tipoCombustibleController,
-    TextEditingController numeroChasisController,
+    //TextEditingController numeroChasisController,
     BuildContext context,
     GlobalKey <FormState> formkey
     ) async {
       if (formkey.currentState!.validate()) {
         try {
-          Map<String, dynamic> clienteTemp = cliente ; 
+          Map<String, dynamic> clienteTemp = cliente ;
 
           loading = true;
           notifyListeners();
@@ -161,7 +152,7 @@ class VehiculoProvider extends ChangeNotifier {
             'color': colorController.text,
             'kilometrajeEntrada': kilometrajeEntradaController.text,
             'tipoCombustible': tipoCombustibleController.text,
-            'numeroChasis': numeroChasisController.text
+            //'numeroChasis': numeroChasisController.text
           });
 
           Future.delayed(Duration(seconds: 2), () {
@@ -176,13 +167,13 @@ class VehiculoProvider extends ChangeNotifier {
           colorController.clear();
           kilometrajeEntradaController.clear();
           tipoCombustibleController.clear();
-          numeroChasisController.clear();
+          //numeroChasisController.clear();
 
         Navigator.push(context,
           MaterialPageRoute
           (builder:(context) => Vehiculo(cliente: clienteTemp),),
         );
-        
+
         const SnackBar(content:Text('Vehículo actualizado con éxito'));
         } on FirebaseAuthException catch (e) {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -191,10 +182,43 @@ class VehiculoProvider extends ChangeNotifier {
         }
       }
     }
-  
+
 
   Future<void> loadUserRole() async {
-    rol = await Shared.getCredentials('rol'); // Esperamos el resultado
+    rol = await Shared.getCredentials('rol');
     notifyListeners();
+  }
+  
+
+
+  Future<void> obtenerPlacasExistentes() async {
+
+    final FirebaseFirestore db = FirebaseFirestore.instance;
+
+    final Set<String> placasExistentes = Set<String>();
+
+    final usuariosSnap = await db.collection('usuarios').get();
+
+    for (var usuarioDoc in usuariosSnap.docs) {
+      final usuarioId = usuarioDoc.id;
+
+      final vehiculosSnap = await db
+          .collection('usuarios')
+          .doc(usuarioId)
+          .collection('vehiculos')
+          .get();
+
+      for (var vehiculoDoc in vehiculosSnap.docs) {
+        final vehiculoPlaca = vehiculoDoc.data()['placa'];
+        placasExistentes.add(vehiculoPlaca);
+      }
+    }
+
+    _placasExistentes = placasExistentes;
+    notifyListeners();
+  }
+
+  Future<bool> verificarPlacaExistente(String placa) async {
+    return _placasExistentes.contains(placa);
   }
 }
