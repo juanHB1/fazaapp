@@ -5,7 +5,8 @@ import 'package:flutter_application_1/views/vehiculos/formularioVehiculo/formula
 import 'package:flutter_application_1/views/vehiculos/vistaordendeservicio/ordenservicio.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_application_1/views/drawer/drawe.dart';
-import 'package:intl/intl.dart';
+//import 'package:intl/intl.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 
 class Vehiculo extends StatefulWidget {
@@ -46,7 +47,7 @@ class VehiculoState extends State<Vehiculo> {
             mainAxisAlignment: MainAxisAlignment.center,
             mainAxisSize: MainAxisSize.min,
             children: [
-               Icon(Icons.directions_car_filled_outlined, color: Colors.amber, size: 28), // Icon for vehicles list
+               Icon(Icons.directions_car_filled_outlined, color: const Color.fromARGB(255, 255, 7, 7), size: 28), // Icon for vehicles list
                SizedBox(width: 8),
               Text(
                 'Lista de vehículos',
@@ -56,7 +57,7 @@ class VehiculoState extends State<Vehiculo> {
             ],
           ),
           centerTitle: true,
-          backgroundColor: Colors.blueGrey[900],
+          backgroundColor: const Color.fromARGB(255, 0, 0, 0),
           elevation: 4,
           shadowColor: Colors.black45,
           leading: vehiculosProvider.rol == 'admin'
@@ -80,11 +81,13 @@ class VehiculoState extends State<Vehiculo> {
             ),
           ],
         ),
+        
         drawer: CustomDrawer(),
-        bottomNavigationBar: BottomAppBar(
-        color: const Color.fromARGB(255, 108, 112, 114),
-        shape: const CircularNotchedRectangle(),
-        child: Padding(
+        bottomNavigationBar: (vehiculosProvider.rol == 'admin') //mostrar el BottomAppBar solo si el rol es 'admin'
+       ? BottomAppBar(
+          color: const Color.fromARGB(255, 0, 0, 0),
+         shape: const CircularNotchedRectangle(),
+         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 5),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -95,15 +98,16 @@ class VehiculoState extends State<Vehiculo> {
                     context,
                     MaterialPageRoute(
                       builder: (context) => FormularioVehiculo(cliente: cliente),
-                      
                     ),
                   );
                 },
                 icon: const Icon(Icons.add, color: Colors.white),
-                label: const Text('Agregar vehículo',
-                    style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
+                label: const Text(
+                  'Agregar vehículo',
+                  style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
+                ),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.green,
+                  backgroundColor: const Color.fromARGB(255, 255, 0, 0),
                   padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
                   textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                   foregroundColor: Colors.white,
@@ -112,13 +116,16 @@ class VehiculoState extends State<Vehiculo> {
             ],
           ),
         ),
-      ),
+      )
+    : null,  // Aquí no muestra nada
+    
+ // No mostrar el BottomAppBar si el rol no es 'admin' // No button for other roles
         body: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _clienteInfoSection(cliente), // Pass only client
+              _clienteInfoSection(cliente, vehiculosProvider), // Pass client and provider
               const SizedBox(height: 20),
               Expanded(
                 child: vehiculosProvider.loading
@@ -135,36 +142,96 @@ class VehiculoState extends State<Vehiculo> {
     );
   }
 
-  Widget _clienteInfoSection(Map<String, dynamic> cliente) {
-    return Card( // Wrapped client info in a Card
-      elevation: 4,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            CircleAvatar(
-              backgroundColor: Colors.blueGrey[700],
-              radius: 30, // Adjusted size slightly
-              child: Icon(Icons.person_outline, size: 30, color: Colors.white), // Icon for person
-            ),
-            const SizedBox(width: 16),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _infoRow(Icons.person_outline, "${cliente['nombre']} ${cliente['apellido']}", isBold: true), // Use outline icon
-                  _infoRow(Icons.mail_outline, cliente['email'] ?? "email"), // Use outline icon
-                  _infoRow(Icons.phone_outlined, cliente['telefono'] ?? "No registrado"), // Use outline icon
-                ],
+Widget _clienteInfoSection(Map<String, dynamic> cliente, VehiculoProvider provider) {
+  return Card(
+    elevation: 4,
+    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+    child: Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Datos del cliente
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              CircleAvatar(
+                backgroundColor: const Color.fromARGB(255, 0, 0, 0),
+                radius: 30,
+                child: Icon(Icons.person_outline, size: 30, color: Colors.white),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _infoRow(Icons.person_outline, "${cliente['nombre']} ${cliente['apellido']}", isBold: true),
+                    _infoRow(Icons.mail_outline, cliente['email'] ?? "email"),
+                    _infoRow(Icons.phone_outlined, cliente['telefono'] ?? "No registrado"),
+                  ],
+                ),
+              ),
+            ],
+          ),
+
+          const SizedBox(height: 16),
+
+          // Mostrar "Contáctanos" solo si el rol es cliente
+          if (provider.rol == 'cliente') ...[
+            Divider(thickness: 1.5, color: Colors.grey[400]),
+            const SizedBox(height: 8),
+            Center(
+              child: Text(
+                "Contáctanos",
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.blueGrey[800],
+                ),
               ),
             ),
+            const SizedBox(height: 8),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                Column(
+                  children: [
+                    IconButton(
+                      tooltip: "Enviar a WhatsApp",
+                      icon: Icon(Icons.messenger_sharp, color: Colors.green, size: 30),
+                      onPressed: () {
+                        final String phoneNumber = "573103588390";
+                        final String message = Uri.encodeComponent(
+                            "Hola, soy ${cliente['nombre']} ${cliente['apellido']}, me gustaría contactarte.");
+                        final String url = "https://wa.me/$phoneNumber?text=$message";
+                        launchUrl(Uri.parse(url));
+                      },
+                    ),
+                    Text("WhatsApp", style: TextStyle(fontSize: 12)),
+                  ],
+                ),
+                Column(
+                  children: [
+                    IconButton(
+                      tooltip: "Llamar a la empresa",
+                      icon: Icon(Icons.phone, color: Colors.blue, size: 30),
+                      onPressed: () {
+                        final String phoneNumber = "tel:+573103588390";
+                        launchUrl(Uri.parse(phoneNumber));
+                      },
+                    ),
+                    Text("Llamar", style: TextStyle(fontSize: 12)),
+                  ],
+                ),
+              ],
+            ),
           ],
-        ),
+        ],
       ),
-    );
-  }
+    ),
+  );
+}
+
 
    // Helper for displaying a row of info with icon and text
    Widget _infoRow(IconData icon, String text, {bool isBold = false}) {
@@ -173,7 +240,7 @@ class VehiculoState extends State<Vehiculo> {
        child: Row(
          crossAxisAlignment: CrossAxisAlignment.start, // Align text to top
          children: [
-           Icon(icon, size: 18, color: Colors.blueGrey[700]), // Adjusted icon size
+           Icon(icon, size: 18, color: const Color.fromARGB(255, 0, 0, 0)), // Adjusted icon size
            const SizedBox(width: 8), // Consistent spacing
            Expanded(
              child: Text(
@@ -241,21 +308,21 @@ class VehiculoState extends State<Vehiculo> {
                   children: [
                     CircleAvatar(
                       radius: 28,
-                      backgroundColor: Colors.blueGrey[700],
-                       child: Icon(Icons.car_repair, size: 30, color: Colors.white), // Icon instead of letter
+                      backgroundColor: const Color.fromARGB(255, 0, 0, 0),
+                       child: Icon(Icons.car_repair, size: 30, color: const Color.fromARGB(255, 255, 0, 0)), // Icon instead of letter
                     ),
                     const SizedBox(width: 12), // Adjusted spacing
                     Expanded(
                       child: Text(
                         "${vehiculo["marca"]} ${vehiculo["modelo"]}", // Combine make and model in title
-                        style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.blueGrey),
+                        style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color.fromARGB(255, 0, 0, 0)),
                         overflow: TextOverflow.ellipsis,
                          maxLines: 1,
                       ),
                     ),
                   ],
                 ),
-                 const Divider(height: 20, thickness: 1, color: Colors.blueGrey), // Separator
+                 const Divider(height: 20, thickness: 1, color: Color.fromARGB(255, 0, 0, 0)), // Separator
                 // Vehicle details rows
                 _infoRow(Icons.badge, "Placa: ${vehiculo["placa"] ?? 'Sin placa'}"),
                 _infoRow(Icons.color_lens_outlined, "Color: ${vehiculo["color"] ?? 'Sin color'}"),

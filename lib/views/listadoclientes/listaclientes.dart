@@ -3,6 +3,7 @@ import 'package:flutter_application_1/providers/Clientes/cliente.provider.dart';
 import 'package:flutter_application_1/views/RegistroClientes/registroClientes.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_application_1/views/drawer/drawe.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class ListaCliente extends StatefulWidget {
   const ListaCliente({super.key});
@@ -27,14 +28,14 @@ class _ListaClienteState extends State<ListaCliente> {
     return Scaffold(
       backgroundColor: Colors.blueGrey[50],
       appBar: AppBar(
-        backgroundColor: Colors.blueGrey[900],
+        backgroundColor: const Color.fromARGB(255, 0, 0, 0),
         elevation: 4,
         shadowColor: Colors.black45,
         title: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Icons.people_alt_outlined, color: Colors.amber, size: 28),
+            Icon(Icons.people_alt_outlined, color: const Color.fromARGB(255, 255, 7, 7), size: 28),
             SizedBox(width: 8),
             Text(
               'Lista de Clientes',
@@ -61,7 +62,7 @@ class _ListaClienteState extends State<ListaCliente> {
       ),
       drawer: CustomDrawer(),
       bottomNavigationBar: BottomAppBar(
-        color: const Color.fromARGB(255, 108, 112, 114),
+        color: const Color.fromARGB(255, 17, 17, 17),
         shape: const CircularNotchedRectangle(),
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 5),
@@ -77,11 +78,11 @@ class _ListaClienteState extends State<ListaCliente> {
                     ),
                   );
                 },
-                icon: const Icon(Icons.add, color: Colors.white),
+                icon: const Icon(Icons.add, color: Color.fromARGB(255, 0, 0, 0)),
                 label: const Text('Agregar Cliente',
                     style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.green,
+                  backgroundColor: const Color.fromARGB(255, 238, 0, 0),
                   padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
                   textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                   foregroundColor: Colors.white,
@@ -129,11 +130,13 @@ class _ListaClienteState extends State<ListaCliente> {
                   final cliente = clientesProvider.clientes[index];
 
                   return Card(
+                    color: Colors.white,
                     margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 10),
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-                    elevation: 6,
+                    elevation: 4,
+                    shadowColor: Colors.grey.withOpacity(0.3),
                     child: Padding(
-                      padding: const EdgeInsets.all(15),
+                      padding: const EdgeInsets.all(16),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -145,66 +148,69 @@ class _ListaClienteState extends State<ListaCliente> {
                                 child: Text(
                                   cliente["nombre"][0].toUpperCase(),
                                   style: const TextStyle(
-                                      fontSize: 22, fontWeight: FontWeight.bold, color: Colors.white),
+                                    fontSize: 22,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white,
+                                  ),
                                 ),
                               ),
-                              const SizedBox(width: 10),
+                              const SizedBox(width: 12),
                               Expanded(
-                                child: Text(
-                                  "${cliente["nombre"]} ${cliente["apellido"]}",
-                                  style: const TextStyle(
-                                      fontSize: 18, fontWeight: FontWeight.bold, color: Colors.blueGrey),
-                                  overflow: TextOverflow.ellipsis,
-                                  maxLines: 1,
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      "${cliente["nombre"]} ${cliente["apellido"]}",
+                                      style: const TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.black87,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 4),
+                                    _infoRow(Icons.email_outlined, cliente["email"]),
+                                    _infoRow(Icons.phone_outlined, cliente["telefono"]),
+                                    _infoRow(Icons.assignment_ind_outlined, "Rol: ${cliente["rol"]}"),
+                                  ],
                                 ),
                               ),
                             ],
                           ),
-                          const SizedBox(height: 10),
-                          _infoRow(Icons.email_outlined, cliente["email"]),
-                          _infoRow(Icons.phone_outlined, cliente["telefono"]),
-                          _infoRow(Icons.assignment_ind_outlined, "Rol: ${cliente["rol"]}"),
-                          const SizedBox(height: 10),
-                          Align( // Align buttons to the right
-                            alignment: Alignment.bottomRight,
-                            child: Wrap( // Use Wrap for better responsiveness of buttons
-                              spacing: 8, // Horizontal spacing between buttons
-                              runSpacing: 4, // Vertical spacing if buttons wrap
-                              children: [
-                                IconButton(
-                                  tooltip: "Llamar",
-                                  icon: Icon(Icons.phone_outlined, color: Colors.black), // Outline icon for consistency
-                                  onPressed: (){
-                                    clientesProvider.hacerLlamada(cliente["telefono"], context);
-                                  }
-                                ),
-                                IconButton(
-                                  tooltip: "Ver vehículos",
-                                  iconSize: 22,
-                                  padding: EdgeInsets.zero,
-                                  constraints: const BoxConstraints(),
-                                  icon: Icon(Icons.directions_car_outlined, color: Colors.green[800]), // Outline icon
-                                  onPressed: () => clientesProvider.agregarCarros(context, cliente),
-                                ),
-                                IconButton(
-                                  tooltip: "Previsualizar",
-                                  icon: Icon(Icons.remove_red_eye_outlined, color: Colors.blue[700]), // Outline icon
-                                  onPressed: () => clientesProvider.mostrarPrevisualizacion(context, cliente),
-                                ),
-                                IconButton(
-                                  tooltip: "Editar",
-                                  icon: Icon(Icons.edit_outlined, color: Colors.amber[800]), // Outline icon
-                                  onPressed: () {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) => RegistroClientes(cliente: cliente),
-                                      ),
-                                    );
-                                  },
-                                ),
-                              ],
-                            ),
+                          const Divider(height: 24, thickness: 1),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              _actionIcon(context, Icons.phone_outlined, "Llamar", const Color.fromARGB(255, 0, 0, 0), () {
+                                clientesProvider.hacerLlamada(cliente["telefono"], context);
+                              }),
+                              _actionIcon(context, Icons.directions_car_outlined, "Vehículos", const Color.fromARGB(255, 255, 0, 0), () {
+                                clientesProvider.agregarCarros(context, cliente);
+                              }),
+                              _actionIcon(context, Icons.remove_red_eye_outlined, "Ver", const Color.fromARGB(255, 0, 0, 0), () {
+                                clientesProvider.mostrarPrevisualizacion(context, cliente);
+                              }),
+                              _actionIcon(context, Icons.edit_outlined, "Editar", const Color.fromARGB(255, 255, 0, 0), () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => RegistroClientes(cliente: cliente),
+                                  ),
+                                );
+                              }),
+                              _actionIcon(context, Icons.message_sharp, "WhatsApp", const Color.fromARGB(255, 73, 255, 1), () {
+                                final phoneNumber = cliente["telefono"];
+                                if (phoneNumber.isEmpty) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(content: Text("El cliente no tiene un número de teléfono registrado.")),
+                                  );
+                                  return;
+                                }
+                                final message = Uri.encodeComponent(
+                                    "Hola ${cliente['nombre']} ${cliente['apellido']}, Te escribimos desde Faza Ingenieria.");
+                                final url = "https://wa.me/$phoneNumber?text=$message";
+                                launchUrl(Uri.parse(url));
+                              }),
+                            ],
                           ),
                         ],
                       ),
@@ -216,22 +222,38 @@ class _ListaClienteState extends State<ListaCliente> {
     );
   }
 
-  // Helper for displaying a row of info with icon and text
   Widget _infoRow(IconData icon, String text) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 4), // Adjusted padding
+      padding: const EdgeInsets.only(bottom: 4),
       child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start, // Align text to top
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Icon(icon, size: 18, color: Colors.blueGrey[500]),
-          const SizedBox(width: 8), // Consistent spacing
+          const SizedBox(width: 8),
           Expanded(
             child: Text(
               text,
-              style: TextStyle(color: Colors.blueGrey[700], fontSize: 14), // Consistent font size
+              style: TextStyle(color: Colors.blueGrey[700], fontSize: 14),
               overflow: TextOverflow.ellipsis,
-              maxLines: 2, // Allow text to wrap
+              maxLines: 2,
             ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _actionIcon(BuildContext context, IconData icon, String label, Color color, VoidCallback onTap) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, color: color, size: 28),
+          const SizedBox(height: 4),
+          Text(
+            label,
+            style: const TextStyle(fontSize: 12, color: Colors.black87),
           ),
         ],
       ),

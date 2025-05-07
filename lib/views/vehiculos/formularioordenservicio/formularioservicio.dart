@@ -154,14 +154,14 @@ class _AgregarOrdenState extends State<AgregarOrden> with WidgetsBindingObserver
         //barra de navegacion superior
         appBar: AppBar(
           automaticallyImplyLeading: false,
-          backgroundColor: Colors.blueGrey[900], // Color oscuro elegante
+          backgroundColor: const Color.fromARGB(255, 0, 0, 0), // Color oscuro elegante
           elevation: 4,
           shadowColor: Colors.black45,
           title: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             mainAxisSize: MainAxisSize.min, // Added to center the row content
             children: [
-              Icon(Icons.car_repair, color: Colors.amber, size: 28), // Ícono llamativo
+              Icon(Icons.car_repair, color: const Color.fromARGB(255, 255, 7, 7), size: 28), // Ícono llamativo
               SizedBox(width: 8),
               //texto con el nombre de la empresa e icono
               Flexible( // Wrap Text in Flexible to prevent overflow
@@ -228,7 +228,7 @@ class _AgregarOrdenState extends State<AgregarOrden> with WidgetsBindingObserver
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             // Icono y título
-                            Icon(Icons.description_outlined, size: 60, color: Colors.blueGrey), // Changed icon to reflect "service order"
+                            Icon(Icons.description_outlined, size: 60, color: const Color.fromARGB(255, 255, 0, 0)), // Changed icon to reflect "service order"
                             const SizedBox(height: 10),
                             Text(
                               esEdicion
@@ -247,7 +247,7 @@ class _AgregarOrdenState extends State<AgregarOrden> with WidgetsBindingObserver
                               decoration: InputDecoration(
                                 labelText: "Fecha del servicio",
                                 prefixIcon: Icon(Icons.calendar_today,
-                                    color: Colors.blueGrey),
+                                    color: const Color.fromARGB(255, 0, 0, 0)),
                                 border: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(10)),
                                 hintText: 'DD/MM/YYYY', // Added hint
@@ -271,7 +271,7 @@ class _AgregarOrdenState extends State<AgregarOrden> with WidgetsBindingObserver
                               decoration: InputDecoration(
                                 labelText: "Descripción del servicio", // Improved label text
                                 prefixIcon: Icon(Icons.notes, // Changed icon
-                                    color: Colors.blueGrey),
+                                    color: const Color.fromARGB(255, 0, 0, 0)),
                                 border: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(10)),
                                 alignLabelWithHint: true,
@@ -335,7 +335,7 @@ class _AgregarOrdenState extends State<AgregarOrden> with WidgetsBindingObserver
                                       decoration: InputDecoration(
                                         labelText: "Fecha de cambio de aceite",
                                         prefixIcon: Icon(Icons.oil_barrel, // Changed icon
-                                            color: Colors.blueGrey),
+                                            color: const Color.fromARGB(255, 0, 0, 0)),
                                         border: OutlineInputBorder(
                                             borderRadius:
                                                 BorderRadius.circular(10)),
@@ -357,7 +357,7 @@ class _AgregarOrdenState extends State<AgregarOrden> with WidgetsBindingObserver
                                       decoration: InputDecoration(
                                         labelText: "Próximo cambio de aceite",
                                         prefixIcon: Icon(Icons.access_time, // Changed icon
-                                            color: Colors.blueGrey),
+                                            color: const Color.fromARGB(255, 0, 0, 0)),
                                         border: OutlineInputBorder(
                                             borderRadius:
                                                 BorderRadius.circular(10)),
@@ -390,9 +390,9 @@ class _AgregarOrdenState extends State<AgregarOrden> with WidgetsBindingObserver
                               decoration: InputDecoration(
                                 border: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(10)),
-                                contentPadding: const EdgeInsets.symmetric(
+                                    contentPadding: const EdgeInsets.symmetric(
                                     horizontal: 12, vertical: 14),
-                                prefixIcon: Icon(Icons.payment, color: Colors.blueGrey), // Added icon
+                                prefixIcon: Icon(Icons.payment, color: const Color.fromARGB(255, 0, 0, 0)), // Added icon
                               ),
                               onChanged: (newValue) {
                                 setState(() {
@@ -423,7 +423,7 @@ class _AgregarOrdenState extends State<AgregarOrden> with WidgetsBindingObserver
                                     borderRadius: BorderRadius.circular(10)),
                                 contentPadding: const EdgeInsets.symmetric(
                                     horizontal: 12, vertical: 14),
-                                prefixIcon: Icon(Icons.build_circle_outlined, color: Colors.blueGrey), // Added icon
+                                prefixIcon: Icon(Icons.build_circle_outlined, color: const Color.fromARGB(255, 0, 0, 0)), // Added icon
                               ),
                               onChanged: (newValue) {
                                 setState(() {
@@ -453,7 +453,7 @@ class _AgregarOrdenState extends State<AgregarOrden> with WidgetsBindingObserver
                                       const EdgeInsets.symmetric(vertical: 14),
                                   shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(10)),
-                                  backgroundColor: Colors.blueGrey,
+                                  backgroundColor: const Color.fromARGB(255, 0, 0, 0),
                                   foregroundColor: Colors.white, // Text color
                                 ),
                                 onPressed: ordenServicioProvider.loading

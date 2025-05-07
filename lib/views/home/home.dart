@@ -68,7 +68,7 @@ class _BienvenidaScreenState extends State<BienvenidaScreen> {
                       ),
                       const SizedBox(height: 10),
                       const Text(
-                        "Explora, aprende y disfruta de todas nuestras funcionalidades.",
+                        "Explora y disfruta de todas nuestras funcionalidades.",
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           fontSize: 16,
@@ -86,11 +86,11 @@ class _BienvenidaScreenState extends State<BienvenidaScreen> {
                   icon: const Icon(Icons.arrow_forward_ios, color: Colors.white),
                   label: const Text(
                     "Empezar",
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color.fromARGB(255, 255, 255, 255)),
                   ),
                   style: ElevatedButton.styleFrom(
                     padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 15),
-                    backgroundColor: Colors.blueGrey[800],
+                    backgroundColor: const Color.fromARGB(255, 0, 0, 0),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),

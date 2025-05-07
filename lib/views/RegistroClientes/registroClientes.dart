@@ -65,7 +65,7 @@ class RegistroState extends State<RegistroClientes> {
             //barra de navegacion superior
             appBar: AppBar(
               automaticallyImplyLeading: false,
-              backgroundColor: Colors.blueGrey[900], // Color oscuro elegante
+              backgroundColor: const Color.fromARGB(255, 0, 0, 0), // Color oscuro elegante
               elevation: 4,
               shadowColor: Colors.black45,
               title: Row(
@@ -102,7 +102,7 @@ class RegistroState extends State<RegistroClientes> {
                 Builder(
                   builder: (context) {
                     return IconButton(
-                      icon: const Icon(Icons.menu, color: Colors.white, size: 28), // ☰ Menú
+                      icon: const Icon(Icons.menu, color: Color.fromARGB(255, 255, 255, 255), size: 28), // ☰ Menú
                       tooltip: "Abrir menú",
                       onPressed: () => Scaffold.of(context).openDrawer(),
                     );
@@ -131,11 +131,11 @@ class RegistroState extends State<RegistroClientes> {
                                     mainAxisSize: MainAxisSize.min,
                                     children: [
                                       // Icono y título
-                                      Icon(Icons.person, size: 60, color: Colors.blueGrey),
+                                      Icon(Icons.person, size: 60, color: const Color.fromARGB(255, 0, 0, 0)),
                                       const SizedBox(height: 10),
                                       Text(
                                         esEdicion ? "Editar Cliente" : "Registrar Cliente",
-                                        style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Color.fromARGB(255, 45, 43, 43)),
+                                        style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Color.fromARGB(255, 0, 0, 0)),
                                       ),
                                       const SizedBox(height: 20),
                             
@@ -289,7 +289,7 @@ class RegistroState extends State<RegistroClientes> {
                                           style: ElevatedButton.styleFrom(
                                             padding: const EdgeInsets.symmetric(vertical: 14),
                                             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                                            backgroundColor: Colors.blueGrey,
+                                            backgroundColor: const Color.fromARGB(255, 0, 0, 0),
                                           ),
                                           onPressed: () {
                                             if (_formKey.currentState!.validate()) {

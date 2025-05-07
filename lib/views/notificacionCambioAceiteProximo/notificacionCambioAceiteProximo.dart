@@ -29,21 +29,21 @@ class _NotificacionCambioAceiteProximoState extends State<NotificacionCambioAcei
 
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.blueGrey[900], // Consistent AppBar color
+        backgroundColor: const Color.fromARGB(255, 255, 255, 255), // Consistent AppBar color
         elevation: 4,
         shadowColor: Colors.black45,
         title: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Icons.access_time_outlined, color: Colors.amber, size: 28), // Icon for notifications
+            Icon(Icons.access_time_outlined, color: const Color.fromARGB(255, 255, 7, 7), size: 28), // Icon for notifications
             SizedBox(width: 8),
             Text(
               "Próximos cambios de aceite",
               style: TextStyle(
                 fontSize: 18, // Slightly smaller font for longer title
                 fontWeight: FontWeight.bold,
-                color: Colors.white,
+                color: const Color.fromARGB(255, 0, 0, 0),
                 letterSpacing: 1.2,
               ),
                overflow: TextOverflow.ellipsis, // Handle potential overflow
@@ -89,7 +89,7 @@ class _NotificacionCambioAceiteProximoState extends State<NotificacionCambioAcei
                           children: [
                             Row( // Icon and Name
                               children: [
-                                Icon(Icons.person_outline, color: Colors.blueGrey),
+                                Icon(Icons.person_outline, color: const Color.fromARGB(255, 0, 0, 0)),
                                 SizedBox(width: 8),
                                 Expanded( // Use Expanded to prevent overflow
                                   child: Text(
@@ -103,7 +103,7 @@ class _NotificacionCambioAceiteProximoState extends State<NotificacionCambioAcei
                             const SizedBox(height: 8),
                             Row( // Icon and Phone
                               children: [
-                                Icon(Icons.phone_outlined, color: Colors.blueGrey),
+                                Icon(Icons.phone_outlined, color: const Color.fromARGB(255, 0, 0, 0)),
                                 SizedBox(width: 8),
                                 Text("Teléfono: $telefono"),
                               ],
@@ -111,7 +111,7 @@ class _NotificacionCambioAceiteProximoState extends State<NotificacionCambioAcei
                             const SizedBox(height: 8),
                             Row( // Icon and Plate
                               children: [
-                                Icon(Icons.credit_card, color: Colors.blueGrey), // Using credit card icon for plate number
+                                Icon(Icons.credit_card, color: const Color.fromARGB(255, 0, 0, 0)), // Using credit card icon for plate number
                                 SizedBox(width: 8),
                                 Text("Placa: $placa", style: const TextStyle(fontSize: 16)),
                               ],
@@ -119,7 +119,7 @@ class _NotificacionCambioAceiteProximoState extends State<NotificacionCambioAcei
                             const SizedBox(height: 8),
                             Row( // Icon and Vehicle Info
                               children: [
-                                Icon(Icons.directions_car_outlined, color: Colors.blueGrey),
+                                Icon(Icons.directions_car_outlined, color: const Color.fromARGB(255, 0, 0, 0)),
                                 SizedBox(width: 8),
                                 Expanded( // Use Expanded to prevent overflow
                                   child: Text("Vehículo: $vehiculoNombre $vehiculoModelo"),
@@ -129,7 +129,7 @@ class _NotificacionCambioAceiteProximoState extends State<NotificacionCambioAcei
                             const SizedBox(height: 8),
                              Row( // Icon and Mileage
                               children: [
-                                Icon(Icons.speed_outlined, color: Colors.blueGrey),
+                                Icon(Icons.speed_outlined, color: const Color.fromARGB(255, 0, 0, 0)),
                                 SizedBox(width: 8),
                                 Text("Kilometraje actual: $vehiculoKilometrajeActual"),
                               ],

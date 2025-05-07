@@ -38,7 +38,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
         children: [
           // Encabezado del Drawer
           DrawerHeader(
-            decoration: BoxDecoration(color: Colors.blueGrey[900]),
+            decoration: BoxDecoration(color: const Color.fromARGB(255, 0, 0, 0)),
             child: Row(
               children: [
                 const Icon(Icons.person, size: 50, color: Colors.white),
@@ -95,7 +95,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
     required VoidCallback onTap,
   }) {
     return ListTile(
-      leading: Icon(icon, color: Colors.blueGrey),
+      leading: Icon(icon, color: const Color.fromARGB(255, 255, 0, 0)),
       title: Text(
         text,
         style: TextStyle(fontSize: 16, color: Colors.blueGrey[900]),

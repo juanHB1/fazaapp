@@ -39,10 +39,10 @@ class LoginState extends State<Login> {
                   child: Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Icon(Icons.lock, size: 60, color: Colors.blueGrey),
+                      Icon(Icons.lock, size: 60, color: const Color.fromARGB(255, 0, 0, 0)),
                       SizedBox(height: 10),
                       Text(
-                        "Bienvenido",
+                        "Bienvenido a la Aplicación",
                         style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.blueGrey),
                       ),
                       SizedBox(height: 20),
@@ -73,11 +73,14 @@ class LoginState extends State<Login> {
                         ),
                         obscureText: true,
                         validator: (value) {
-                          if (value == null || value.isEmpty) {
+                          if (value == null || value.isEmpty) 
+                          {
                             return "Por favor, ingresa tu contraseña";
-                          } else if (value.length < 6) {
+                          } else if (value.length < 6) 
+                          {
                             return "Debe tener al menos 6 caracteres";
-                          }
+                          } 
+                          
                           return null;
                         },
                       ),
@@ -95,8 +98,8 @@ class LoginState extends State<Login> {
                               style: ElevatedButton.styleFrom(
                                 padding: EdgeInsets.symmetric(vertical: 14),
                                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                                backgroundColor: Colors.blueGrey,
-                                foregroundColor: Colors.white, // Added for text color
+                                backgroundColor: const Color.fromARGB(255, 255, 0, 0),
+                                foregroundColor: const Color.fromARGB(255, 0, 0, 0), // Added for text color
                               ),
                               child: loginProvider.loading
                                   ? const SizedBox(

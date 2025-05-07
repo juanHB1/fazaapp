@@ -85,22 +85,26 @@ class LoginProvider extends ChangeNotifier {
     loading = false;
     notifyListeners();
     String mensajeError = "Error al iniciar sesión";
-    switch (e.code) {
-      case "user-not-found":
-        mensajeError = "No existe una cuenta con este correo";
-        break;
-      case "wrong-password":
-        mensajeError = "Contraseña incorrecta";
-        break;
-      case "invalid-email":
-        mensajeError = "Formato de correo inválido";
-        break;
-      case "user-disabled":
-        mensajeError = "Esta cuenta ha sido deshabilitada";
-        break;
-      default:
-        mensajeError = e.message ?? mensajeError;
-    }
+switch (e.code) {
+  case "user-not-found":
+    mensajeError = "No existe una cuenta con este correo";
+    break;
+  case "wrong-password":
+    mensajeError = "Contraseña incorrecta";
+    break;
+  case "invalid-email":
+    mensajeError = "Formato de correo inválido";
+    break;
+  case "user-disabled":
+    mensajeError = "Esta cuenta ha sido deshabilitada";
+    break;
+  case "too-many-requests":
+    mensajeError = "Demasiados intentos fallidos. Intenta más tarde.";
+    break;
+  default:
+    mensajeError = "Usuario o contraseña incorrectos por favor verifica tus datos";
+}
+
 
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text(mensajeError)),

@@ -54,17 +54,17 @@ class _OrdenesServicioState extends State<OrdenesServicio> {
             mainAxisAlignment: MainAxisAlignment.center,
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(Icons.assignment_turned_in_outlined, color: Colors.amber, size: 28), // Icon for service orders
+              Icon(Icons.assignment_turned_in_outlined, color: const Color.fromARGB(255, 255, 0, 0), size: 28), // Icon for service orders
               SizedBox(width: 8),
               Text(
                 'Ordenes de servicio',
-                style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white, fontSize: 22),
+                style: TextStyle(fontWeight: FontWeight.bold, color: const Color.fromARGB(255, 255, 255, 255), fontSize: 22),
                 overflow: TextOverflow.ellipsis, // Handle potential overflow
               ),
             ],
           ),
           centerTitle: true,
-          backgroundColor: Colors.blueGrey[900],
+          backgroundColor: const Color.fromARGB(255, 0, 0, 0),
           elevation: 4,
           shadowColor: Colors.black45,
           leading: IconButton(
@@ -103,9 +103,9 @@ class _OrdenesServicioState extends State<OrdenesServicio> {
                   child: Row(
                     children: [
                        CircleAvatar(
-                        backgroundColor: Colors.blueGrey[700], // Darker blue-grey for avatar background
+                        backgroundColor: const Color.fromARGB(255, 0, 0, 0), // Darker blue-grey for avatar background
                         radius: 35,
-                        child: Icon(Icons.car_repair, size: 30, color: Colors.white), // Vehicle icon in avatar
+                        child: Icon(Icons.car_repair, size: 30, color: const Color.fromARGB(255, 255, 0, 0)), // Vehicle icon in avatar
                       ),
                       const SizedBox(width: 16),
                       Expanded( // Use Expanded to take available space
@@ -152,7 +152,7 @@ class _OrdenesServicioState extends State<OrdenesServicio> {
                     ),
                   );
                 },
-                backgroundColor: Colors.blueGrey[700],
+                backgroundColor: const Color.fromARGB(255, 0, 0, 0),
                 child: const Icon(Icons.add, color: Colors.white),
               )
             : null,
@@ -217,10 +217,10 @@ class _OrdenesServicioState extends State<OrdenesServicio> {
                   children: [
                     Row( // Icon and Title
                       children: [
-                         Icon(Icons.assignment_outlined, size: 24, color: Colors.blueGrey[700]), // Icon for order title
+                         Icon(Icons.assignment_outlined, size: 24, color: const Color.fromARGB(255, 255, 0, 0)), // Icon for order title
                          SizedBox(width: 8),
                         Text("Orden de Servicio #${index + 1}",
-                            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.blueGrey[800])), // Larger title
+                            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: const Color.fromARGB(255, 0, 0, 0))), // Larger title
                       ],
                     ),
                     Row( // Action buttons
@@ -305,13 +305,14 @@ class _OrdenesServicioState extends State<OrdenesServicio> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.assignment_turned_in_outlined, size: 80, color: Colors.blueGrey[400]),
+            Icon(Icons.assignment_turned_in_outlined, size: 80, color: const Color.fromARGB(255, 0, 0, 0)),
             const SizedBox(height: 16),
-            const Text("¡Sin órdenes de servicio registradas!",
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.blueGrey)),
+            const Text ("¡Sin órdenes de servicio registradas!",
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Color.fromARGB(255, 0, 0, 0))),
             const SizedBox(height: 8),
             const Text("Este vehículo aún no tiene órdenes de servicio. Agrega una para comenzar.",
-                textAlign: TextAlign.center, style: TextStyle(fontSize: 16, color: Colors.blueGrey)),
+                textAlign: TextAlign.center, style: TextStyle(fontSize: 16, color: Color.fromARGB(255, 0, 0, 0))),
           ],
         ),
       ),
@@ -323,7 +324,7 @@ class _OrdenesServicioState extends State<OrdenesServicio> {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start, // Align text to the top if it wraps
       children: [
-        Icon(icon, size: 18, color: Colors.blueGrey[500]),
+        Icon(icon, size: 18, color: const Color.fromARGB(255, 0, 0, 0)),
         const SizedBox(width: 8), // Increased spacing slightly
         Text("$label ", style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.black87, fontSize: 15)), // Label bold
         Expanded( // Use Expanded for the value text

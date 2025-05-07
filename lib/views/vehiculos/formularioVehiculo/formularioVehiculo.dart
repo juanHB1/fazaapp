@@ -56,13 +56,13 @@ class _FormularioVehiculoState extends State<FormularioVehiculo> {
         backgroundColor: Colors.blueGrey[50],
         appBar: AppBar(
           automaticallyImplyLeading: false,
-          backgroundColor: Colors.blueGrey[900],
+          backgroundColor: const Color.fromARGB(255, 0, 0, 0),
           elevation: 4,
           shadowColor: Colors.black45,
           title: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(Icons.car_repair, color: Colors.amber, size: 28),
+              Icon(Icons.car_repair, color: const Color.fromARGB(255, 255, 7, 7), size: 28),
               SizedBox(width: 8),
               Text(
                 "Faza Ingeniería",
@@ -116,14 +116,14 @@ class _FormularioVehiculoState extends State<FormularioVehiculo> {
                         child: Column(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            Icon(Icons.person, size: 60, color: Colors.blueGrey),
+                            Icon(Icons.person, size: 60, color: const Color.fromARGB(255, 0, 0, 0)),
                             const SizedBox(height: 10),
                             Text(
                               esEdicion ? "Editar vehículo" : "Registrar vehículo",
                               style: const TextStyle(
                                 fontSize: 22,
                                 fontWeight: FontWeight.bold,
-                                color: Color.fromARGB(255, 45, 43, 43),
+                                color: Color.fromARGB(255, 0, 0, 0),
                               ),
                             ),
                             const SizedBox(height: 20),
@@ -204,12 +204,7 @@ class _FormularioVehiculoState extends State<FormularioVehiculo> {
                               },
                             ),
                             const SizedBox(height: 10),
-                            /* buildTextFormField(
-                              controller: numeroChasisController,
-                              label: "Número de chasis",
-                              icon: Icons.tag,
-                              validatorMsg: "Por favor, ingrese el número de chasis",
-                            ), */
+     
                             const SizedBox(height: 20),
                             SizedBox(
                               width: double.infinity,
@@ -229,12 +224,12 @@ class _FormularioVehiculoState extends State<FormularioVehiculo> {
                                       )
                                     : Text(
                                         esEdicion ? "Actualizar" : "Registrar",
-                                        style: TextStyle(fontSize: 18, color: Colors.white),
+                                        style: TextStyle(fontSize: 18, color: const Color.fromARGB(255, 255, 255, 255)),
                                       ),
                                 style: ElevatedButton.styleFrom(
                                   padding: const EdgeInsets.symmetric(vertical: 14),
                                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                                  backgroundColor: Colors.blueGrey,
+                                  backgroundColor: const Color.fromARGB(255, 0, 0, 0),
                                 ),
                                 onPressed: () async {
                                   if (formKey.currentState!.validate()) {
@@ -305,7 +300,7 @@ class _FormularioVehiculoState extends State<FormularioVehiculo> {
       controller: controller,
       decoration: InputDecoration(
         labelText: label,
-        prefixIcon: Icon(icon, color: Colors.blueGrey),
+        prefixIcon: Icon(icon, color: const Color.fromARGB(255, 0, 0, 0)),
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
       ),
       validator: (value) {
