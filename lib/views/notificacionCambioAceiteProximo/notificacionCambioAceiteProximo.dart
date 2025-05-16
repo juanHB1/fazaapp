@@ -27,7 +27,7 @@ class _NotificacionCambioAceiteProximoState extends State<NotificacionCambioAcei
     final ordenes = provider.ordenesProximas;
     final estaCargando = provider.cargando;
 
-    return Scaffold(
+    return Scaffold( 
       appBar: AppBar(
         backgroundColor: const Color.fromARGB(255, 255, 255, 255), // Consistent AppBar color
         elevation: 4,
