@@ -4,6 +4,8 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
+
 
 // Importación de todos los providers usados globalmente
 import 'package:flutter_application_1/providers/login/login.provider.dart';
@@ -21,27 +23,21 @@ import 'package:flutter_application_1/views/listadoclientes/listaclientes.dart';
 import 'package:flutter_application_1/views/vehiculos/listaVehiculos/vehiculo.dart';
 import 'package:flutter_application_1/views/notificacionCambioAceiteProximo/notificacionCambioAceiteProximo.dart';
 
+
+
 // Instancia global para notificaciones locales
 final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
     FlutterLocalNotificationsPlugin();
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized(); // Asegura que Flutter esté completamente inicializado
+  
   await Firebase.initializeApp(); // Inicializa Firebase
 
-  // Configuración para notificaciones locales en Android
-  const AndroidInitializationSettings initializationSettingsAndroid =
-      AndroidInitializationSettings('@mipmap/ic_launcher');
+  await inicializarFirebaseMessaging();
 
-  final InitializationSettings initializationSettings = InitializationSettings(
-    android: initializationSettingsAndroid,
-  );
-
-  // Inicialización del plugin de notificaciones
-  await flutterLocalNotificationsPlugin.initialize(initializationSettings);
-
-  // Solicita permisos de notificación al usuario
   await Permission.notification.request();
+  
 
   // Inicialización de la app con MultiProvider para usar Provider globalmente
   runApp(
@@ -89,4 +85,31 @@ class MyApp extends StatelessWidget {
       },
     );
   }
+}
+
+Future<void> inicializarFirebaseMessaging() async {
+  FirebaseMessaging messaging = FirebaseMessaging.instance;
+
+  // Solicita permiso para recibir notificaciones
+  NotificationSettings settings = await messaging.requestPermission(
+    alert: true,
+    badge: true,
+    sound: true,
+  );
+
+  if (settings.authorizationStatus == AuthorizationStatus.authorized) {
+    print('Permiso para notificaciones concedido');
+  } else {
+    print('Permiso para notificaciones denegado');
+  }
+
+  // Opcional: obtener token para enviar notificaciones a este dispositivo
+  String? token = await messaging.getToken();
+  print('Token FCM: $token');
+
+  // Configurar handler para mensajes cuando la app está en primer plano
+  FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+    print('Mensaje recibido en primer plano: ${message.messageId}');
+    // Aquí puedes mostrar notificación local o hacer algo con el mensaje
+  });
 }

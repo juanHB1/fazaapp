@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_application_1/views/login/login.dart';
 import 'package:flutter_application_1/views/vehiculos/listaVehiculos/vehiculo.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 
 
 class LoginProvider extends ChangeNotifier {
@@ -37,11 +38,22 @@ class LoginProvider extends ChangeNotifier {
 
     DocumentSnapshot usuarioDoc = await FirebaseFirestore.instance.collection('usuarios').doc(user.uid).get();
 
+
+      // Obtener token FCM
+    String? tokenFCM = await FirebaseMessaging.instance.getToken();
+
+    if (tokenFCM != null) {
+      // Guardar token en Firestore para este usuario
+      await FirebaseFirestore.instance.collection('usuarios').doc(user.uid).update({
+        'tokenNotificacion': tokenFCM,
+      });
+    }
+
     if (!usuarioDoc.exists) {
       throw FirebaseAuthException(code: "user-not-found", message: "No se encontraron datos en Firestore.");
     }
 
-    Map<String, dynamic> datosUsuario = usuarioDoc.data() as Map<String, dynamic>;
+    Map<String, dynamic> datosUsuario = usuarioDoc.data() as Map<String, dynamic>;    
 
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString('uid', datosUsuario['uid']);
@@ -51,6 +63,11 @@ class LoginProvider extends ChangeNotifier {
     await prefs.setString('rol', datosUsuario['rol']);
     await prefs.setString('telefono', datosUsuario['telefono']);
     await prefs.setString('password', datosUsuario['password']);
+
+
+ 
+
+
 
     switch (datosUsuario['rol']) {
       case "cliente":
